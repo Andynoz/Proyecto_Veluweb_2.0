@@ -1,0 +1,16 @@
+{% extends "todo/layout.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle del Producto</title>
+<link rel="stylesheet" href="{% static 'todo/styles.css' %}"></head>
+<body>
+  <h1>{{ producto.nombre }}</h1>
+  <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+  <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+  <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
+  <a href="{{ url 'listar_productos' }}">Volver a la lista</a>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends "todo/layout2.html" %}
+{% load static %}
+
+{% block title %}Tabla de Clientes | Veluweb{% endblock %}
+
+{% block content %}
+<div class="contenedor-articulos" style="position: relative">
+  <section>
+    <h2>Lista de Clientes</h2>
+      
+    <table class="formulario">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cliente in clientes %}
+        <tr>
+          <td>{{ cliente.id }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.apellido }}</td>
+          <td>{{ cliente.correo }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>
+            
+            <button class=" boton-accion btn btn-primary btn-lg">
+            <a href="{% url 'eliminar' cliente.id %}">Archivar</a>
+            </button>
+
+            <button class="boton-accion btn btn-primary btn-lg">
+            <a href="{% url 'editar' cliente.id %}">Modificar</a>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">No hay clientes registrados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    <!-- Botón flotante en la esquina inferior derecha -->
+    <a href="{% url 'agregar' %}" class="boton-agregar-cliente">
+      ➕ Agregar Cliente
+    </a>
+  </section>
+</div>
+{% endblock %}

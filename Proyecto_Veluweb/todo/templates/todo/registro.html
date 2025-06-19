@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+</head>
+<body class="login">
+
+<<<<<<< HEAD
+<div class="registro-container-new">
+    <!-- Sección superior con fondo azul -->
+    <div class="registro-header">
+        <div class="logo1">
+            <img src="{% static 'todo/images/logo.png' %}" alt="VeluWeb Logo">
+        </div>
+        <h2>- Registrarse -</h2>
+    </div>
+    
+    <!-- Sección inferior con fondo blanco -->
+    <div class="registro-form">
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Nombre Completo</label>
+                <input type="text" id="username" name="username" placeholder="Ingresa tu nombre" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Correo</label>
+                <input type="email" id="email" name="email" placeholder="Ingresa tu correo" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password1">Contraseña</label>
+                <input type="password" id="password1" name="password1" placeholder="Ingresa una contraseña" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password2">Comprobar contraseña</label>
+                <input type="password" id="password2" name="password2" placeholder="Confirmar contraseña" required>
+            </div>
+            
+            <div class="form-actions-single">
+                <button class="btn btn-primary btn-lg">Registro</button>
+            </div>
+            
+            <div class="login-footer">
+                <p>¿Ya tienes cuenta? <a href="{% url 'signIn' %}" class="login-link">Inicia sesión aquí</a></p>
+            </div>
+        </form>
+=======
+<div class="login-container">
+    <div class="logo">
+        <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros">
+>>>>>>> 1349669239122d3889efccfaa7a3e65d78ff0cdf
+    </div>
+</div>
+
+</body>
+</html>

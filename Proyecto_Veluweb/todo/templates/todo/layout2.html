@@ -1,0 +1,95 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Velurapp{% endblock %}</title>
+  
+  <!-- Estilo personalizado -->
+  <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+</head>
+<body class="desplegable">
+  
+  <!-- Checkbox oculto para controlar el menú -->
+  <input type="checkbox" id="menu-toggle" class="control-menu-lateral">
+  
+  <!-- Overlay para cerrar el menú -->
+  <label for="menu-toggle" class="fondo-oscuro"></label>
+  
+  <!-- Encabezado con menú hamburguesa -->
+  <header class="encabezado-principal">
+    <div class="wrapper-encabezado">
+      <!-- Botón hamburguesa -->
+      <label for="menu-toggle" class="btn-menu-desplegable">
+        <span class="barra-menu"></span>
+        <span class="barra-menu"></span>
+        <span class="barra-menu"></span>
+      </label>
+      
+      <!-- Logo y título -->
+      <div class="zona-branding">
+        <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros" class="logotipo-empresa">
+      </div>
+    </div>
+  </header>
+
+  <!-- Menú lateral -->
+  <nav class="sidebar-navegacion">
+    <div class="header-sidebar">
+      <div class="info-usuario">
+        <h3 class="mensaje-bienvenida">¡Hola Usuario!</h3>
+        <p class="descripcion-app">Bienvenido a VeluWeb</p>
+      </div>
+    </div>
+    
+    <ul class="listado-opciones">
+      <li class="item-navegacion">
+        <a href="{% url 'index' %}" class="link-navegacion">
+          <span class="etiqueta-opcion">Inicio</span>
+        </a>
+      </li>
+      <li class="item-navegacion">
+        <a href="{% url 'tabla' %}" class="link-navegacion">
+          <span class="etiqueta-opcion">Clientes</span>
+        </a>
+      </li>
+      <li class="item-navegacion">
+        <a href="{% url 'productos_index' %}" class="link-navegacion">
+          <span class="etiqueta-opcion">Productos</span>
+        </a>
+      </li>
+      <li class="item-navegacion">
+        <a href="{% url 'lista_facturas' %}" class="link-navegacion">
+          <span class="etiqueta-opcion">Facturas</span>
+        </a>
+      </li>
+      <li class="item-navegacion division-menu">
+        <a href="{% url 'logout' %}" class="link-navegacion boton-salir">
+          <span class="etiqueta-opcion">Cerrar Sesión</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  
+  <!-- Contenido dinámico -->
+  <main class="seccion-contenido" id="contenidoPrincipal">
+    {% block content %}
+    <div class="muestra-contenido">
+      <h2>Contenido Principal</h2>
+      <p>Aquí va el contenido de tu aplicación Django...</p>
+    </div>
+    {% endblock %}
+  </main>
+  
+  <!-- Footer -->
+  <footer class="pie-de-pagina">
+    <p class="texto-copyright">Velurapp &copy; 2025 - Todos los derechos reservados</p>
+    <ul class="redes-sociales">
+      <li class="item-social"><a href="#" class="enlace-red">Facebook</a></li>
+      <li class="item-social"><a href="#" class="enlace-red">TikTok</a></li>
+      <li class="item-social"><a href="#" class="enlace-red">Instagram</a></li>
+    </ul>
+  </footer>
+</body>
+</html>

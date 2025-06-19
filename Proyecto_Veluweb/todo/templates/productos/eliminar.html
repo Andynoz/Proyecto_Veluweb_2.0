@@ -1,0 +1,13 @@
+{% extends "todo/layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>¿Eliminar Producto?</h1>
+    <p>¿Estás seguro de que deseas eliminar <strong>{{ producto.nombre }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'productos_index' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

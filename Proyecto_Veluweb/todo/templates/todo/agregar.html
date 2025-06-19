@@ -1,0 +1,50 @@
+{% extends 'todo/layout2.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: auto;">
+    <h2 style="text-align: center;">Formulario de Registro</h2>
+
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 10px;">
+            {{ form.nombre.label_tag }}
+            {{ form.nombre }}
+            {{ form.nombre.errors }}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            {{ form.apellido.label_tag }}
+            {{ form.apellido }}
+            {{ form.apellido.errors }}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            {{ form.correo.label_tag }}
+            {{ form.correo }}
+            {{ form.correo.errors }}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            {{ form.telefono.label_tag }}
+            {{ form.telefono }}
+            {{ form.telefono.errors }}
+        </div>
+
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

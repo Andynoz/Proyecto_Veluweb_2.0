@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+
+</head>
+<body class="recuperacion">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="recovery-card">
+                    <!-- Header -->
+                    <div class="card-header">
+                        <div class="logo">
+<<<<<<< HEAD
+                         <img src="{% static 'todo/images/logo.png' %}" alt="VeluWeb Logo">
+=======
+                            <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros">
+>>>>>>> 1349669239122d3889efccfaa7a3e65d78ff0cdf
+                        </div>
+                        <div class="recovery-icon">
+                            🔐
+                        </div>
+                        <h3 class="mb-0">Recuperar Contraseña</h3>
+                        <p class="mt-2 mb-0 opacity-75">Te enviaremos un enlace para restablecer tu contraseña</p>
+                    </div>
+                    
+                    <!-- Body -->
+                    <div class="card-body">
+                        <!-- Formulario -->
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label for="correo" class="form-label fw-bold text-dark">
+                                    <i class="fas fa-envelope me-2"></i>Correo Electrónico
+                                </label>
+                                <input type="email" 
+                                       class="form-control form-control-lg" 
+                                       id="correo" 
+                                       name="correo" 
+                                       placeholder="Ingresa tu correo electrónico"
+                                       required>
+                                <div class="form-text text-muted">
+                                    Ingresa el correo asociado a tu cuenta
+                                </div>
+                            </div>
+                            
+                            <!-- Botones -->
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Enviar Enlace de Recuperación
+                                </button>
+                                
+                                <a href="{% url 'signIn' %}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Volver al Inicio de Sesión
+                                </a>
+                            </div>
+                        </form>
+                        
+                        <!-- Información adicional -->
+                        <div class="mt-4 text-center">
+                            <small class="text-muted">
+                                ¿No tienes cuenta? 
+                                <a href="{% url 'registro' %}" class="text-decoration-none fw-bold" style="color: #183a5e;">
+                                    Regístrate aquí
+                                </a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

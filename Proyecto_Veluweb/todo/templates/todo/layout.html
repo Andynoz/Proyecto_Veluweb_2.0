@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Velurapp{% endblock %}</title>
+
+  <!-- Estilo personalizado -->
+  <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+</head>
+<body>
+
+  <!-- Encabezado y logo -->
+  <header>
+    <div class="contenedor-encabezado">
+      <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros">
+    </div>
+
+  </header>
+
+  <!-- Contenido dinámico -->
+  <main id="contenido-principal">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="pie-de-pagina">
+    <p class="texto-copyright">Velurapp &copy; 2025 - Todos los derechos reservados</p>
+    <ul class="redes-sociales">
+      <li class="item-social"><a href="#" class="enlace-red">Facebook</a></li>
+      <li class="item-social"><a href="#" class="enlace-red">TikTok</a></li>
+      <li class="item-social"><a href="#" class="enlace-red">Instagram</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>

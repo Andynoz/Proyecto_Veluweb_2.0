@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Contraseña Cambiada</title>
+<link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+<style>
+    .btn-enviar.azul {
+    background-color: #007bff;
+    color: white;
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    width: 100%;
+    }
+    .btn-enviar.azul:hover {
+    background-color: #0056b3;
+    }
+</style>
+</head>
+<body class="login">
+<div class="login-container">
+    <h2>Contraseña actualizada</h2>
+    <p>Tu contraseña ha sido cambiada exitosamente.</p>
+    <a class="btn-enviar azul" href="{% url 'login' %}">Volver al inicio</a>
+</div>
+</body>
+</html>
