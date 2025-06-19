@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'todo',  
+    'tailwind', 
+    'theme',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +139,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = ['todo.backend.EmailBackend'] # Usar el backend personalizado para autenticación por correo electrónico
 
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+# En tu settings.py, agrega esta línea:
+NPM_BIN_PATH = r'C:\Users\ACER\AppData\Roaming\npm\npm.cmd'  
+NODE_BIN_PATH = r'C:\Program Files\nodejs\node.exe'

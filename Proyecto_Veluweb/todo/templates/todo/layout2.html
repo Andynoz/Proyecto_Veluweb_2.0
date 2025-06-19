@@ -5,91 +5,158 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Velurapp{% endblock %}</title>
-  
-  <!-- Estilo personalizado -->
   <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'blue-custom': '#145ba0',
+            'blue-dark': '#183a5e',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Checkbox oculto */
+    .control-menu-lateral {
+      display: none;
+    }
+    
+    /* Animaciones del menú hamburguesa */
+    .control-menu-lateral:checked ~ header .barra-menu:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    
+    .control-menu-lateral:checked ~ header .barra-menu:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .control-menu-lateral:checked ~ header .barra-menu:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
+    
+    /* Mostrar overlay cuando menú está activo */
+    .control-menu-lateral:checked ~ .fondo-oscuro {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    /* Mostrar menú lateral cuando está activo */
+    .control-menu-lateral:checked ~ nav {
+      left: 0;
+    }
+  </style>
 </head>
-<body class="desplegable">
-  
+<body class="font-sans bg-gray-100 min-h-screen flex flex-col">
+
   <!-- Checkbox oculto para controlar el menú -->
   <input type="checkbox" id="menu-toggle" class="control-menu-lateral">
-  
+
   <!-- Overlay para cerrar el menú -->
-  <label for="menu-toggle" class="fondo-oscuro"></label>
-  
+  <label 
+    for="menu-toggle" 
+    class="fondo-oscuro fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[998] opacity-0 invisible transition-all duration-300 cursor-pointer"
+  ></label>
+
   <!-- Encabezado con menú hamburguesa -->
-  <header class="encabezado-principal">
-    <div class="wrapper-encabezado">
+  <header class="bg-blue-dark shadow-lg sticky top-0 z-[1000]">
+    <div class="max-w-6xl mx-auto px-5 flex items-center h-[70px] gap-5">
       <!-- Botón hamburguesa -->
-      <label for="menu-toggle" class="btn-menu-desplegable">
-        <span class="barra-menu"></span>
-        <span class="barra-menu"></span>
-        <span class="barra-menu"></span>
+      <label 
+        for="menu-toggle" 
+        class="flex flex-col cursor-pointer p-2 rounded-md transition-colors duration-300 hover:bg-white hover:bg-opacity-10"
+      >
+        <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
+        <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
+        <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
       </label>
       
       <!-- Logo y título -->
-      <div class="zona-branding">
-        <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros" class="logotipo-empresa">
+      <div class="flex items-center gap-4">
+        <img 
+          src="{% static 'todo/images/logo.png' %}" 
+          alt="Logo de Veluros" 
+          class="h-11 w-auto rounded-lg"
+        >
       </div>
     </div>
   </header>
 
   <!-- Menú lateral -->
-  <nav class="sidebar-navegacion">
-    <div class="header-sidebar">
-      <div class="info-usuario">
-        <h3 class="mensaje-bienvenida">¡Hola Usuario!</h3>
-        <p class="descripcion-app">Bienvenido a VeluWeb</p>
+  <nav class="fixed top-0 -left-80 w-80 h-screen bg-blue-dark z-[999] transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.8,0.25,1)] overflow-y-auto shadow-2xl">
+    <div class="py-7 px-6 bg-blue-dark border-b border-white border-opacity-10">
+      <div>
+        <h3 class="text-white text-xl mb-1 font-semibold">¡Hola Usuario!</h3>
+        <p class="text-white text-opacity-80 text-sm">Bienvenido a VeluWeb</p>
       </div>
     </div>
     
-    <ul class="listado-opciones">
-      <li class="item-navegacion">
-        <a href="{% url 'index' %}" class="link-navegacion">
-          <span class="etiqueta-opcion">Inicio</span>
+    <ul class="py-5">
+      <li>
+        <a 
+          href="{% url 'index' %}" 
+          class="flex items-center py-4 px-6 text-gray-100 no-underline transition-all duration-300 border-l-4 border-transparent hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 hover:pl-8"
+        >
+          <span class="text-base font-medium">Inicio</span>
         </a>
       </li>
-      <li class="item-navegacion">
-        <a href="{% url 'tabla' %}" class="link-navegacion">
-          <span class="etiqueta-opcion">Clientes</span>
+      <li>
+        <a 
+          href="{% url 'tabla' %}" 
+          class="flex items-center py-4 px-6 text-gray-100 no-underline transition-all duration-300 border-l-4 border-transparent hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 hover:pl-8"
+        >
+          <span class="text-base font-medium">Clientes</span>
         </a>
       </li>
-      <li class="item-navegacion">
-        <a href="{% url 'productos_index' %}" class="link-navegacion">
-          <span class="etiqueta-opcion">Productos</span>
+      <li>
+        <a 
+          href="{% url 'productos_index' %}" 
+          class="flex items-center py-4 px-6 text-gray-100 no-underline transition-all duration-300 border-l-4 border-transparent hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 hover:pl-8"
+        >
+          <span class="text-base font-medium">Productos</span>
         </a>
       </li>
-      <li class="item-navegacion">
-        <a href="{% url 'lista_facturas' %}" class="link-navegacion">
-          <span class="etiqueta-opcion">Facturas</span>
+      <li>
+        <a 
+          href="{% url 'lista_facturas' %}" 
+          class="flex items-center py-4 px-6 text-gray-100 no-underline transition-all duration-300 border-l-4 border-transparent hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 hover:pl-8"
+        >
+          <span class="text-base font-medium">Facturas</span>
         </a>
       </li>
-      <li class="item-navegacion division-menu">
-        <a href="{% url 'logout' %}" class="link-navegacion boton-salir">
-          <span class="etiqueta-opcion">Cerrar Sesión</span>
+      <li class="item-navegacion mt-8 pt-5 border-t border-white/10">
+        <a 
+          href="{% url 'logout' %}" 
+          class="flex items-center py-4 px-6 text-red-400 no-underline transition-all duration-300 border-l-4 border-transparent hover:bg-red-600 hover:bg-opacity-10 hover:border-l-red-400 hover:pl-8"
+        >
+          <span class="text-base font-medium">Cerrar Sesión</span>
         </a>
       </li>
     </ul>
   </nav>
-  
+
   <!-- Contenido dinámico -->
-  <main class="seccion-contenido" id="contenidoPrincipal">
+  <main class="flex-1 py-8 px-5 max-w-6xl mx-auto w-full transition-all duration-300" id="contenidoPrincipal">
     {% block content %}
-    <div class="muestra-contenido">
-      <h2>Contenido Principal</h2>
-      <p>Aquí va el contenido de tu aplicación Django...</p>
+    <div class="bg-white p-8 rounded-xl shadow-lg">
+      <h2 class="text-slate-800 mb-4 text-2xl font-bold">Contenido Principal</h2>
+      <p class="text-gray-500 leading-relaxed">Aquí va el contenido de tu aplicación Django...</p>
     </div>
     {% endblock %}
   </main>
-  
+
   <!-- Footer -->
-  <footer class="pie-de-pagina">
-    <p class="texto-copyright">Velurapp &copy; 2025 - Todos los derechos reservados</p>
-    <ul class="redes-sociales">
-      <li class="item-social"><a href="#" class="enlace-red">Facebook</a></li>
-      <li class="item-social"><a href="#" class="enlace-red">TikTok</a></li>
-      <li class="item-social"><a href="#" class="enlace-red">Instagram</a></li>
+  <footer class="bg-blue-dark text-white text-center py-6 px-5 mt-auto">
+    <p class="mb-4 text-sm">Veluweb &copy; 2025 - Todos los derechos reservados</p>
+    <ul class="list-none flex justify-center gap-6 flex-wrap">
+      <li><a href="#" class="text-gray-300 no-underline transition-colors duration-300 text-sm hover:text-blue-400">Facebook</a></li>
+      <li><a href="#" class="text-gray-300 no-underline transition-colors duration-300 text-sm hover:text-blue-400">TikTok</a></li>
+      <li><a href="#" class="text-gray-300 no-underline transition-colors duration-300 text-sm hover:text-blue-400">Instagram</a></li>
     </ul>
   </footer>
+
 </body>
 </html>

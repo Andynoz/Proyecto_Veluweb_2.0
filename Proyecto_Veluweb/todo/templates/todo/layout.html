@@ -5,9 +5,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Velurapp{% endblock %}</title>
-
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+    </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'blue-custom': '#145ba0',
+            'blue-dark': '#183a5e',
+          }
+        }
+      }
+    }
+  </script>
   <!-- Estilo personalizado -->
   <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 </head>
 <body>
 
@@ -27,7 +52,7 @@
 
   <!-- Footer -->
   <footer class="pie-de-pagina">
-    <p class="texto-copyright">Velurapp &copy; 2025 - Todos los derechos reservados</p>
+    <p class="texto-copyright">Veluweb &copy; 2025 - Todos los derechos reservados</p>
     <ul class="redes-sociales">
       <li class="item-social"><a href="#" class="enlace-red">Facebook</a></li>
       <li class="item-social"><a href="#" class="enlace-red">TikTok</a></li>
