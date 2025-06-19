@@ -17,9 +17,9 @@
                     <th>Precio Unitario</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="formset-body">
                 {% for form in formset %}
-                <tr>
+                <tr class="formset-row">
                     <td>{{ form.producto }}</td>
                     <td>{{ form.cantidad }}</td>
                     <td>{{ form.precio_unitario }}</td>
@@ -28,8 +28,29 @@
             </tbody>
         </table>
 
+        <button type="button" class="btn btn-success mb-3" id="agregar-producto">+ Agregar producto</button>
+
         <button type="submit" class="btn btn-primary">Guardar Factura</button>
         <a href="{% url 'lista_facturas' %}" class="btn btn-secondary">Cancelar</a>
     </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const agregarBtn = document.getElementById('agregar-producto');
+        const formsetBody = document.getElementById('formset-body');
+        const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
+
+    agregarBtn.addEventListener('click', function () {
+        const formCount = parseInt(totalForms.value);
+        const newRow = document.querySelector('.formset-row').cloneNode(true);
+        const regex = new RegExp(`detallefactura_set-(\\d){1,}`, 'g');
+
+        newRow.innerHTML = newRow.innerHTML.replace(regex, `detallefactura_set-${formCount}`);
+        formsetBody.appendChild(newRow);
+        totalForms.value = formCount + 1;
+    });
+});
+</script>
+
 </div>
 {% endblock %}

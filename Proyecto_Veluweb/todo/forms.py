@@ -83,6 +83,9 @@ class ProductoForm(forms.ModelForm):
         fields = ['nombre', 'codigo', 'precio', 'descripcion', 'imagen']
 
 
+
+# FACTURAS
+
 class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
@@ -97,5 +100,5 @@ DetalleFacturaFormSet = inlineformset_factory(
     Factura,
     DetalleFactura,
     form=DetalleFacturaForm,
-    extra=1,  # Puedes ajustar la cantidad de líneas iniciales
+    extra=1,  # Puede ajustar la cantidad de líneas iniciales
 )
