@@ -30,11 +30,15 @@
           <td>
             
             <button class=" boton-accion btn btn-primary btn-lg">
-            <a href="{% url 'eliminar' cliente.id %}">Archivar</a>
+            <a href="{% url 'eliminar' cliente.id %}">
+              <i class="fas fa-trash-alt"></i>
+            </a>
             </button>
 
             <button class="boton-accion btn btn-primary btn-lg">
-            <a href="{% url 'editar' cliente.id %}">Modificar</a>
+            <a href="{% url 'editar' cliente.id %}">
+              <i class="fas fa-edit"></i>
+            </a>
             </button>
           </td>
         </tr>
