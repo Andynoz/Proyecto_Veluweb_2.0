@@ -1,0 +1,24 @@
+# Ignorar entorno virtual
+env/
+
+# Ignorar archivos de Python compilados
+**/__pycache__/
+/Proyecto_Veluweb/**/migrations/*.pyc
+/Proyecto_Veluweb/**/migrations/__pycache__/
+/Proyecto_Veluweb/**/migrations/*.py
+
+# Ignorar archivos temporales
+*.log
+*.pot
+
+# Ignorar archivos de configuraciones locales (opcional)
+*.env
+.env
+
+# Ignorar archivos de base de datos SQLite
+/Proyecto_Veluweb/db.sqlite3
+
+# Ignorar la carpeta de Productos (la que contiene las imagenes) 
+/Proyecto_Veluweb/media/
+
+
