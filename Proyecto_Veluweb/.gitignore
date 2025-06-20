@@ -13,3 +13,7 @@ __pycache__/
 # Ignorar archivos de configuraciones locales (opcional)
 *.env
 .env
+
+# Ignorar archivos de base de datos SQLite
+db.sqlite3
+
