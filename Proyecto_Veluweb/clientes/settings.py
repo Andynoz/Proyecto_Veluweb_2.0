@@ -52,7 +52,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'clientes.urls'
 
-LOGIN_URL = 'signIn'
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 
 TEMPLATES = [
@@ -137,3 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = ['todo.backend.EmailBackend'] # Usar el backend personalizado para autenticación por correo electrónico
 
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

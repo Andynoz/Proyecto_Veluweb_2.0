@@ -69,8 +69,8 @@ class LoginForm(AuthenticationForm):
         label='Contraseña'
     ) 
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def _init_(self, *args, **kwargs):
+        super()._init_(*args, **kwargs)
         # Personalizar mensajes de error
         self.error_messages['invalid_login'] = 'Correo o contraseña incorrectos.'
         self.error_messages['inactive'] = 'Esta cuenta está inactiva.' 
@@ -81,7 +81,40 @@ class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
         fields = ['nombre', 'codigo', 'precio', 'descripcion', 'imagen']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill border-0 shadow-sm',
+                'placeholder': 'Nombre del producto',
+                'autocomplete': 'off',
+                'required': 'true'
+            }),
+            'codigo': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill border-0 shadow-sm',
+                'placeholder': 'Código del producto',
+                'autocomplete': 'off',
+                'required': 'true'
+            }),
+            'precio': forms.NumberInput(attrs={
+                'class': 'form-control rounded-pill border-0 shadow-sm',
+                'placeholder': 'Precio',
+                'step': '0.01',
+                'min': '0',
+                'autocomplete': 'off',
+                'required': 'true'
+            }),
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-control border-0 shadow-sm',
+                'placeholder': 'Escribe una breve descripción',
+                'rows': 3,
+                'autocomplete': 'off'
+            }),
+            'imagen': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'onchange': 'previewImage(event)'
+            }),
+        }
 
+# FACTURAS 
 
 class FacturaForm(forms.ModelForm):
     class Meta:

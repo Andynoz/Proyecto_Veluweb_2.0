@@ -9,7 +9,7 @@ class Cliente(models.Model):
     correo = models.EmailField(unique=True)
     telefono = models.CharField(max_length=15)
     
-    def __str__(self):
+    def _str_(self):
         return f"{self.nombre} {self.apellido}"
     
     class Meta:
@@ -34,15 +34,16 @@ class Producto(models.Model):
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.nombre} - {self.codigo}"
 
+# FACTURAS 
 
 class Factura(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fecha = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
+    def _str_(self):
         return f"Factura #{self.id} - {self.cliente}"
 
     def total(self):
@@ -58,5 +59,5 @@ class DetalleFactura(models.Model):
     def subtotal(self):
         return self.cantidad * self.precio_unitario
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.producto} x {self.cantidad}"
