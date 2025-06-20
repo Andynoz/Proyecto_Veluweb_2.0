@@ -25,9 +25,15 @@
                     <td>{{ factura.fecha }}</td>
                     <td>${{ factura.total }}</td>
                     <td>
-                        <a href="{% url 'detalle_factura' factura.id %}" class="btn btn-primary btn-sm">Ver</a>
-                        <a href="{% url 'editar_factura' factura.id %}" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="{% url 'eliminar_factura' factura.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a href="{% url 'detalle_factura' factura.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'editar_factura' factura.id %}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'eliminar_factura' factura.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
                     </td>
                 </tr>
                 {% empty %}
