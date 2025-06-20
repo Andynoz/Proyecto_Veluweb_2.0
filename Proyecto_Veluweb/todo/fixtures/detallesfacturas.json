@@ -1,0 +1,52 @@
+[
+{
+  "model": "todo.detallefactura",
+  "pk": 1,
+  "fields": {
+    "factura": 1,
+    "producto": 1,
+    "cantidad": 10,
+    "precio_unitario": "2000000.00"
+  }
+},
+{
+  "model": "todo.detallefactura",
+  "pk": 2,
+  "fields": {
+    "factura": 2,
+    "producto": 4,
+    "cantidad": 2,
+    "precio_unitario": "1500000.00"
+  }
+},
+{
+  "model": "todo.detallefactura",
+  "pk": 3,
+  "fields": {
+    "factura": 3,
+    "producto": 5,
+    "cantidad": 5,
+    "precio_unitario": "600000.00"
+  }
+},
+{
+  "model": "todo.detallefactura",
+  "pk": 4,
+  "fields": {
+    "factura": 3,
+    "producto": 2,
+    "cantidad": 2,
+    "precio_unitario": "800000.00"
+  }
+},
+{
+  "model": "todo.detallefactura",
+  "pk": 5,
+  "fields": {
+    "factura": 4,
+    "producto": 2,
+    "cantidad": 8,
+    "precio_unitario": "800000.00"
+  }
+}
+]
