@@ -17,3 +17,7 @@ __pycache__/
 # Ignorar archivos de base de datos SQLite
 db.sqlite3
 
+# Ignorar la carpeta de Productos (la que contiene las imagenes) 
+/media/
+
+
