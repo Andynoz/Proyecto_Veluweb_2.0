@@ -1,19 +1,23 @@
-
 from django.urls import path
 from django.conf.urls.static import static
-from . import views
 from django.conf import settings
+from . import views
 
 urlpatterns = [
+    # Home y clientes
     path('', views.home, name='home'),
     path('tabla/', views.tabla, name='tabla'),
     path('agregar/', views.agregar, name='agregar'),
     path('editar/<int:cliente_id>/', views.editar, name='editar'),
     path('eliminar/<int:cliente_id>/', views.eliminar, name='eliminar'),
+
+    # Autentificacion
     path('index/', views.index, name='index'),
     path('signIn/', views.signIn, name='signIn'),
     path('logout/', views.signout, name='logout'),
     path('registro/', views.registro, name='registro'),
+
+    # Recuperacion de contraseña
     path('recuperacion/', views.recuperacion, name='recuperacion'),
     path('recuperar/', views.recuperar_contrasena, name='recuperar_contrasena'),
     path('recuperacion/enviado/', views.correo_enviado, name='correo_enviado'),
@@ -22,12 +26,15 @@ urlpatterns = [
     path('verificar-codigo/', views.verificar_codigo, name='verificar_codigo'),
     path('nueva-contrasena/', views.nueva_contrasena, name='nueva_contrasena'),
     path('bienvenida/', views.bienvenida, name='bienvenida'),
-# CRUD Productos
+    
+    # CRUD Productos
     path('productos/', views.productos_index, name='productos_index'),
     path('productos/crear/', views.crear_producto, name='crear_producto'),
     path('productos/editar/<int:pk>/', views.editar_producto, name='editar_producto'),
     path('productos/eliminar/<int:pk>/', views.eliminar_producto, name='eliminar_producto'),
-# CRUD Facturas
+    path('productos/detalle/<int:pk>/', views.detalle_producto, name='detalle_producto'),
+
+    # CRUD Facturas
     path('facturas/', views.lista_facturas, name='lista_facturas'),
     path('facturas/crear/', views.crear_factura, name='crear_factura'),
     path('facturas/<int:pk>/', views.detalle_factura, name='detalle_factura'),
@@ -35,5 +42,6 @@ urlpatterns = [
     path('facturas/<int:pk>/eliminar/', views.eliminar_factura, name='eliminar_factura'),
 ]
 
+# Para servir archivos multimedia en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

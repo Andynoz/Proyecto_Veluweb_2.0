@@ -1,13 +1,26 @@
 {% extends "todo/layout.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>¿Eliminar Producto?</h1>
-    <p>¿Estás seguro de que deseas eliminar <strong>{{ producto.nombre }}</strong>?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-        <a href="{% url 'productos_index' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<div class="container mt-5">
+    <div class="card border-danger shadow-lg rounded-4">
+        <div class="card-header bg-danger text-white text-center py-3 rounded-top">
+            <h4 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+            </h4>
+        </div>
+        <div class="card-body text-center">
+            <p class="lead">¿Estás seguro de que deseas eliminar el producto <strong>"{{ producto.nombre }}"</strong>?</p>
+            <p class="text-muted">Esta acción no se puede deshacer.</p>
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm me-2">
+                    <i class="fas fa-trash-alt me-1"></i> Eliminar
+                </button>
+                <a href="{% url 'productos_index' %}" class="btn btn-secondary rounded-pill">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

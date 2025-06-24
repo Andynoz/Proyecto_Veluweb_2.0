@@ -19,6 +19,8 @@ from .models import Factura, DetalleFactura
 from .forms import FacturaForm, DetalleFacturaFormSet, DetalleFacturaForm
 from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 
@@ -190,12 +192,29 @@ def nueva_contrasena(request):
 def bienvenida(request):
     return render(request, 'bienvenida.html')
 
+
 # PRODUCTOS
 
 @login_required
 def productos_index(request):
-    productos = Producto.objects.all()
-    return render(request, 'productos/index.html', {'productos': productos})
+    query = request.GET.get("buscar")  # ← input del buscador
+    
+    if query:
+        productos_lista = Producto.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__icontains=query)
+        ).order_by('-id')
+    else:
+        productos_lista = Producto.objects.all().order_by('-id')
+
+    paginator = Paginator(productos_lista, 5)
+    pagina = request.GET.get('page')
+    productos = paginator.get_page(pagina)
+
+    return render(request, 'productos/index.html', {
+        'productos': productos,
+        'buscar': query
+    })
+    
 
 @login_required
 def crear_producto(request):
@@ -209,10 +228,14 @@ def crear_producto(request):
 def editar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     form = ProductoForm(request.POST or None, request.FILES or None, instance=producto)
+
     if form.is_valid():
         form.save()
         return redirect('productos_index')
-    return render(request, 'productos/editar.html', {'form': form})  # ← plantilla real
+    else:
+        print(form.errors)  # 👈 Esto mostrará los errores en la consola
+
+    return render(request, 'productos/editar.html', {'form': form})
 
 @login_required
 def eliminar_producto(request, pk):
@@ -222,6 +245,20 @@ def eliminar_producto(request, pk):
         return redirect('productos_index')
     return render(request, 'productos/eliminar.html', {'producto': producto})
 
+@login_required
+def detalle_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+
+    producto_anterior = Producto.objects.filter(pk__lt=producto.pk).order_by('-pk').first()
+    producto_siguiente = Producto.objects.filter(pk__gt=producto.pk).order_by('pk').first()
+
+    contexto = {
+        'producto': producto,
+        'producto_anterior': producto_anterior,
+        'producto_siguiente': producto_siguiente
+    }
+
+    return render(request, 'productos/detalle.html', contexto)
 
 #FACTURAS
 

@@ -2,168 +2,255 @@
 
 @font-face {
     font-family: 'branding_probold_italic';
-    src: url('static/font/branding_pro_bold_italic-webfont.woff2') format('woff2'),
-         url('static/font/branding_pro_bold_italic-webfont.woff') format('woff');
+    src: url('static/font/branding_pro_bold_italic-webfont.woff2') format('woff2'), url('static/font/branding_pro_bold_italic-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
-
 
 @font-face {
     font-family: 'branding_probold';
-    src: url('static/font/branding_pro_bold-webfont.woff2') format('woff2'),
-         url('static/font/branding_pro_bold-webfont.woff') format('woff');
+    src: url('static/font/branding_pro_bold-webfont.woff2') format('woff2'), url('static/font/branding_pro_bold-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
-
 
 @font-face {
     font-family: 'branding_proitalic';
-    src: url('static/font/branding_pro_italic-webfont.woff2') format('woff2'),
-         url('static/font/branding_pro_italic-webfont.woff') format('woff');
+    src: url('static/font/branding_pro_italic-webfont.woff2') format('woff2'), url('static/font/branding_pro_italic-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
-
 
 @font-face {
     font-family: 'branding_prolight_italic';
-    src: url('static/font/branding_pro_light_italic-webfont.woff2') format('woff2'),
-         url('static/font/branding_pro_light_italic-webfont.woff') format('woff');
+    src: url('static/font/branding_pro_light_italic-webfont.woff2') format('woff2'), url('static/font/branding_pro_light_italic-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
-
 
 @font-face {
     font-family: 'branding_prolight';
-    src: url('static/font/branding_pro_light-webfont.woff2') format('woff2'),
-         url('static/font/branding_pro_light-webfont.woff') format('woff');
+    src: url('static/font/branding_pro_light-webfont.woff2') format('woff2'), url('static/font/branding_pro_light-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
-
 
 @font-face {
     font-family: 'branding_proregular';
-    src: url('static/font/branding_pro_regular-webfont.woff2') format('woff2'),
-         url('static/font/branding_pro_regular-webfont.woff') format('woff');
+    src: url('static/font/branding_pro_regular-webfont.woff2') format('woff2'), url('static/font/branding_pro_regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
+
+
 /* http://meyerweb.com/eric/tools/css/reset/ 
     v2.0 | 20110126
     License: none (public domain)
 */
 
+
 /*Lo clasico para resetear los estilos de la pagina*/
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
+
+
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
 }
+
 body {
-	line-height: 1;
+    line-height: 1;
 }
-ol, ul {
-	list-style: none;
+
+ol,
+ul {
+    list-style: none;
 }
-blockquote, q {
-	quotes: none;
+
+blockquote,
+q {
+    quotes: none;
 }
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
 }
+
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
+
 
 /*Aqui empiezan los estilos propios*/
 
+
 /*a general para todo*/
-a{
+
+a {
     text-decoration: none;
     color: white;
 }
 
-body{
-    font-family: 'branding_proregular',Arial, Helvetica, sans-serif;
+body {
+    font-family: 'branding_proregular', Arial, Helvetica, sans-serif;
 }
-header{
+
+header {
     color: #fff;
     background-color: #183a5e;
     padding: 20px;
     text-align: center;
     font-family: 'branding_proregular', sans-serif;
 }
-header h1{
+
+header h1 {
     font-size: 76px;
     font-family: 'branding_proregular', sans-serif;
     font-weight: bold;
     padding: 20px 10px;
 }
-header img{
+
+header img {
     height: 125px;
     width: 215px;
     border-radius: 10px;
 }
 
-.contenedor-encabezado{  /*gracias a esto se puede poner la imagen de logo de la empresa al lado del titulo*/
+.contenedor-encabezado {
+    /*gracias a esto se puede poner la imagen de logo de la empresa al lado del titulo*/
     display: flex;
     gap: 10px;
 }
 
-.menu-nav{
+.menu-nav {
     font-size: 20px;
 }
-.menu-nav ul li{
-    display: inline; /*para que los enlaces de la barra de navegación esten horientados de forma horizontal*/
+
+.menu-nav ul li {
+    display: inline;
+    /*para que los enlaces de la barra de navegación esten horientados de forma horizontal*/
     margin-right: 30px;
 }
-.menu-nav a{
+
+.menu-nav a {
     text-decoration: none;
     color: #fff;
 }
 
-
-.contenedor-grid{   /*gracias a este bloque se permite poner los section del indice en forma de 2x2*/
+.contenedor-grid {
+    /*gracias a este bloque se permite poner los section del indice en forma de 2x2*/
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 50px;
     margin: 40px auto;
     max-width: 1000px;
 }
-.contenedor-grid section{
+
+.contenedor-grid section {
     text-align: center;
     padding: 25px;
     border: 1px solid #000;
@@ -171,21 +258,21 @@ header img{
     background-color: #f1f4f7;
 }
 
-.contenedor-grid img{
+.contenedor-grid img {
     height: 400px;
     width: 400px;
     border-radius: 10px;
     margin-bottom: 20px;
 }
-.contenedor-grid a{
+
+.contenedor-grid a {
     text-decoration: none;
     color: #000;
     font-size: 36px;
     font-weight: 200;
 }
 
-
-.contenedor-articulos{
+.contenedor-articulos {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
@@ -195,24 +282,24 @@ header img{
 }
 
 .boton-agregar-cliente {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  background-color: #2c7be5;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  text-decoration: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.2s ease;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background-color: #2c7be5;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
 }
 
 .boton-agregar-cliente:hover {
-  background-color: #1a68d1;
+    background-color: #1a68d1;
 }
 
-.contenedor-articulos section{
+.contenedor-articulos section {
     text-align: left;
     padding: 20px;
     border: 1px solid #000;
@@ -223,64 +310,69 @@ header img{
     font-weight: 200;
     width: 950px;
 }
+
 .contenedor-articulos img {
     height: 400px;
     width: 500px;
     border-radius: 10px;
     margin-bottom: 20px;
 }
-.contenedor-articulos p{
+
+.contenedor-articulos p {
     font-size: 25px;
 }
-
 
 .clickeable {
     cursor: pointer;
     border-radius: 5px;
     padding: 10px;
 }
+
 .boton-accion {
     padding: 6px 12px;
     margin-bottom: 5px;
     border-radius: 4px;
     min-width: 80px;
     display: inline-block;
-  }
+}
+
 .boton-agregar {
     background-color: #294475;
     width: 60px;
     height: 60px;
     border-radius: 50%;
     display: flex;
-    align-items: center; /* Centra verticalmente */
-    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    /* Centra verticalmente */
+    justify-content: center;
+    /* Centra horizontalmente */
     position: fixed;
     bottom: 30px;
     right: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     padding: 0;
-  }
-  
-  .boton-agregar img {
+}
+
+.boton-agregar img {
     width: 28px;
     height: 28px;
     display: block;
-  }
-  
+}
 
 .boton-agregar:hover {
     transform: scale(1.1);
 }
 
-
-.boton-agregar:hover{
+.boton-agregar:hover {
     transform: scale(1.1);
     background-color: #34cc8d;
 }
 
+
 /*Estilos de formularios*/
-.formulario{
+
+.formulario {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
@@ -288,26 +380,30 @@ header img{
     background-color: #f9f9f9;
     border-radius: 8px;
 }
-.formulario fieldset{
+
+.formulario fieldset {
     border: 2px solid #28a745;
     padding: 20px;
     border-radius: 8px;
 }
-.formulario label{
+
+.formulario label {
     display: block;
     font-size: 16px;
     color: #555;
     margin-bottom: 20px;
 }
 
+
 /*Los estilos de todos los diferents inputs utilizados en los formularios*/
+
 input[type="text"],
 input[type="email"],
-input[type="password"], 
+input[type="password"],
 input[type="tel"],
 input[type="number"],
 input[type="date"],
-.formulario textarea{
+.formulario textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -316,28 +412,38 @@ input[type="date"],
     box-sizing: border-box;
     font-size: 16px;
 }
-.formulario button[type="submit"] { /*este se pone aparte porque auqneu tambien es atributo como los otros es diferente por ser el de enviar*/
+
+.formulario button[type="submit"] {
+    /*este se pone aparte porque auqneu tambien es atributo como los otros es diferente por ser el de enviar*/
     background-color: #28a745;
     color: white;
     font-size: 16px;
     padding: 12px 20px;
     border: none;
     border-radius: 4px;
-    cursor: pointer; /*este atributo es para que el cursor cambie cuando esta sobre el elemento*/
+    cursor: pointer;
+    /*este atributo es para que el cursor cambie cuando esta sobre el elemento*/
     width: 100%;
 }
+
 .contenedor-articulos {
-    background-color: #f9f9f9; /* fondo clarito */
-    border: 2px solid #2c3e50; /* borde azul oscuro */
-    border-radius: 10px; /* bordes redondeados */
+    background-color: #f9f9f9;
+    /* fondo clarito */
+    border: 2px solid #2c3e50;
+    /* borde azul oscuro */
+    border-radius: 10px;
+    /* bordes redondeados */
     padding: 20px;
     margin: 20px auto;
     width: 100%;
     max-width: 1000px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* sombrita */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* sombrita */
 }
 
+
 /* Título */
+
 table.formulario {
     width: 100%;
     border-collapse: collapse;
@@ -346,27 +452,28 @@ table.formulario {
     font-size: 16px;
     border: 1px solid #ccc;
     margin-top: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  
-  table.formulario th,
-  table.formulario td {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table.formulario th,
+table.formulario td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ccc;
-  }
-  
-  table.formulario thead {
+}
+
+table.formulario thead {
     background-color: #294475;
     color: white;
-  }
-  
-  table.formulario tbody tr:hover {
-    background-color: #eef;
-  }
-  
+}
 
-/* Botones */  
+table.formulario tbody tr:hover {
+    background-color: #eef;
+}
+
+
+/* Botones */
+
 .contenedor-articulos a.clickable {
     margin-right: 10px;
     text-decoration: none;
@@ -381,7 +488,8 @@ table.formulario {
 
 
 /*Estilos para la pagina de facturas*/
-.contenedor-facturas{
+
+.contenedor-facturas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
@@ -390,7 +498,7 @@ table.formulario {
     padding: 30px;
 }
 
-.factura{
+.factura {
     display: flex;
     align-items: center;
     margin-top: 20px;
@@ -398,6 +506,7 @@ table.formulario {
     border-radius: 3px;
     padding: 15px;
 }
+
 .factura h2 {
     font-size: 24px;
     font-weight: bold;
@@ -405,27 +514,32 @@ table.formulario {
     margin-bottom: 5px;
     margin-left: 10px;
 }
-.factura p{
+
+.factura p {
     font-size: 18px;
     color: #777;
     margin-left: 10px;
 }
 
-.factura img{
+.factura img {
     width: 80px;
     height: 80px;
     border-radius: 3px;
 }
-.factura:hover{
+
+.factura:hover {
     border: 1px solid #000;
 }
-.factura h2:hover{
+
+.factura h2:hover {
     color: rgb(10, 42, 110);
     text-decoration: underline;
 }
 
+
 /*estilos basicos para el footer*/
-footer{
+
+footer {
     bottom: 0;
     margin-top: 60px;
     background-color: #1B263B;
@@ -434,23 +548,26 @@ footer{
     font-size: 20px;
     color: #fff;
 }
-footer ul{
+
+footer ul {
     list-style: none;
     margin-top: 20px;
 }
-footer ul li{
+
+footer ul li {
     display: inline;
     margin-right: 20px;
 }
-footer a{
+
+footer a {
     text-decoration: none;
     color: #fff;
 }
-footer a:hover{
+
+footer a:hover {
     text-decoration: underline;
     color: #c9d1d1;
 }
-
 
 
 /*Notas a mejorar
@@ -464,7 +581,9 @@ footer a:hover{
 
 Diseño del login*/
 
+
 /* ===== ESTILOS GENERALES ===== */
+
 .login {
     display: flex;
     justify-content: center;
@@ -475,7 +594,9 @@ Diseño del login*/
     padding: 20px;
 }
 
+
 /* ===== ESTILOS PARA LOGIN CON DISEÑO DIVIDIDO ===== */
+
 .login-container-new {
     width: 100%;
     max-width: 400px;
@@ -485,7 +606,9 @@ Diseño del login*/
     background-color: white;
 }
 
+
 /* Sección superior con fondo azul para login */
+
 .login-header {
     background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
     padding: 40px 30px 30px 30px;
@@ -509,7 +632,9 @@ Diseño del login*/
     color: white;
 }
 
+
 /* Sección inferior con fondo blanco para login */
+
 .login-form {
     background-color: white;
     padding: 30px;
@@ -571,8 +696,8 @@ Diseño del login*/
 }
 
 
-
 /* ===== ESTILOS PARA REGISTRO CON DISEÑO DIVIDIDO ===== */
+
 .registro-container-new {
     width: 100%;
     max-width: 400px;
@@ -582,7 +707,9 @@ Diseño del login*/
     background-color: white;
 }
 
+
 /* Sección superior con fondo azul para registro */
+
 .registro-header {
     background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
     padding: 40px 30px 30px 30px;
@@ -606,7 +733,9 @@ Diseño del login*/
     color: white;
 }
 
+
 /* Sección inferior con fondo blanco para registro */
+
 .registro-form {
     background-color: white;
     padding: 30px;
@@ -670,8 +799,11 @@ Diseño del login*/
     text-decoration: underline;
 }
 
+
 /* ===== ESTILOS PARA MENSAJES DE ERROR ===== */
-.login-form .error, .registro-form .error {
+
+.login-form .error,
+.registro-form .error {
     background-color: rgba(220, 53, 69, 0.1);
     color: #dc3545;
     padding: 12px;
@@ -681,91 +813,94 @@ Diseño del login*/
     font-size: 14px;
 }
 
+
 /*CSS recuperacion*/
 
- .recuperacion {
-            background: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .recovery-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 450px;
-            width: 100%;
-        }
-        
-        .card-header {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-            color: white;
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .card-body {
-            padding: 2.5rem;
-        }
-        
-        .form-control {
-            border-radius: 12px;
-            border: 2px solid #e1e5e9;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: #183a5e;
-            box-shadow: 0 0 0 0.2rem rgba(24, 58, 94, 0.25);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 12px 24px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(24, 58, 94, 0.3);
-        }
-        
-        .btn-outline-secondary {
-            border-radius: 12px;
-            border: 2px solid #183a5e;
-            color: #183a5e;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-outline-secondary:hover {
-            background-color: #183a5e;
-            border-color: #183a5e;
-        }
-        
-        .alert {
-            border-radius: 12px;
-            border: none;
-        }
-        
-        .text-muted {
-            color: #6c757d !important;
-        }
-        
-        .recovery-icon {
-            font-size: 3rem;
-            color: white;
-            margin-bottom: 1rem;
-        }
+.recuperacion {
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        /* ===== ESTILOS ESPECÍFICOS PARA EL LOGO DE RECUPERACIÓN ===== */
+.recovery-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 450px;
+    width: 100%;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+}
+
+.card-body {
+    padding: 2.5rem;
+}
+
+.form-control {
+    border-radius: 12px;
+    border: 2px solid #e1e5e9;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #183a5e;
+    box-shadow: 0 0 0 0.2rem rgba(24, 58, 94, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(24, 58, 94, 0.3);
+}
+
+.btn-outline-secondary {
+    border-radius: 12px;
+    border: 2px solid #183a5e;
+    color: #183a5e;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #183a5e;
+    border-color: #183a5e;
+}
+
+.alert {
+    border-radius: 12px;
+    border: none;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.recovery-icon {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+
+/* ===== ESTILOS ESPECÍFICOS PARA EL LOGO DE RECUPERACIÓN ===== */
+
 .recovery-card .card-header .logo {
     display: block;
     text-align: center;
@@ -782,18 +917,23 @@ Diseño del login*/
     object-fit: contain;
 }
 
+
 /* Si quieres que el logo sea más pequeño en recuperación */
+
 .recovery-card .card-header .logo img {
     max-width: 100px;
     max-height: 60px;
 }
 
+
 /* O si quieres mantener el mismo tamaño que en otras páginas */
+
 .recovery-card .card-header .logo img {
     max-width: 120px;
     max-height: 80px;
 }
-      
+
+
 /*CSS DE LA PAGINA DE INICIO*/
 
 .hero h2,
@@ -866,317 +1006,341 @@ Diseño del login*/
 /*CSS MENU DESPLEGABLE*/
 
 .desplegable {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f5f7fa;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
-    /* Ocultar checkbox */
-    .control-menu-lateral {
-      display: none;
-    }
 
-    /* Barra de navegación superior */
-    .encabezado-principal {
-      background-color: #183a5e;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+/* Ocultar checkbox */
 
+.control-menu-lateral {
+    display: none;
+}
+
+
+/* Barra de navegación superior */
+
+.encabezado-principal {
+    background-color: #183a5e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.wrapper-encabezado {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    height: 70px;
+    gap: 20px;
+}
+
+
+/* Botón hamburguesa */
+
+.btn-menu-desplegable {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-menu-desplegable:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.barra-menu {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 3px 0;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+
+/* Animación del botón hamburguesa cuando está activo */
+
+.control-menu-lateral:checked~.encabezado-principal .barra-menu:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.control-menu-lateral:checked~.encabezado-principal .barra-menu:nth-child(2) {
+    opacity: 0;
+}
+
+.control-menu-lateral:checked~.encabezado-principal .barra-menu:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+
+/* Sección de marca/logo */
+
+.zona-branding {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.titulo-principal {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.logotipo-empresa {
+    height: 45px;
+    width: auto;
+    border-radius: 8px;
+}
+
+
+/* Overlay para cerrar menú */
+
+.fondo-oscuro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.control-menu-lateral:checked~.fondo-oscuro {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* Menú lateral */
+
+.sidebar-navegacion {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 320px;
+    height: 100vh;
+    background-color: #183a5e;
+    z-index: 999;
+    transition: left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow-y: auto;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.control-menu-lateral:checked~.sidebar-navegacion {
+    left: 0;
+}
+
+
+/* Encabezado del menú */
+
+.header-sidebar {
+    padding: 30px 25px 25px;
+    background-color: #183a5e;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mensaje-bienvenida {
+    color: white;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.descripcion-app {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+
+/* Lista del menú */
+
+.listado-opciones {
+    list-style: none;
+    padding: 20px 0;
+}
+
+.item-navegacion {
+    margin: 0;
+}
+
+.division-menu {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.link-navegacion {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.link-navegacion:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #3498db;
+    padding-left: 30px;
+}
+
+.boton-salir {
+    color: #e74c3c !important;
+}
+
+.boton-salir:hover {
+    background-color: rgba(231, 76, 60, 0.1) !important;
+    border-left-color: #e74c3c !important;
+}
+
+.simbolo-opcion {
+    font-size: 1.2rem;
+    margin-right: 15px;
+    width: 20px;
+    text-align: center;
+}
+
+.etiqueta-opcion {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+
+/* Área de contenido */
+
+.seccion-contenido {
+    flex: 1;
+    padding: 30px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    transition: margin-left 0.3s ease;
+}
+
+.muestra-contenido {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.muestra-contenido h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.muestra-contenido p {
+    color: #7f8c8d;
+    line-height: 1.6;
+}
+
+
+/* Footer */
+
+.pie-de-pagina {
+    background-color: #183a5e;
+    color: white;
+    text-align: center;
+    padding: 25px 20px;
+    margin-top: auto;
+}
+
+.texto-copyright {
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.redes-sociales {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.enlace-red {
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.enlace-red:hover {
+    color: #3498db;
+}
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
     .wrapper-encabezado {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      height: 70px;
-      gap: 20px;
-    }
-
-    /* Botón hamburguesa */
-    .btn-menu-desplegable {
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 6px;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-menu-desplegable:hover {
-      background-color: rgba(255,255,255,0.1);
-    }
-
-    .barra-menu {
-      width: 25px;
-      height: 3px;
-      background-color: white;
-      margin: 3px 0;
-      transition: all 0.3s ease;
-      border-radius: 2px;
-    }
-
-    /* Animación del botón hamburguesa cuando está activo */
-    .control-menu-lateral:checked ~ .encabezado-principal .barra-menu:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .control-menu-lateral:checked ~ .encabezado-principal .barra-menu:nth-child(2) {
-      opacity: 0;
-    }
-
-    .control-menu-lateral:checked ~ .encabezado-principal .barra-menu:nth-child(3) {
-      transform: rotate(-45deg) translate(7px, -6px);
-    }
-
-    /* Sección de marca/logo */
-    .zona-branding {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .titulo-principal {
-      color: white;
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-
-    .logotipo-empresa {
-      height: 45px;
-      width: auto;
-      border-radius: 8px;
-    }
-
-    /* Overlay para cerrar menú */
-    .fondo-oscuro {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 998;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .control-menu-lateral:checked ~ .fondo-oscuro {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Menú lateral */
-    .sidebar-navegacion {
-      position: fixed;
-      top: 0;
-      left: -320px;
-      width: 320px;
-      height: 100vh;
-      background-color: #183a5e;
-      z-index: 999;
-      transition: left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      overflow-y: auto;
-      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
-    }
-
-    .control-menu-lateral:checked ~ .sidebar-navegacion {
-      left: 0;
-    }
-
-    /* Encabezado del menú */
-    .header-sidebar {
-      padding: 30px 25px 25px;
-      background-color: #183a5e;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .mensaje-bienvenida {
-      color: white;
-      font-size: 1.4rem;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .descripcion-app {
-      color: rgba(255,255,255,0.8);
-      font-size: 0.9rem;
-    }
-
-    /* Lista del menú */
-    .listado-opciones {
-      list-style: none;
-      padding: 20px 0;
-    }
-
-    .item-navegacion {
-      margin: 0;
-    }
-
-    .division-menu {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .link-navegacion {
-      display: flex;
-      align-items: center;
-      padding: 15px 25px;
-      color: #ecf0f1;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      border-left: 3px solid transparent;
-    }
-
-    .link-navegacion:hover {
-      background-color: rgba(255,255,255,0.1);
-      border-left-color: #3498db;
-      padding-left: 30px;
-    }
-
-    .boton-salir {
-      color: #e74c3c !important;
-    }
-
-    .boton-salir:hover {
-      background-color: rgba(231, 76, 60, 0.1) !important;
-      border-left-color: #e74c3c !important;
-    }
-
-    .simbolo-opcion {
-      font-size: 1.2rem;
-      margin-right: 15px;
-      width: 20px;
-      text-align: center;
-    }
-
-    .etiqueta-opcion {
-      font-size: 1rem;
-      font-weight: 500;
-    }
-
-    /* Área de contenido */
-    .seccion-contenido {
-      flex: 1;
-      padding: 30px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      transition: margin-left 0.3s ease;
-    }
-
-    .muestra-contenido {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .muestra-contenido h2 {
-      color: #2c3e50;
-      margin-bottom: 15px;
-    }
-
-    .muestra-contenido p {
-      color: #7f8c8d;
-      line-height: 1.6;
-    }
-
-    /* Footer */
-    .pie-de-pagina {
-      background-color: #183a5e;
-      color: white;
-      text-align: center;
-      padding: 25px 20px;
-      margin-top: auto;
-    }
-
-    .texto-copyright {
-      margin-bottom: 15px;
-      font-size: 0.9rem;
-    }
-
-    .redes-sociales {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-      flex-wrap: wrap;
-    }
-
-    .enlace-red {
-      color: #bdc3c7;
-      text-decoration: none;
-      transition: color 0.3s ease;
-      font-size: 0.9rem;
-    }
-
-    .enlace-red:hover {
-      color: #3498db;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .wrapper-encabezado {
         padding: 0 15px;
-      }
-
-      .titulo-principal {
+    }
+    .titulo-principal {
         font-size: 1.5rem;
-      }
-
-      .logotipo-empresa {
+    }
+    .logotipo-empresa {
         height: 35px;
-      }
-
-      .sidebar-navegacion {
+    }
+    .sidebar-navegacion {
         width: 280px;
         left: -280px;
-      }
-
-      .seccion-contenido {
-        padding: 20px 15px;
-      }
-
-      .muestra-contenido {
-        padding: 20px;
-      }
     }
+    .seccion-contenido {
+        padding: 20px 15px;
+    }
+    .muestra-contenido {
+        padding: 20px;
+    }
+}
 
-    @media (max-width: 480px) {
-      .sidebar-navegacion {
+@media (max-width: 480px) {
+    .sidebar-navegacion {
         width: 100%;
         left: -100%;
-      }
-
-      .redes-sociales {
+    }
+    .redes-sociales {
         flex-direction: column;
         gap: 15px;
-      }
     }
+}
 
-    button{
-      color: white !important;
-    }
+button {
+    color: white !important;
+}
 
 
 /* Estilos específicos para la página de productos */
+
+
 /* Este CSS funciona con tu layout existente sin modificarlo */
 
+
 /* Contenedor principal */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
 }
 
+
 /* Título principal */
+
 .container h1 {
     color: #2c5282;
     font-size: 2.5rem;
@@ -1185,17 +1349,21 @@ Diseño del login*/
     font-weight: 600;
 }
 
+
 /* Contenedor de la tabla con fondo blanco */
+
 .container .table-container {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin: 2rem auto;
     max-width: 95%;
 }
 
+
 /* Botón crear producto */
+
 .btn-success {
     background-color: #48bb78;
     border-color: #48bb78;
@@ -1215,13 +1383,17 @@ Diseño del login*/
     box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
 }
 
+
 /* Estilos para centrar el botón */
+
 .d-flex.justify-content-center {
     display: flex;
     justify-content: center;
 }
 
+
 /* Tabla principal */
+
 .table {
     background-color: white;
     border-radius: 8px;
@@ -1231,7 +1403,9 @@ Diseño del login*/
     width: 100%;
 }
 
+
 /* Header de la tabla */
+
 .table-dark {
     background-color: #2d3748;
     border-color: #2d3748;
@@ -1247,7 +1421,9 @@ Diseño del login*/
     letter-spacing: 0.5px;
 }
 
+
 /* Filas de la tabla */
+
 .table tbody tr {
     transition: all 0.3s ease;
     border-bottom: 1px solid #e2e8f0;
@@ -1266,32 +1442,42 @@ Diseño del login*/
     font-size: 0.95rem;
 }
 
+
 /* Columna de nombre */
+
 .table td:first-child {
     font-weight: 600;
     color: #2d3748;
     text-align: left;
 }
 
+
 /* Columna de descripción */
+
 .table td:nth-child(2) {
     color: #4a5568;
     text-align: left;
 }
 
+
 /* Columna de precio */
+
 .table td:nth-child(3) {
     font-weight: 700;
     color: #48bb78;
     font-size: 1.1rem;
 }
 
+
 /* Columna de acciones */
+
 .table td:last-child {
     text-align: center;
 }
 
+
 /* Botones de acción */
+
 .btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
@@ -1327,7 +1513,9 @@ Diseño del login*/
     box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
 }
 
+
 /* Mensaje cuando no hay productos */
+
 .table tbody tr td[colspan="4"] {
     text-align: center;
     color: #718096;
@@ -1336,32 +1524,30 @@ Diseño del login*/
     font-size: 1.1rem;
 }
 
+
 /* Responsividad */
+
 @media (max-width: 768px) {
     .container {
         padding: 1rem 0.5rem;
     }
-    
     .container .table-container {
         padding: 1rem;
         margin: 1rem auto;
     }
-    
     .container h1 {
         font-size: 2rem;
         margin-bottom: 1.5rem;
     }
-    
     .btn-success {
         padding: 0.5rem 1.5rem;
         font-size: 0.9rem;
     }
-    
-    .table td, .table th {
+    .table td,
+    .table th {
         padding: 0.75rem 0.5rem;
         font-size: 0.85rem;
     }
-    
     .btn-sm {
         font-size: 0.75rem;
         padding: 0.375rem 0.75rem;
@@ -1374,11 +1560,10 @@ Diseño del login*/
     .table td:nth-child(2) {
         text-align: center;
     }
-    
-    .table td, .table th {
+    .table td,
+    .table th {
         padding: 0.5rem 0.25rem;
     }
-    
     .btn-sm {
         display: block;
         margin: 0.25rem auto;
@@ -1386,7 +1571,9 @@ Diseño del login*/
     }
 }
 
+
 /* Mejoras adicionales para que se vea exactamente como la imagen */
+
 .table-bordered {
     border: none;
 }
@@ -1396,28 +1583,38 @@ Diseño del login*/
     border: none;
 }
 
+
 /* Contenedor con fondo blanco y sombra */
-.container > div:not(.d-flex) {
+
+.container>div:not(.d-flex) {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin: 2rem auto;
 }
 
+
 /* Estilos generales para todas las páginas */
+
+
 /* Este CSS funciona con tu layout existente sin modificarlo */
+
 
 /* ========== ESTILOS PARA LISTA DE PRODUCTOS ========== */
 
+
 /* Contenedor principal */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
 }
 
+
 /* Título principal */
+
 .container h1 {
     color: #2c5282;
     font-size: 2.5rem;
@@ -1426,17 +1623,21 @@ Diseño del login*/
     font-weight: 600;
 }
 
+
 /* Contenedor de la tabla con fondo blanco */
+
 .container .table-container {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin: 2rem auto;
     max-width: 95%;
 }
 
+
 /* Botón crear producto */
+
 .btn-success {
     background-color: #48bb78;
     border-color: #48bb78;
@@ -1456,13 +1657,17 @@ Diseño del login*/
     box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
 }
 
+
 /* Estilos para centrar el botón */
+
 .d-flex.justify-content-center {
     display: flex;
     justify-content: center;
 }
 
+
 /* Tabla principal */
+
 .table {
     background-color: white;
     border-radius: 8px;
@@ -1472,7 +1677,9 @@ Diseño del login*/
     width: 100%;
 }
 
+
 /* Header de la tabla */
+
 .table-dark {
     background-color: #2d3748;
     border-color: #2d3748;
@@ -1488,7 +1695,9 @@ Diseño del login*/
     letter-spacing: 0.5px;
 }
 
+
 /* Filas de la tabla */
+
 .table tbody tr {
     transition: all 0.3s ease;
     border-bottom: 1px solid #e2e8f0;
@@ -1507,29 +1716,38 @@ Diseño del login*/
     font-size: 0.95rem;
 }
 
+
 /* Columna de nombre */
+
 .table td:first-child {
     font-weight: 600;
     color: #2d3748;
     text-align: left;
 }
 
+
 /* Columna de descripción */
+
 .table td:nth-child(2) {
     color: #4a5568;
     text-align: left;
 }
 
+
 /* Columna de precio */
+
 .table td:nth-child(3) {
     font-weight: 700;
     color: #48bb78;
     font-size: 1.1rem;
 }
 
+
 /* ========== ESTILOS PARA LISTA DE CLIENTES ========== */
 
+
 /* Contenedor principal de clientes */
+
 .contenedor-articulos {
     max-width: 1200px;
     margin: 0 auto;
@@ -1540,12 +1758,14 @@ Diseño del login*/
 .contenedor-articulos section {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin: 2rem auto;
 }
 
+
 /* Título para clientes */
+
 .contenedor-articulos h2 {
     color: #2c5282;
     font-size: 2.5rem;
@@ -1554,7 +1774,9 @@ Diseño del login*/
     font-weight: 600;
 }
 
+
 /* Tabla de clientes */
+
 .formulario {
     width: 100%;
     background-color: white;
@@ -1607,7 +1829,9 @@ Diseño del login*/
     color: #2d3748;
 }
 
+
 /* Botón flotante agregar cliente */
+
 .boton-agregar-cliente {
     position: fixed;
     bottom: 2rem;
@@ -1632,7 +1856,9 @@ Diseño del login*/
     text-decoration: none;
 }
 
+
 /* Botones de acción en tabla de clientes */
+
 .boton-accion {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -1671,19 +1897,24 @@ Diseño del login*/
     text-decoration: none;
 }
 
+
 /* ========== ESTILOS PARA FORMULARIOS ========== */
 
+
 /* Contenedor de formulario */
+
 .container form {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin: 2rem auto;
     max-width: 600px;
 }
 
+
 /* Título de formulario */
+
 .container h1 {
     color: #2c5282;
     font-size: 2rem;
@@ -1692,7 +1923,9 @@ Diseño del login*/
     font-weight: 600;
 }
 
+
 /* Campos del formulario */
+
 .container form p {
     margin-bottom: 1.5rem;
 }
@@ -1726,7 +1959,9 @@ Diseño del login*/
     box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
 }
 
+
 /* Botones de formulario */
+
 .btn-primary {
     background-color: #2c5282;
     border-color: #2c5282;
@@ -1767,7 +2002,9 @@ Diseño del login*/
     text-decoration: none;
 }
 
+
 /* Botones de acción generales */
+
 .btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
@@ -1803,7 +2040,9 @@ Diseño del login*/
     box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
 }
 
+
 /* Mensaje cuando no hay registros */
+
 .table tbody tr td[colspan],
 .formulario tbody tr td[colspan] {
     text-align: center;
@@ -1813,6 +2052,7 @@ Diseño del login*/
     font-size: 1.1rem;
 }
 
+
 /* ========== RESPONSIVIDAD ========== */
 
 @media (max-width: 768px) {
@@ -1820,40 +2060,36 @@ Diseño del login*/
     .contenedor-articulos {
         padding: 1rem 0.5rem;
     }
-    
     .container .table-container,
     .contenedor-articulos section,
     .container form {
         padding: 1rem;
         margin: 1rem auto;
     }
-    
     .container h1,
     .contenedor-articulos h2 {
         font-size: 2rem;
         margin-bottom: 1.5rem;
     }
-    
     .btn-success,
     .btn-primary,
     .btn-secondary {
         padding: 0.5rem 1.5rem;
         font-size: 0.9rem;
     }
-    
-    .table td, .table th,
-    .formulario td, .formulario th {
+    .table td,
+    .table th,
+    .formulario td,
+    .formulario th {
         padding: 0.75rem 0.5rem;
         font-size: 0.85rem;
     }
-    
     .btn-sm,
     .boton-accion {
         font-size: 0.75rem;
         padding: 0.375rem 0.75rem;
         margin: 0.125rem;
     }
-    
     .boton-agregar-cliente {
         bottom: 1rem;
         right: 1rem;
@@ -1868,19 +2104,18 @@ Diseño del login*/
     .formulario td {
         text-align: center;
     }
-    
-    .table td, .table th,
-    .formulario td, .formulario th {
+    .table td,
+    .table th,
+    .formulario td,
+    .formulario th {
         padding: 0.5rem 0.25rem;
     }
-    
     .btn-sm,
     .boton-accion {
         display: block;
         margin: 0.25rem auto;
         width: 80px;
     }
-    
     .container form input,
     .container form textarea,
     .container form select {
@@ -1889,7 +2124,9 @@ Diseño del login*/
     }
 }
 
+
 /* Mejoras adicionales */
+
 .table-bordered {
     border: none;
 }
@@ -1899,11 +2136,64 @@ Diseño del login*/
     border: none;
 }
 
+
 /* Contenedor con fondo blanco y sombra para productos */
-.container > div:not(.d-flex) {
+
+.container>div:not(.d-flex) {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     margin: 2rem auto;
+}
+
+
+/* botones de buscar en productos */
+
+.buscador-input {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 15px;
+    width: 280px;
+    border: 1px solid #ced4da;
+    transition: all 0.2s ease-in-out;
+}
+
+.buscador-input:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border-color: #007bff;
+}
+
+.form-inline input.buscador-input {
+    max-width: 280px;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+    padding: 12px;
+}
+
+.table thead {
+    border-radius: 12px;
+}
+
+.input-group .form-control::placeholder {
+    color: #aaa;
+}
+
+.input-group-text {
+    border-right: 0;
+    background-color: #fff;
+}
+
+.input-group .form-control {
+    border-left: 0;
+    box-shadow: none !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0056b3;
+    color: white;
 }
