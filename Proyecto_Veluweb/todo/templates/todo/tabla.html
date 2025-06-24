@@ -1,15 +1,35 @@
 {% extends "todo/layout2.html" %}
 {% load static %}
 
-{% block title %}Tabla de Clientes | Veluweb{% endblock %}
+{% block title %}Clientes | Veluweb{% endblock %}
 
 {% block content %}
-<div class="contenedor-articulos" style="position: relative">
-  <section>
-    <h2>Lista de Clientes</h2>
-      
-    <table class="formulario">
-      <thead>
+<div class="container mt-4">
+  <h1 class="mb-4 text-center">👥 Lista de Clientes</h1>
+  <p class="text-muted">Página {{ clientes.number }} de {{ clientes.paginator.num_pages }}</p>
+
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{% url 'agregar' %}" class="btn btn-success shadow-sm">
+      <i class="fas fa-user-plus me-1"></i> Agregar Cliente
+    </a>
+
+    <form method="GET" action="{% url 'tabla' %}" class="d-flex" style="gap: 10px;">
+      <input
+        type="text"
+        name="buscar"
+        class="form-control"
+        placeholder="🔍 Buscar cliente"
+        value="{{ query|default:'' }}"
+      >
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+  </div>
+
+  <div class="table-responsive shadow-sm">
+    <table class="table table-striped table-hover text-center align-middle">
+      <thead class="table-dark">
         <tr>
           <th>#</th>
           <th>Nombre</th>
@@ -28,32 +48,57 @@
           <td>{{ cliente.correo }}</td>
           <td>{{ cliente.telefono }}</td>
           <td>
-            
-            <button class=" boton-accion btn btn-primary btn-lg">
-            <a href="{% url 'eliminar' cliente.id %}">
-              <i class="fas fa-trash-alt"></i>
-            </a>
-            </button>
-
-            <button class="boton-accion btn btn-primary btn-lg">
-            <a href="{% url 'editar' cliente.id %}">
-              <i class="fas fa-edit"></i>
-            </a>
-            </button>
+            <div class="d-flex justify-content-center gap-2">
+              <a href="{% url 'editar' cliente.id %}" class="btn btn-warning btn-sm" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'eliminar' cliente.id %}" class="btn btn-danger btn-sm" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+            </div>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6">No hay clientes registrados.</td>
+          <td colspan="6" class="text-center text-muted">No hay clientes registrados.</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    
-    <!-- Botón flotante en la esquina inferior derecha -->
-    <a href="{% url 'agregar' %}" class="boton-agregar-cliente">
-      ➕ Agregar Cliente
-    </a>
-  </section>
+  </div>
+
+  {% if clientes.has_other_pages %}
+    <div class="d-flex justify-content-between align-items-center mt-4 px-2">
+      <div class="text-muted">Total de clientes: {{ clientes.paginator.count }}</div>
+    <nav>
+      <ul class="pagination mb-0">
+        {% if clientes.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ clientes.previous_page_number }}{% if query %}&buscar={{ query }}{% endif %}">Anterior</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        {% endif %}
+
+        {% for num in clientes.paginator.page_range %}
+          {% if clientes.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&buscar={{ query }}{% endif %}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if clientes.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ clientes.next_page_number }}{% if query %}&buscar={{ query }}{% endif %}">Siguiente</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+
 </div>
 {% endblock %}

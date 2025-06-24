@@ -29,8 +29,26 @@ def home(request):
 
 @login_required
 def tabla(request):
-    clientes = Cliente.objects.all()
-    return render(request, 'todo/tabla.html', {'clientes': clientes})
+    query = request.GET.get('buscar')  # toma el texto de búsqueda si lo hay
+
+    if query:
+        lista_clientes = Cliente.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(correo__icontains=query) |
+            Q(telefono__icontains=query)
+        ).order_by('id')
+    else:
+        lista_clientes = Cliente.objects.all().order_by('id')
+
+    paginator = Paginator(lista_clientes, 5)
+    page_number = request.GET.get('page')
+    clientes = paginator.get_page(page_number)
+
+    return render(request, 'todo/tabla.html', {
+        'clientes': clientes,
+        'query': query  # para que puedas volver a mostrar lo buscado
+    })
 
 @login_required
 def agregar(request):
@@ -264,8 +282,25 @@ def detalle_producto(request, pk):
 
 @login_required
 def lista_facturas(request):
-    facturas = Factura.objects.all()
-    return render(request, 'facturas/lista.html', {'facturas': facturas})
+    query = request.GET.get('buscar')
+
+    if query:
+        facturas_list = Factura.objects.filter(
+            Q(cliente__nombre__icontains=query) |
+            Q(cliente__apellido__icontains=query) |
+            Q(fecha__icontains=query)
+        ).order_by('-fecha')
+    else:
+        facturas_list = Factura.objects.all().order_by('-fecha')
+
+    paginator = Paginator(facturas_list, 5)
+    page_number = request.GET.get('page')
+    facturas = paginator.get_page(page_number)
+
+    return render(request, 'facturas/lista.html', {
+        'facturas': facturas,
+        'query': query
+    })
 
 @login_required
 def crear_factura(request):
