@@ -3,6 +3,20 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Lista de Comprobantes</h1>
+    <p class="text-muted">Página {{ facturas.number }} de {{ facturas.paginator.num_pages }}</p>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form method="GET" action="{% url 'lista_facturas' %}" class="d-flex" style="gap: 10px;">
+            <input
+                type="text"
+                name="buscar"
+                class="form-control"
+                placeholder="🔍 Buscar por cliente o fecha"
+                value="{{ query|default:'' }}"
+            >
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+
     <div class="d-flex justify-content-center mb-4">
         <a href="{% url 'crear_factura' %}" class="btn btn-success">+ Crear Comprobante</a>
     </div>
@@ -45,4 +59,37 @@
         </table>
     </div>
 </div>
+{% if facturas.has_other_pages %}
+<div class="d-flex justify-content-between align-items-center mt-4">
+  <div class="text-muted">Total de comprobantes: {{ facturas.paginator.count }}</div>
+  <nav>
+    <ul class="pagination mb-0">
+      {% if facturas.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ facturas.previous_page_number }}{% if query %}&buscar={{ query }}{% endif %}">Anterior</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+      {% endif %}
+
+      {% for num in facturas.paginator.page_range %}
+        {% if facturas.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&buscar={{ query }}{% endif %}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if facturas.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ facturas.next_page_number }}{% if query %}&buscar={{ query }}{% endif %}">Siguiente</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endif %}
+
 {% endblock %}
