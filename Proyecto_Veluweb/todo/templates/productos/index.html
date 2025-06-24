@@ -57,6 +57,9 @@
                 <td>${{ producto.precio }}</td>
                 <td>
                     <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'detalle_producto' producto.id %}" class="btn btn-info btn-sm" title="Ver">
+                            <i class="fas fa-eye"></i>
+                        </a>
                         <a href="{% url 'editar_producto' producto.id %}" class="btn btn-warning btn-sm" title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>

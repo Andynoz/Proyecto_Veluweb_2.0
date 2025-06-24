@@ -248,8 +248,17 @@ def eliminar_producto(request, pk):
 @login_required
 def detalle_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
-    return render(request, 'productos/detalle.html', {'producto': producto})
 
+    producto_anterior = Producto.objects.filter(pk__lt=producto.pk).order_by('-pk').first()
+    producto_siguiente = Producto.objects.filter(pk__gt=producto.pk).order_by('pk').first()
+
+    contexto = {
+        'producto': producto,
+        'producto_anterior': producto_anterior,
+        'producto_siguiente': producto_siguiente
+    }
+
+    return render(request, 'productos/detalle.html', contexto)
 
 #FACTURAS
 

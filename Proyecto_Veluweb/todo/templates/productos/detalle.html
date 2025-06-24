@@ -1,31 +1,56 @@
 {% extends "todo/layout2.html" %}
-{% load static %}
-{% load humanize %}  {# para intcomma en el precio #}
 
-{% block title %}Detalle | Velurapp{% endblock %}
+{% load static %}
+{% load humanize %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="card shadow p-4 mx-auto" style="max-width: 650px;">
-    <h2 class="text-center mb-4 text-primary">
-      <i class="fas fa-box-open me-2"></i>
-      {{ producto.nombre }}
-    </h2>
-
-    {% if producto.imagen %}
-      <img src="{{ producto.imagen.url }}" class="img-fluid rounded mb-3" alt="{{ producto.nombre }}">
-    {% endif %}
-
-    <p><strong>📝 Descripción:</strong> {{ producto.descripcion }}</p>
-    <p><strong>💰 Precio:</strong> ${{ producto.precio|intcomma }}</p>
-    <p>
-      <strong>🏷️ Categoría:</strong>
-      <span class="badge bg-warning text-dark">{{ producto.categoria }}</span>
-    </p>
-
-    <a href="{% url 'productos_index' %}" class="btn btn-primary mt-3">
-      <i class="fas fa-arrow-left me-1"></i> Volver
+<div class="container-fluid p-4 vh-100 d-flex flex-column">
+  <!-- Botón de volver -->
+  <div class="mb-3">
+    <a href="{% url 'productos_index' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver
     </a>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="row flex-grow-1">
+    <!-- Imagen del producto -->
+    <div class="col-md-6 d-flex align-items-start">
+      <img src="{{ producto.imagen.url }}" alt="Imagen del producto"
+           class="img-fluid rounded shadow-sm w-100">
+    </div>
+
+    <!-- Info del producto + flechas -->
+    <div class="col-md-6 d-flex align-items-start">
+      <div class="w-100 bg-white rounded shadow-sm p-4">
+        <h2 class="mb-3">{{ producto.nombre }}</h2>
+        <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+        <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+
+        <!-- Flechas de navegación -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          {% if producto_anterior %}
+            <a href="{% url 'detalle_producto' producto_anterior.pk %}" class="text-secondary fs-2">
+              <i class="bi bi-arrow-left-circle-fill"></i>
+            </a>
+          {% else %}
+            <span class="invisible text-secondary fs-2">
+              <i class="bi bi-arrow-left-circle-fill"></i>
+            </span>
+          {% endif %}
+
+          {% if producto_siguiente %}
+            <a href="{% url 'detalle_producto' producto_siguiente.pk %}" class="text-secondary fs-2">
+              <i class="bi bi-arrow-right-circle-fill"></i>
+            </a>
+          {% else %}
+            <span class="invisible text-secondary fs-2">
+              <i class="bi bi-arrow-right-circle-fill"></i>
+            </span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
