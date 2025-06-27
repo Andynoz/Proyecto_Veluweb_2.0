@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Cliente
 from .forms import ClienteForm
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -323,6 +323,16 @@ def crear_factura(request):
         'form': form,
         'formset': formset
     })
+    
+    
+@login_required
+def obtener_precio_producto(request):
+    producto_id = request.GET.get('producto_id')
+    try:
+        producto = Producto.objects.get(id=producto_id)
+        return JsonResponse({'precio': str(producto.precio)})
+    except Producto.DoesNotExist:
+        return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
 @login_required
 def detalle_factura(request, pk):

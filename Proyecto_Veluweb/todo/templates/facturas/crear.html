@@ -34,23 +34,69 @@
         <a href="{% url 'lista_facturas' %}" class="btn btn-secondary">Cancelar</a>
     </form>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const agregarBtn = document.getElementById('agregar-producto');
-        const formsetBody = document.getElementById('formset-body');
-        const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const agregarBtn = document.getElementById('agregar-producto');
+    const formsetBody = document.getElementById('formset-body');
+    const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
 
+    // Evento al cambiar un producto
+    function handleProductoChange(event) {
+        const select = event.target;
+        const productoId = select.value;
+
+        if (!productoId) return;
+
+        const fila = select.closest('tr');
+        const inputPrecio = fila.querySelector('input[name$="-precio_unitario"]');
+
+        fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.precio) {
+                    inputPrecio.value = data.precio;
+                } else {
+                    inputPrecio.value = '';
+                }
+            });
+    }
+
+    // Asignar eventos a todos los selects de productos
+    function asignarEventosPrecio() {
+        document.querySelectorAll('select[name$="-producto"]').forEach(function(select) {
+            select.removeEventListener('change', handleProductoChange);
+            select.addEventListener('change', handleProductoChange);
+        });
+    }
+
+    // Asigna eventos al cargar la página
+    asignarEventosPrecio();
+
+    // Evento para agregar nuevas filas
     agregarBtn.addEventListener('click', function () {
         const formCount = parseInt(totalForms.value);
         const newRow = document.querySelector('.formset-row').cloneNode(true);
         const regex = new RegExp(`detallefactura_set-(\\d){1,}`, 'g');
 
+        // Reemplazar índices
         newRow.innerHTML = newRow.innerHTML.replace(regex, `detallefactura_set-${formCount}`);
+
+        // Limpiar campos del nuevo row
+        newRow.querySelectorAll('input, select').forEach(el => {
+            if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0;
+            } else {
+                el.value = '';
+            }
+        });
+
         formsetBody.appendChild(newRow);
         totalForms.value = formCount + 1;
+
+        // Reasignar eventos
+        asignarEventosPrecio();
     });
 });
 </script>
-
 </div>
 {% endblock %}
