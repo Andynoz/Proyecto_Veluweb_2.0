@@ -8,6 +8,11 @@
         </h2>
         <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
+            <div class="col-md-6">
+                <label for="id_categoria" class="form-label">Categoría</label>
+                {{ form.categoria }}
+            </div>
+            
             {% if form.errors %}
             <div class="alert alert-danger">
                 <h5>⚠️ Errores en el formulario:</h5>

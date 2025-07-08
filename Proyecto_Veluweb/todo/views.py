@@ -21,7 +21,8 @@ from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from .models import Categoria
+from .forms import CategoriaForm
 
 
 def home(request):
@@ -219,10 +220,16 @@ def productos_index(request):
     
     if query:
         productos_lista = Producto.objects.filter(
-            Q(nombre__icontains=query) | Q(descripcion__icontains=query)
+            Q(activo=True) & (
+                Q(nombre__icontains=query) |
+                Q(descripcion__icontains=query) |
+                Q(codigo__icontains=query)
+            )
         ).order_by('-id')
+    
     else:
-        productos_lista = Producto.objects.all().order_by('-id')
+        productos_lista = Producto.objects.filter(activo=True).order_by('-id')
+
 
     paginator = Paginator(productos_lista, 5)
     pagina = request.GET.get('page')
@@ -259,9 +266,11 @@ def editar_producto(request, pk):
 def eliminar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
-        producto.delete()
+        producto.activo = False
+        producto.save()
         return redirect('productos_index')
-    return render(request, 'productos/eliminar.html', {'producto': producto})
+    return redirect('productos_index')  
+
 
 @login_required
 def detalle_producto(request, pk):
@@ -277,6 +286,20 @@ def detalle_producto(request, pk):
     }
 
     return render(request, 'productos/detalle.html', contexto)
+
+@login_required
+def categorias_index(request):
+    categorias = Categoria.objects.all()
+    form = CategoriaForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect('categorias_index')
+
+    return render(request, 'productos/categorias.html', {
+        'categorias': categorias,
+        'form': form
+    })
+    
 
 #FACTURAS
 

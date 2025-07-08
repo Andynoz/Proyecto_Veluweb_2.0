@@ -21,6 +21,14 @@
 
         <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_categoria" class="form-label">
+                    <i class="fas fa-tags text-secondary me-1"></i> Categoría
+                </label>
+                {{ form.categoria }}
+                <div class="invalid-feedback">Selecciona una categoría válida.</div>
+            </div>
+            
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label for="id_nombre" class="form-label">

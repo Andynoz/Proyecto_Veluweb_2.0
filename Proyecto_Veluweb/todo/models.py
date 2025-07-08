@@ -23,7 +23,15 @@ class PasswordResetToken(models.Model):
 
     def is_valid(self):
         return timezone.now() < self.expires_at
+
+# CATEGORÍAS
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
     
+     
 # PRODUCTOS
 
 class Producto(models.Model):
@@ -33,10 +41,14 @@ class Producto(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=True)
+    categoria = models.ForeignKey('Categoria', on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.nombre} - {self.codigo}"
 
+
+# FACTURAS
 
 class Factura(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)

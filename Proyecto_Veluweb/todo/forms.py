@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import Producto
 from .models import Factura, DetalleFactura
 from django.forms import inlineformset_factory
-
+from .models import Categoria
 
 class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
     telefono = forms.CharField(
@@ -80,7 +80,7 @@ class LoginForm(AuthenticationForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'codigo', 'precio', 'descripcion', 'imagen']
+        fields = ['nombre', 'codigo', 'precio', 'descripcion', 'imagen', 'categoria']
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control rounded-pill border-0 shadow-sm',
@@ -112,9 +112,32 @@ class ProductoForm(forms.ModelForm):
                 'class': 'form-control',
                 'onchange': 'previewImage(event)'
             }),
+            'categoria': forms.Select(attrs={
+                'class': 'form-select rounded-pill border-0 shadow-sm',
+                'required': 'true'
+                }),
         }
+        
+def clean_categoria(self):
+        categoria = self.cleaned_data.get('categoria')
+        if not categoria:
+            raise forms.ValidationError("Selecciona una categoría.")
+        return categoria
 
-
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ['nombre']
+        labels = {
+            'nombre': 'Nombre de la categoría'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control rounded-pill border-0 shadow-sm',
+                'placeholder': 'Ej. Electrónica, Ropa, etc.',
+                'required': True
+            })
+        }
 
 # FACTURAS
 

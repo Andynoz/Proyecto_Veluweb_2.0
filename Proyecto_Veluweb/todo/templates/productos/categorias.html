@@ -1,0 +1,46 @@
+{% extends "todo/layout2.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">🏷️ Categorías de Producto</h1>
+
+    <form method="post" class="mb-4 d-flex gap-3">
+        {% csrf_token %}
+        {{ form.nombre.label_tag }}
+        {{ form.nombre }}
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-plus"></i> Agregar
+        </button>
+    </form>
+
+    <div class="table-responsive shadow-sm">
+        <table class="table table-striped text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.id }}</td>
+                    <td>{{ categoria.nombre }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="text-muted">No hay categorías registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="{% url 'productos_index' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Productos
+        </a>
+    </div>
+</div>
+{% endblock %}

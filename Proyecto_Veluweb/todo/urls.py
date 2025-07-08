@@ -33,6 +33,7 @@ urlpatterns = [
     path('productos/editar/<int:pk>/', views.editar_producto, name='editar_producto'),
     path('productos/eliminar/<int:pk>/', views.eliminar_producto, name='eliminar_producto'),
     path('productos/detalle/<int:pk>/', views.detalle_producto, name='detalle_producto'),
+    path('categorias/', views.categorias_index, name='categorias_index'),
 
     # CRUD Facturas
     path('facturas/', views.lista_facturas, name='lista_facturas'),
