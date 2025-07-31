@@ -41,6 +41,7 @@ urlpatterns = [
     path('facturas/<int:pk>/', views.detalle_factura, name='detalle_factura'),
     path('facturas/<int:pk>/editar/', views.editar_factura, name='editar_factura'),
     path('facturas/<int:pk>/eliminar/', views.eliminar_factura, name='eliminar_factura'),
+    path('estadisticas/', views.estadisticas_view, name='estadisticas'),
 ]
 
 # Para servir archivos multimedia en desarrollo
