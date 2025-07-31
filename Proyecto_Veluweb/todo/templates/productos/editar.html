@@ -1,15 +1,96 @@
-{% extends "todo/layout.html" %}
+{% extends "todo/layout2.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Editar Producto</h1>
-    <form method="post" enctype="multipart/form-data">
+<header>
+     <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+    </style>
+</header>
+<!-- Contenedor principal -->
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Título principal -->
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Editar Producto</h1>
+  
+  <!-- Contenedor del formulario con fondo blanco y sombra -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <div class="p-8">
+      <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <div class="form-buttons" style="text-align: center; margin-top: 2rem;">
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="{% url 'productos_index' %}" class="btn btn-secondary">Cancelar</a>
+        
+        <!-- Información del producto -->
+        <div class="mb-8">
+          {% for field in form %}
+          <div class="mb-6">
+            <label for="{{ field.id_for_label }}" class="block text-slate-700 font-semibold mb-2 text-base">
+              {{ field.label }}
+            </label>
+            {% if field.field.widget.input_type == 'select' %}
+              <select name="{{ field.name }}" id="{{ field.id_for_label }}" 
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
+                {% for choice in field.field.choices %}
+                  <option value="{{ choice.0 }}" {% if choice.0 == field.value %}selected{% endif %}>{{ choice.1 }}</option>
+                {% endfor %}
+              </select>
+            {% elif field.field.widget.input_type == 'textarea' %}
+              <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" 
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg resize-vertical"
+                        rows="4">{{ field.value|default:"" }}</textarea>
+            {% elif field.field.widget.input_type == 'file' %}
+              <input type="file" 
+                     name="{{ field.name }}" 
+                     id="{{ field.id_for_label }}" 
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            {% elif field.field.widget.input_type == 'number' %}
+              <input type="number" 
+                     step="0.01"
+                     name="{{ field.name }}" 
+                     id="{{ field.id_for_label }}" 
+                     value="{{ field.value|default:"" }}"
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
+            {% else %}
+              <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                     name="{{ field.name }}" 
+                     id="{{ field.id_for_label }}" 
+                     value="{{ field.value|default:"" }}"
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
+            {% endif %}
+            {% if field.help_text %}
+              <div class="mt-1 text-gray-500 text-sm">
+                {{ field.help_text }}
+              </div>
+            {% endif %}
+            {% if field.errors %}
+              <div class="mt-2 text-red-600 text-sm">
+                {% for error in field.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          {% endfor %}
         </div>
-    </form>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-center space-x-4 pt-6">
+          <button type="submit" class="btn-custom text-white px-8 py-3 rounded-lg font-medium text-base transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer hover:shadow-xl">
+            Guardar Cambios
+          </button>
+          <a href="{% url 'productos_index' %}" class="bg-red-500 hover:bg-red-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

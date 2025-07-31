@@ -4,16 +4,13 @@
 {% block title %}Inicio | Veluweb{% endblock %}
 
 {% block content %}
-<section class="hero" style="text-align: center; padding: 80px 20px;  background-size: cover; background-position: center; color: black;">
-    <h2 style="font-size: 48px; margin-bottom: 20px;">Bienvenido a Veluweb</h2>
-    <p style="font-size: 20px;">Tu sistema inteligente para la gestión de clientes, facturas y más.</p>
-    <div style="margin-top: 40px;">
-        <button class="btn btn-primary btn-lg">
-        <a href="{% url 'tabla' %}">Ir a tabla</a>
-        </button>
-    </div>
+<section class="text-center py-20 px-5 bg-cover bg-center text-black">
+    <h2 class="text-5xl mb-5 drop-shadow-lg" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);">
+        Bienvenido a Veluweb
+    </h2>
+    <p class="text-xl drop-shadow-md" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);">
+        Tu sistema inteligente para la gestión de clientes, facturas y más.
+    </p>
 </section>
 
 {% endblock %}
-
-

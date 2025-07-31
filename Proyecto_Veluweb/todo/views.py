@@ -306,3 +306,8 @@ def eliminar_factura(request, pk):
         factura.delete()
         return redirect('lista_facturas')
     return render(request, 'facturas/eliminar.html', {'factura': factura})
+
+
+#ROLES 
+def roles(request):
+    return render(request, 'todo/roles.html')
