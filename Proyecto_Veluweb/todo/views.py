@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse
-from .models import Cliente
+from django.http import HttpResponse, JsonResponse
+from .models import Cliente, Producto, Factura, DetalleFactura
 from .forms import ClienteForm
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -10,25 +10,130 @@ from django.contrib import messages
 from .models import PasswordResetToken
 from django.utils import timezone
 from django.core.mail import send_mail
-from datetime import timedelta
+from datetime import timedelta, date, datetime
 from django.db import IntegrityError
 from django.contrib.auth.backends import ModelBackend
-from .models import Producto
 from .forms import ProductoForm
-from .models import Factura, DetalleFactura
 from .forms import FacturaForm, DetalleFacturaFormSet, DetalleFacturaForm
 from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q, Sum, Count, F
+from django.db.models.functions import TruncDay
+import json
 
 
+@login_required
+def estadisticas_view(request):
+    end_date_str = request.GET.get('fecha_fin')
+    start_date_str = request.GET.get('fecha_inicio')
+
+    if end_date_str:
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    else:
+        end_date = timezone.now().date()
+
+    if start_date_str:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    else:
+        start_date = end_date - timedelta(days=29)
+
+    if start_date > end_date:
+        messages.warning(request, "La fecha de inicio no puede ser posterior a la fecha de fin.")
+        start_date = end_date - timedelta(days=29)
+
+    ventas_totales = Factura.objects.filter(
+        fecha__date__range=[start_date, end_date]
+    ).aggregate(total=Sum('monto_total'))['total'] or 0
+
+    num_facturas = Factura.objects.filter(
+        fecha__date__range=[start_date, end_date]
+    ).count()
+
+    estado_facturas = Factura.objects.filter(
+        fecha__date__range=[start_date, end_date]
+    ).values('estado').annotate(count=Count('id')).order_by('estado')
+
+    estado_dict = {item['estado']: item['count'] for item in estado_facturas}
+    estados_data = {
+        'Pagada': estado_dict.get('Pagada', 0),
+        'Pendiente': estado_dict.get('Pendiente', 0),
+        'Vencida': estado_dict.get('Vencida', 0),
+    }
+
+    top_productos_vendidos = DetalleFactura.objects.filter(
+        factura__fecha__date__range=[start_date, end_date]
+    ).values('producto__nombre').annotate(
+        total_cantidad=Sum('cantidad')
+    ).order_by('-total_cantidad')[:5]
+
+    top_productos_labels = [item['producto__nombre'] for item in top_productos_vendidos]
+    top_productos_data = [float(item['total_cantidad']) for item in top_productos_vendidos]
+
+    producto_mas_vendido_nombre = top_productos_labels[0] if top_productos_labels else "N/A"
+
+
+    ventas_diarias = Factura.objects.filter(
+        fecha__date__range=[start_date, end_date]
+    ).annotate(
+        day=TruncDay('fecha')
+    ).values('day').annotate(
+        total_dia=Sum('monto_total')
+    ).order_by('day')
+
+    date_range = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+    ventas_diarias_dict = {item['day'].date(): float(item['total_dia']) for item in ventas_diarias}
+
+    tendencia_ventas_labels = [d.strftime('%Y-%m-%d') for d in date_range]
+    tendencia_ventas_data = [ventas_diarias_dict.get(d, 0) for d in date_range]
+
+    total_clientes = Cliente.objects.count()
+    total_productos = Producto.objects.count()
+    ultima_factura = Factura.objects.order_by('-fecha').first()
+
+    context = {
+        'ventas_totales': ventas_totales,
+        'num_facturas': num_facturas,
+        'estados_data': estados_data,
+        'top_productos_labels': json.dumps(top_productos_labels),
+        'top_productos_data': json.dumps(top_productos_data),
+        'producto_mas_vendido_nombre': producto_mas_vendido_nombre,
+        'tendencia_ventas_labels': json.dumps(tendencia_ventas_labels),
+        'tendencia_ventas_data': json.dumps(tendencia_ventas_data),
+        'fecha_inicio_str': start_date.strftime('%Y-%m-%d'),
+        'fecha_fin_str': end_date.strftime('%Y-%m-%d'),
+        'total_clientes': total_clientes,
+        'total_productos': total_productos,
+        'ultima_factura': ultima_factura,
+    }
+
+    return render(request, 'estadisticas/estadisticas.html', context)
 
 def home(request):
     return render(request, 'todo/home.html')  
 
 @login_required
 def tabla(request):
-    clientes = Cliente.objects.all()
-    return render(request, 'todo/tabla.html', {'clientes': clientes})
+    query = request.GET.get('buscar')
+
+    if query:
+        lista_clientes = Cliente.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(correo__icontains=query) |
+            Q(telefono__icontains=query)
+        ).order_by('id')
+    else:
+        lista_clientes = Cliente.objects.all().order_by('id')
+
+    paginator = Paginator(lista_clientes, 5)
+    page_number = request.GET.get('page')
+    clientes = paginator.get_page(page_number)
+
+    return render(request, 'todo/tabla.html', {
+        'clientes': clientes,
+        'query': query
+    })
 
 @login_required
 def agregar(request):
@@ -190,12 +295,29 @@ def nueva_contrasena(request):
 def bienvenida(request):
     return render(request, 'bienvenida.html')
 
+
 # PRODUCTOS
 
 @login_required
 def productos_index(request):
-    productos = Producto.objects.all()
-    return render(request, 'productos/index.html', {'productos': productos})
+    query = request.GET.get("buscar") 
+    
+    if query:
+        productos_lista = Producto.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__icontains=query)
+        ).order_by('-id')
+    else:
+        productos_lista = Producto.objects.all().order_by('-id')
+
+    paginator = Paginator(productos_lista, 5)
+    pagina = request.GET.get('page')
+    productos = paginator.get_page(pagina)
+
+    return render(request, 'productos/index.html', {
+        'productos': productos,
+        'buscar': query
+    })
+    
 
 @login_required
 def crear_producto(request):
@@ -209,10 +331,14 @@ def crear_producto(request):
 def editar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     form = ProductoForm(request.POST or None, request.FILES or None, instance=producto)
+
     if form.is_valid():
         form.save()
         return redirect('productos_index')
-    return render(request, 'productos/editar.html', {'form': form})  # ← plantilla real
+    else:
+        print(form.errors)  # 👈 Esto mostrará los errores en la consola
+
+    return render(request, 'productos/editar.html', {'form': form})
 
 @login_required
 def eliminar_producto(request, pk):
@@ -222,13 +348,44 @@ def eliminar_producto(request, pk):
         return redirect('productos_index')
     return render(request, 'productos/eliminar.html', {'producto': producto})
 
+@login_required
+def detalle_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+
+    producto_anterior = Producto.objects.filter(pk__lt=producto.pk).order_by('-pk').first()
+    producto_siguiente = Producto.objects.filter(pk__gt=producto.pk).order_by('pk').first()
+
+    contexto = {
+        'producto': producto,
+        'producto_anterior': producto_anterior,
+        'producto_siguiente': producto_siguiente
+    }
+
+    return render(request, 'productos/detalle.html', contexto)
 
 #FACTURAS
 
 @login_required
 def lista_facturas(request):
-    facturas = Factura.objects.all()
-    return render(request, 'facturas/lista.html', {'facturas': facturas})
+    query = request.GET.get('buscar')
+
+    if query:
+        facturas_list = Factura.objects.filter(
+            Q(cliente__nombre__icontains=query) |
+            Q(cliente__apellido__icontains=query) |
+            Q(fecha__icontains=query)
+        ).order_by('-fecha')
+    else:
+        facturas_list = Factura.objects.all().order_by('-fecha')
+
+    paginator = Paginator(facturas_list, 5)
+    page_number = request.GET.get('page')
+    facturas = paginator.get_page(page_number)
+
+    return render(request, 'facturas/lista.html', {
+        'facturas': facturas,
+        'query': query
+    })
 
 @login_required
 def crear_factura(request):
@@ -251,6 +408,16 @@ def crear_factura(request):
         'form': form,
         'formset': formset
     })
+    
+    
+@login_required
+def obtener_precio_producto(request):
+    producto_id = request.GET.get('producto_id')
+    try:
+        producto = Producto.objects.get(id=producto_id)
+        return JsonResponse({'precio': str(producto.precio)})
+    except Producto.DoesNotExist:
+        return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
 @login_required
 def detalle_factura(request, pk):

@@ -13,21 +13,21 @@
             background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
         }
         table select,
-table input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 2px solid #e5e7eb; /* gris claro */
-    border-radius: 0.5rem;
-    background-color: #f9fafb; /* gris muy claro */
-    font-size: 0.875rem;
-}
+        table input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb; /* gris claro */
+            border-radius: 0.5rem;
+            background-color: #f9fafb; /* gris muy claro */
+            font-size: 0.875rem;
+        }
 
-table select:focus,
-table input:focus {
-    outline: none;
-    border-color: #1e40af; /* azul Tailwind 800 */
-    background-color: white;
-}
+        table select:focus,
+        table input:focus {
+            outline: none;
+            border-color: #1e40af; /* azul Tailwind 800 */
+            background-color: white;
+        }
     </style>
 </header>
 <div class="bg-gray-50 min-h-screen">
@@ -58,11 +58,11 @@ table input:focus {
                     </thead>
                     <tbody id="formset-body" class="divide-y divide-gray-200">
                         {% for form in formset %}
-                        <tr class="formset-row transition-all  duration-300 hover:bg-gray-50 hover:translate-x-1">
+                        <tr class="formset-row transition-all duration-300 hover:bg-gray-50 hover:translate-x-1">
                             <td class="py-5 px-4 text-center">
                                 {{ form.producto }}
                             </td>
-                            <td class="py-5  px-4 text-center">
+                            <td class="py-5 px-4 text-center">
                                 {{ form.cantidad }}
                             </td>
                             <td class="py-5 px-4 text-center">
@@ -87,8 +87,8 @@ table input:focus {
             <!-- Botones de acción -->
             <div class="flex flex-wrap gap-4">
                 <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
-                Guardar Factura
-            </button>
+                    Guardar Factura
+                </button>
                 <a href="{% url 'lista_facturas' %}" class="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block text-center no-underline">
                     Cancelar
                 </a>
@@ -103,15 +103,53 @@ document.addEventListener('DOMContentLoaded', function () {
     const formsetBody = document.getElementById('formset-body');
     const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
 
+    // Evento al cambiar un producto
+    function handleProductoChange(event) {
+        const select = event.target;
+        const productoId = select.value;
+
+        if (!productoId) return;
+
+        const fila = select.closest('tr');
+        const inputPrecio = fila.querySelector('input[name$="-precio_unitario"]');
+
+        fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.precio) {
+                    inputPrecio.value = data.precio;
+                } else {
+                    inputPrecio.value = '';
+                }
+            });
+    }
+
+    // Asignar eventos a todos los selects de productos
+    function asignarEventosPrecio() {
+        document.querySelectorAll('select[name$="-producto"]').forEach(function(select) {
+            select.removeEventListener('change', handleProductoChange);
+            select.addEventListener('change', handleProductoChange);
+        });
+    }
+
+    // Asigna eventos al cargar la página
+    asignarEventosPrecio();
+
+    // Evento para agregar nuevas filas
     agregarBtn.addEventListener('click', function () {
         const formCount = parseInt(totalForms.value);
         const newRow = document.querySelector('.formset-row').cloneNode(true);
         const regex = new RegExp(`detallefactura_set-(\\d){1,}`, 'g');
 
+        // Reemplazar índices
         newRow.innerHTML = newRow.innerHTML.replace(regex, `detallefactura_set-${formCount}`);
         newRow.querySelectorAll('input, select').forEach(input => input.value = '');
+
         formsetBody.appendChild(newRow);
         totalForms.value = formCount + 1;
+
+        // Reasignar eventos
+        asignarEventosPrecio();
     });
 
     formsetBody.addEventListener('click', function (e) {

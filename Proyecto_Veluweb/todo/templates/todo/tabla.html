@@ -1,7 +1,7 @@
 {% extends "todo/layout2.html" %}
 {% load static %}
 
-{% block title %}Tabla de Clientes | Veluweb{% endblock %}
+{% block title %}Clientes | Veluweb{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 py-8">
@@ -52,14 +52,13 @@
           {{ cliente.telefono }}
         </div>
 
-        <!-- Fecha (simulada ya que no está en el modelo original) -->
+        <!-- Fecha -->
         <div class="flex items-center">
           <span class="text-dark font-medium">{{ cliente.date_joined|date:"M d, Y, g:i a"|default:"Jan 01, 2025, 12:00 p.m." }}</span>
         </div>
 
         <!-- Acciones -->
         <div class="flex items-center justify-center space-x-2">
-
           <!-- Botón Editar -->
           <a href="{% url 'editar' cliente.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,35 +88,12 @@
     </div>
   </div>
 
-  <!-- Información adicional o paginación si es necesaria -->
+  <!-- Información adicional -->
   {% if clientes %}
   <div class="mt-6 text-center text-gray-500 text-sm">
     Mostrando {{ clientes|length }} cliente{{ clientes|length|pluralize:"s" }}
   </div>
   {% endif %}
 </div>
-
-<style>
-/* Estilos adicionales para mejorar la apariencia en dispositivos móviles */
-@media (max-width: 768px) {
-  .grid-cols-6 {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  
-  .grid-cols-6 > div {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f3f4f6;
-  }
-  
-  .grid-cols-6 > div:before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #4b5563;
-    display: block;
-    margin-bottom: 0.25rem;
-  }
-}
-</style>
 
 {% endblock %}
