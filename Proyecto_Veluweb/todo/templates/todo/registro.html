@@ -6,61 +6,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
     <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+    <style>
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue-custom': '#145ba0',
+                        'blue-dark': '#183a5e',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="login">
+<body class="flex justify-center items-center min-h-screen m-0 bg-gray-100 p-5">
 
-<<<<<<< HEAD
-<div class="registro-container-new">
+<div class="w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl bg-white">
     <!-- Sección superior con fondo azul -->
-    <div class="registro-header">
-        <div class="logo1">
-            <img src="{% static 'todo/images/logo.png' %}" alt="VeluWeb Logo">
+    <div class="bg-gradient-to-br from-blue-dark to-blue-custom py-10 px-8 text-center text-white">
+        <div class="mb-5">
+            <img src="{% static 'todo/images/logo.png' %}" alt="VeluWeb Logo" class="max-w-[120px] h-auto mx-auto">
         </div>
-        <h2>- Registrarse -</h2>
+        <h2 class="text-2xl font-semibold m-0 text-white">- Registrarse -</h2>
     </div>
     
     <!-- Sección inferior con fondo blanco -->
-    <div class="registro-form">
+    <div class="bg-white p-8">
         {% if error %}
-            <div class="error">{{ error }}</div>
+            <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-5 border-l-4 border-red-600 text-sm">{{ error }}</div>
         {% endif %}
         
         <form method="POST">
             {% csrf_token %}
             
-            <div class="form-group">
-                <label for="username">Nombre Completo</label>
-                <input type="text" id="username" name="username" placeholder="Ingresa tu nombre" required>
+            <div class="mb-5 text-left">
+                <label for="username" class="block mb-2 font-medium text-gray-800 text-sm">Nombre Completo</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Ingresa tu nombre" 
+                    required
+                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                >
             </div>
             
-            <div class="form-group">
-                <label for="email">Correo</label>
-                <input type="email" id="email" name="email" placeholder="Ingresa tu correo" required>
+            <div class="mb-5 text-left">
+                <label for="email" class="block mb-2 font-medium text-gray-800 text-sm">Correo</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Ingresa tu correo" 
+                    required
+                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                >
             </div>
             
-            <div class="form-group">
-                <label for="password1">Contraseña</label>
-                <input type="password" id="password1" name="password1" placeholder="Ingresa una contraseña" required>
+            <div class="mb-5 text-left">
+                <label for="password1" class="block mb-2 font-medium text-gray-800 text-sm">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password1" 
+                    name="password1" 
+                    placeholder="Ingresa una contraseña" 
+                    required
+                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                >
             </div>
             
-            <div class="form-group">
-                <label for="password2">Comprobar contraseña</label>
-                <input type="password" id="password2" name="password2" placeholder="Confirmar contraseña" required>
+            <div class="mb-5 text-left">
+                <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">Comprobar contraseña</label>
+                <input 
+                    type="password" 
+                    id="password2" 
+                    name="password2" 
+                    placeholder="Confirmar contraseña" 
+                    required
+                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                >
             </div>
             
-            <div class="form-actions-single">
-                <button class="btn btn-primary btn-lg">Registro</button>
+            <div class="flex justify-center mt-6">
+                <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline inline-block text-center">
+                    Registro
+                </button>
             </div>
             
-            <div class="login-footer">
-                <p>¿Ya tienes cuenta? <a href="{% url 'signIn' %}" class="login-link">Inicia sesión aquí</a></p>
+            <div class="text-center mt-6 pt-5 border-t border-gray-300">
+                <p class="text-sm text-gray-600 m-0">
+                    ¿Ya tienes cuenta? 
+                    <a href="{% url 'signIn' %}" class="text-blue-dark no-underline font-semibold hover:underline">
+                        Inicia sesión aquí
+                    </a>
+                </p>
             </div>
         </form>
-=======
-<div class="login-container">
-    <div class="logo">
-        <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros">
->>>>>>> 1349669239122d3889efccfaa7a3e65d78ff0cdf
     </div>
 </div>
 

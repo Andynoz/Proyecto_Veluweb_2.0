@@ -15,6 +15,7 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('signIn/', views.signIn, name='signIn'),
     path('logout/', views.signout, name='logout'),
+    path('roles/', views.roles, name='roles'),
     path('registro/', views.registro, name='registro'),
 
     # Recuperacion de contraseña

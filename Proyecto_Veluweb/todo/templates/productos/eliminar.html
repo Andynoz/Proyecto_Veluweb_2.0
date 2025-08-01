@@ -1,26 +1,113 @@
-{% extends "todo/layout.html" %}
+{% extends "todo/layout2.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card border-danger shadow-lg rounded-4">
-        <div class="card-header bg-danger text-white text-center py-3 rounded-top">
-            <h4 class="mb-0">
-                <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
-            </h4>
+<header>
+     <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+    </style>
+</header>
+<!-- Contenedor principal -->
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <!-- Contenedor de confirmación con fondo blanco y sombra -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 border-red-500">
+    <div class="p-8">
+      <!-- Icono de alerta -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-red-100 rounded-full p-4">
+          <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
         </div>
-        <div class="card-body text-center">
-            <p class="lead">¿Estás seguro de que deseas eliminar el producto <strong>"{{ producto.nombre }}"</strong>?</p>
-            <p class="text-muted">Esta acción no se puede deshacer.</p>
-            <form method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm me-2">
-                    <i class="fas fa-trash-alt me-1"></i> Eliminar
-                </button>
-                <a href="{% url 'productos_index' %}" class="btn btn-secondary rounded-pill">
-                    Cancelar
-                </a>
-            </form>
+      </div>
+
+      <!-- Título principal -->
+      <h1 class="text-red-600 text-3xl mb-6 text-center font-bold">¿Eliminar Producto?</h1>
+      
+      <!-- Mensaje de confirmación -->
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <div>
+            <h3 class="text-red-800 font-semibold mb-2">⚠️ Confirmación Requerida</h3>
+            <p class="text-red-700 text-base leading-relaxed">
+              ¿Estás seguro de que deseas eliminar el producto <strong class="text-red-900 bg-red-100 px-2 py-1 rounded">{{ producto.nombre }}</strong>?
+            </p>
+            <p class="text-red-600 text-sm mt-2">
+              Esta acción no se puede deshacer.
+            </p>
+          </div>
         </div>
+      </div>
+
+      <!-- Información adicional del producto -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-8">
+        <h4 class="text-gray-800 font-semibold mb-3">📦 Información del Producto:</h4>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Nombre:</span>
+            <span class="font-medium text-gray-900">{{ producto.nombre }}</span>
+          </div>
+          {% if producto.descripcion %}
+          <div class="flex justify-between items-start">
+            <span class="text-gray-600 mr-4">Descripción:</span>
+            <span class="font-medium text-gray-900 text-right max-w-xs">{{ producto.descripcion|truncatewords:15 }}</span>
+          </div>
+          {% endif %}
+          {% if producto.precio %}
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Precio:</span>
+            <span class="font-bold text-green-600 text-lg">${{ producto.precio|floatformat:2 }}</span>
+          </div>
+          {% endif %}
+          {% if producto.categoria %}
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Categoría:</span>
+            <span class="font-medium text-gray-900">{{ producto.categoria }}</span>
+          </div>
+          {% endif %}
+          {% if producto.stock %}
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Stock:</span>
+            <span class="font-medium text-gray-900">{{ producto.stock }} unidades</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Formulario de eliminación -->
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Botones de acción -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl border-2 border-red-600 hover:border-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">
+            🗑️ Sí, eliminar definitivamente
+          </button>
+          <a href="{% url 'productos_index' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block text-center border-2 border-gray-500 hover:border-gray-600">
+            ↩️ Cancelar
+          </a>
+        </div>
+      </form>
+
+      <!-- Mensaje adicional -->
+      <div class="mt-6 text-center">
+        <p class="text-gray-500 text-sm">
+          💡 <strong>Sugerencia:</strong> Si necesitas el producto más tarde, es mejor editarlo que eliminarlo.
+        </p>
+      </div>
     </div>
+  </div>
 </div>
+
 {% endblock %}
