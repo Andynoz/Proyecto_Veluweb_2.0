@@ -18,6 +18,9 @@ from .forms import FacturaForm, DetalleFacturaFormSet, DetalleFacturaForm
 from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
+from django.core.cache import cache
+import random
 from django.db.models import Q, Sum, Count, F
 from django.db.models.functions import TruncDay
 import json
@@ -225,13 +228,16 @@ def signIn(request): #Vista para iniciar sesión
         
         
 def enviar_codigo_reset(user):
+    codigo = generar_codigo_corto()
+
     token = PasswordResetToken.objects.create(
         user=user,
+        token=codigo,  # Aquí guardas el código corto
         expires_at=timezone.now() + timedelta(minutes=10)
     )
     
     asunto = 'Código de recuperación de contraseña'
-    mensaje = f'Hola {user.username}, tu código para restablecer tu contraseña es:\n\n{token.token}'
+    mensaje = f'Hola {user.username}, tu código para restablecer tu contraseña es:\n\n{codigo}'
     remitente = 'andynox27v@gmail.com'
     destinatario = [user.email]
     
@@ -290,6 +296,14 @@ def nueva_contrasena(request):
         return redirect('signIn')
     
     return render(request, 'todo/nueva_contrasena.html')
+
+def generar_codigo_corto():
+    return str(random.randint(100000,999999))
+
+def guardar_codigo_usuario(email):
+    codigo = generar_codigo_corto()
+    cache.set(f"codigo_recuperacion_{email}", codigo, timeout=300)
+    return codigo
 
 
 def bienvenida(request):

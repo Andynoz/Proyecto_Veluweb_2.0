@@ -17,7 +17,7 @@ class Cliente(models.Model):
 
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    token = models.CharField(max_length=6, unique=True)
     created_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField()
 
