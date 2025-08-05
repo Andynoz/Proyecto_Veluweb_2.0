@@ -1,0 +1,248 @@
+{% extends "todo/layout2.html" %}
+{% load static %}
+
+{% block title %}Estadísticas | Veluweb{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">📊 Estadísticas del Negocio</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtrar por Fecha</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{% url 'estadisticas' %}" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="fecha_inicio" class="form-label">Fecha de Inicio:</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio_str }}">
+                </div>
+                <div class="col-md-5">
+                    <label for="fecha_fin" class="form-label">Fecha de Fin:</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin_str }}">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
+                </div>
+            </form>
+            {% if messages %}
+                <div class="mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-warning" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-users me-2"></i>Total Clientes</h5>
+                    <p class="card-text fs-2 fw-bold text-center">{{ total_clientes }}</p>
+                    <p class="card-text text-muted text-center"><small>Clientes registrados en el sistema</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-success"><i class="fas fa-box me-2"></i>Total Productos</h5>
+                    <p class="card-text fs-2 fw-bold text-center">{{ total_productos }}</p>
+                    <p class="card-text text-muted text-center"><small>Productos disponibles en inventario</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><i class="fas fa-file-invoice-dollar me-2"></i>Comprobantes Emitidos</h5>
+                    <p class="card-text fs-2 fw-bold text-center">{{ num_facturas }}</p>
+                    <p class="card-text text-muted text-center"><small>Facturas generadas</small></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-warning"><i class="fas fa-dollar-sign me-2"></i>Ingresos Totales</h5>
+                    <p class="card-text fs-2 fw-bold text-center">${{ ventas_totales|floatformat:2 }}</p>
+                    <p class="card-text text-muted text-center"><small>Ingresos generados</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-danger"><i class="fas fa-chart-line me-2"></i>Producto Más Vendido</h5>
+                    <p class="card-text fs-3 fw-bold text-center">{{ producto_mas_vendido_nombre }}</p>
+                    <p class="card-text text-muted text-center"><small>Basado en la cantidad de ventas</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary"><i class="fas fa-calendar-alt me-2"></i>Último Comprobante</h5>
+                    <p class="card-text fs-3 fw-bold text-center">
+                        {% if ultima_factura %}
+                            {{ ultima_factura.fecha|date:"d/m/Y" }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </p>
+                    <p class="card-text text-muted text-center"><small>Factura más reciente</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><i class="fas fa-chart-pie me-2"></i>Estado de Facturas</h5>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Pendientes
+                            <span class="badge bg-warning rounded-pill">{{ estados_data.Vencida }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Pagadas
+                            <span class="badge bg-success rounded-pill">{{ estados_data.Pagada }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Vencidas
+                            <span class="badge bg-danger rounded-pill">{{ estados_data.Pendiente }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>Top Productos Vendidos</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="topProductosChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Tendencia de Ventas Diarias</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ventasDiariasChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const topProductosLabels = {{ top_productos_labels|safe }};
+        const topProductosData = {{ top_productos_data|safe }};
+
+        if (topProductosLabels.length > 0) {
+            const ctxTopProductos = document.getElementById('topProductosChart').getContext('2d');
+            new Chart(ctxTopProductos, {
+                type: 'bar',
+                data: {
+                    labels: topProductosLabels,
+                    datasets: [{
+                        label: 'Cantidad Vendida',
+                        data: topProductosData,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('topProductosChart').parentNode.innerHTML = '<p class="text-center text-muted mt-3">No hay datos de productos vendidos para este período.</p>';
+        }
+
+        const tendenciaVentasLabels = {{ tendencia_ventas_labels|safe }};
+        const tendenciaVentasData = {{ tendencia_ventas_data|safe }};
+
+        if (tendenciaVentasLabels.length > 0) {
+            const ctxVentasDiarias = document.getElementById('ventasDiariasChart').getContext('2d');
+            new Chart(ctxVentasDiarias, {
+                type: 'line',
+                data: {
+                    labels: tendenciaVentasLabels,
+                    datasets: [{
+                        label: 'Ventas Diarias ($)',
+                        data: tendenciaVentasData,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        },
+                        x: {
+                            type: 'category',
+                            labels: tendenciaVentasLabels,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('ventasDiariasChart').parentNode.innerHTML = '<p class="text-center text-muted mt-3">No hay datos de ventas diarias para este período.</p>';
+        }
+    });
+</script>
+{% endblock %}

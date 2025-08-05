@@ -4,101 +4,96 @@
 {% block title %}Clientes | Veluweb{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <h1 class="mb-4 text-center">👥 Lista de Clientes</h1>
-  <p class="text-muted">Página {{ clientes.number }} de {{ clientes.paginator.num_pages }}</p>
-
-
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <a href="{% url 'agregar' %}" class="btn btn-success shadow-sm">
-      <i class="fas fa-user-plus me-1"></i> Agregar Cliente
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Encabezado -->
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-dark mb-6">Lista de Clientes</h2>
+    <a href="{% url 'agregar' %}" class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
+      <span class="text-lg mr-2">+</span>
+      Crear Cliente
     </a>
-
-    <form method="GET" action="{% url 'tabla' %}" class="d-flex" style="gap: 10px;">
-      <input
-        type="text"
-        name="buscar"
-        class="form-control"
-        placeholder="🔍 Buscar cliente"
-        value="{{ query|default:'' }}"
-      >
-      <button type="submit" class="btn btn-primary">Buscar</button>
-    </form>
-
   </div>
 
-  <div class="table-responsive shadow-sm">
-    <table class="table table-striped table-hover text-center align-middle">
-      <thead class="table-dark">
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Correo</th>
-          <th>Teléfono</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for cliente in clientes %}
-        <tr>
-          <td>{{ cliente.id }}</td>
-          <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.apellido }}</td>
-          <td>{{ cliente.correo }}</td>
-          <td>{{ cliente.telefono }}</td>
-          <td>
-            <div class="d-flex justify-content-center gap-2">
-              <a href="{% url 'editar' cliente.id %}" class="btn btn-warning btn-sm" title="Editar">
-                <i class="fas fa-edit"></i>
-              </a>
-              <a href="{% url 'eliminar' cliente.id %}" class="btn btn-danger btn-sm" title="Eliminar">
-                <i class="fas fa-trash-alt"></i>
-              </a>
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="6" class="text-center text-muted">No hay clientes registrados.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Tabla moderna -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <!-- Encabezado de la tabla -->
+    <div class="bg-gray-700 text-white">
+      <div class="grid grid-cols-6 gap-4 px-6 py-4 font-semibold">
+        <div class="text-left">ID</div>
+        <div class="text-left">Cliente</div>
+        <div class="text-left">Correo</div>
+        <div class="text-left">Teléfono</div>
+        <div class="text-left">Fecha</div>
+        <div class="text-center">Acciones</div>
+      </div>
+    </div>
+
+    <!-- Cuerpo de la tabla -->
+    <div class="divide-y divide-gray-200">
+      {% for cliente in clientes %}
+      <div class="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
+        <!-- ID -->
+        <div class="flex items-center text-gray-900 font-medium">
+          {{ cliente.id }}
+        </div>
+
+        <!-- Cliente -->
+        <div class="flex items-center">
+          <span class="text-dark font-medium">{{ cliente.nombre }} {{ cliente.apellido }}</span>
+        </div>
+
+        <!-- Correo -->
+        <div class="flex items-center text-dark">
+          {{ cliente.correo }}
+        </div>
+
+        <!-- Teléfono -->
+        <div class="flex items-center text-dark">
+          {{ cliente.telefono }}
+        </div>
+
+        <!-- Fecha -->
+        <div class="flex items-center">
+          <span class="text-dark font-medium">{{ cliente.date_joined|date:"M d, Y, g:i a"|default:"Jan 01, 2025, 12:00 p.m." }}</span>
+        </div>
+
+        <!-- Acciones -->
+        <div class="flex items-center justify-center space-x-2">
+          <!-- Botón Editar -->
+          <a href="{% url 'editar' cliente.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </a>
+
+          <!-- Botón Eliminar -->
+          <a href="{% url 'eliminar' cliente.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente?')" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="px-6 py-12 text-center text-gray-500">
+        <div class="text-6xl mb-4">📋</div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay clientes registrados</h3>
+        <p class="text-gray-500 mb-4">Comienza agregando tu primer cliente</p>
+        <a href="{% url 'agregar' %}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
+          <span class="text-lg mr-2">+</span>
+          Agregar Cliente
+        </a>
+      </div>
+      {% endfor %}
+    </div>
   </div>
 
-  {% if clientes.has_other_pages %}
-    <div class="d-flex justify-content-between align-items-center mt-4 px-2">
-      <div class="text-muted">Total de clientes: {{ clientes.paginator.count }}</div>
-    <nav>
-      <ul class="pagination mb-0">
-        {% if clientes.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ clientes.previous_page_number }}{% if query %}&buscar={{ query }}{% endif %}">Anterior</a>
-        </li>
-        {% else %}
-        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-        {% endif %}
-
-        {% for num in clientes.paginator.page_range %}
-          {% if clientes.number == num %}
-            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-          {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&buscar={{ query }}{% endif %}">{{ num }}</a></li>
-          {% endif %}
-        {% endfor %}
-
-        {% if clientes.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ clientes.next_page_number }}{% if query %}&buscar={{ query }}{% endif %}">Siguiente</a>
-        </li>
-        {% else %}
-        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-        {% endif %}
-      </ul>
-    </nav>
+  <!-- Información adicional -->
+  {% if clientes %}
+  <div class="mt-6 text-center text-gray-500 text-sm">
+    Mostrando {{ clientes|length }} cliente{{ clientes|length|pluralize:"s" }}
   </div>
   {% endif %}
-
 </div>
+
 {% endblock %}

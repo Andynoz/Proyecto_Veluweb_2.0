@@ -15,6 +15,7 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('signIn/', views.signIn, name='signIn'),
     path('logout/', views.signout, name='logout'),
+    path('roles/', views.roles, name='roles'),
     path('registro/', views.registro, name='registro'),
 
     # Recuperacion de contraseña
@@ -41,6 +42,7 @@ urlpatterns = [
     path('facturas/<int:pk>/', views.detalle_factura, name='detalle_factura'),
     path('facturas/<int:pk>/editar/', views.editar_factura, name='editar_factura'),
     path('facturas/<int:pk>/eliminar/', views.eliminar_factura, name='eliminar_factura'),
+    path('estadisticas/', views.estadisticas_view, name='estadisticas'),
 ]
 
 # Para servir archivos multimedia en desarrollo

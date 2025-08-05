@@ -1,50 +1,93 @@
 {% extends 'todo/layout2.html' %}
 
 {% block content %}
-<div style="max-width: 500px; margin: auto;">
-    <h2 style="text-align: center;">Formulario de Registro</h2>
+<style>
+    /* Gradiente botón principal */
+    .btn-custom {
+        background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
 
-    {% if form.errors %}
-    <div class="alert alert-danger">
-        <ul>
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
+    /* Inputs y selects uniformes */
+    form input,
+    form select,
+    form textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb; /* gris claro */
+        border-radius: 0.5rem;
+        background-color: #f9fafb; /* gris muy claro */
+        font-size: 0.875rem;
+    }
+
+    form input:focus,
+    form select:focus,
+    form textarea:focus {
+        outline: none;
+        border-color: #1e40af; /* azul */
+        background-color: white;
+    }
+</style>
+
+<div class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+        
+        <!-- Título -->
+        <h2 class="text-dark text-3xl font-semibold mb-8 text-center">Formulario de Registro</h2>
+
+        <!-- Errores -->
+        {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <ul class="list-disc list-inside">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </ul>
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Formulario -->
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                {{ form.nombre.label_tag }}
+                {{ form.nombre }}
+                {{ form.nombre.errors }}
+            </div>
+
+            <div>
+                {{ form.apellido.label_tag }}
+                {{ form.apellido }}
+                {{ form.apellido.errors }}
+            </div>
+
+            <div>
+                {{ form.correo.label_tag }}
+                {{ form.correo }}
+                {{ form.correo.errors }}
+            </div>
+
+            <div>
+                {{ form.telefono.label_tag }}
+                {{ form.telefono }}
+                {{ form.telefono.errors }}
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-center gap-4">
+                <button type="submit"
+                    class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                    Registrarse
+                </button>
+
+                <a href="{% url 'tabla' %}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg text-center no-underline">
+                    Cancelar
+                </a>
+            </div>
+        </form>
     </div>
-    {% endif %}
-
-    <form method="post">
-        {% csrf_token %}
-        <div style="margin-bottom: 10px;">
-            {{ form.nombre.label_tag }}
-            {{ form.nombre }}
-            {{ form.nombre.errors }}
-        </div>
-
-        <div style="margin-bottom: 10px;">
-            {{ form.apellido.label_tag }}
-            {{ form.apellido }}
-            {{ form.apellido.errors }}
-        </div>
-
-        <div style="margin-bottom: 10px;">
-            {{ form.correo.label_tag }}
-            {{ form.correo }}
-            {{ form.correo.errors }}
-        </div>
-
-        <div style="margin-bottom: 10px;">
-            {{ form.telefono.label_tag }}
-            {{ form.telefono }}
-            {{ form.telefono.errors }}
-        </div>
-
-        <div style="text-align: center;">
-            <button type="submit" class="btn btn-primary">Registrarse</button>
-        </div>
-    </form>
 </div>
 {% endblock %}

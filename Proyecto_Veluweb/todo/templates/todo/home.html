@@ -4,20 +4,57 @@
 {% block title %}Inicio | Veluweb{% endblock %}
 
 {% block content %}
-<section class="hero" style="text-align: center; padding: 80px 20px;  background-size: cover; background-position: center; color: black;">
-    <h2 style="font-size: 48px; margin-bottom: 20px;">Bienvenido a Veluweb</h2>
-    <p style="font-size: 20px;">Tu sistema inteligente para la gestión de clientes, facturas y más.</p>
-    <div style="margin-top: 40px;">
 
-        <button class="btn btn-primary btn-lg">
-        <a href="{% url 'registro' %}">Registrarse</a>
-        </button>
+<header>
+    <style>
+        /* Gradientes personalizados */
+        .bg-gradient-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        .btn-gradient-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Focus personalizado para inputs */
+        .input-focus:focus {
+            border-color: #183a5e;
+            box-shadow: 0 0 0 0.2rem rgba(24, 58, 94, 0.25);
+        }
+        
+        /* Hover para botón primario */
+        .btn-primary-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(24, 58, 94, 0.3);
+        }
+        
+        /* Hover para botón secundario */
+        .btn-secondary-hover:hover {
+            background-color: #183a5e;
+            border-color: #183a5e;
+            color: white;
+        }
+    
+        .text-shadow-black {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</header>
 
-        <button class="btn btn-primary btn-lg">
-        <a href="{% url 'signIn' %}">Iniciar sesión</a>
-        </button>
-
+<section class="text-center py-20 text-black">
+    <h2 class="text-5xl font-bold mb-6 text-shadow-black">Bienvenido a Veluweb</h2>
+    <p class="text-lg md:text-xl mb-10 text-shadow-black">
+        Tu sistema inteligente para la gestión de clientes, facturas y más.
+    </p>
+    <div class="flex justify-center gap-4">
+        <a href="{% url 'registro' %}" 
+           class="btn-gradient-custom text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 btn-primary-hover">
+            Registrarse
+        </a>
+        <a href="{% url 'signIn' %}" 
+           class="btn-gradient-custom text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 btn-primary-hover">
+            Iniciar sesión
+        </a>
     </div>
 </section>
-
 {% endblock %}
