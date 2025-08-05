@@ -1,6 +1,20 @@
 {% extends 'todo/layout2.html' %}
 
 {% block content %}
+<head>
+    <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+    </style>
+</head>
+
 <div class="max-w-6xl mx-auto mt-10 mb-10">
     <div class="bg-white rounded-xl shadow-lg p-6">
         
@@ -60,7 +74,7 @@
         <!-- Botones -->
         <div class="flex justify-end gap-4 mt-6">
             <a href="{% url 'lista_facturas' %}" 
-               class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
+               class="btn-custom text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
                 <i class="bi bi-arrow-left-circle">Volver</i> 
             </a>
             <a href="{% url 'editar_factura' factura.id %}" 
