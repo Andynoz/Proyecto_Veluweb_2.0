@@ -28,7 +28,7 @@
 
     <!-- Cuerpo de la tabla -->
     <div class="divide-y divide-gray-200">
-      {% for factura in facturas %}
+      {% for factura in page_obj %}
       <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
         <!-- ID -->
         <div class="flex items-center text-gray-900 font-semibold">
@@ -91,11 +91,13 @@
   </div>
 
   <!-- Información adicional -->
-  {% if facturas %}
+  {% if page_obj %}
   <div class="mt-6 text-center text-gray-500 text-sm">
-    Mostrando {{ facturas|length }} comprobante{{ facturas|length|pluralize:"s" }}
+    Mostrando {{ page_obj|length }} comprobante{{ page_obj|length|pluralize:"s" }}
   </div>
   {% endif %}
 </div>
+
+{% include "todo/paginacion.html" %}
 
 {% endblock %}

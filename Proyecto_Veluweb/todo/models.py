@@ -31,6 +31,7 @@ class Producto(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
+    stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
 
     def __str__(self):
         return f"{self.nombre} - {self.codigo}"

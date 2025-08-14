@@ -4,31 +4,49 @@
 {% block title %}Estadísticas | Veluweb{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">📊 Estadísticas del Negocio</h1>
+<head>
+    <style>
+    /* Definir color azul oscuro para header y footer */
+    .bg-blue-dark {
+      background-color: #183a5e; /* Azul oscuro de tu layout */
+    }
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtrar por Fecha</h5>
+    .btn-custom {
+      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
+  </style>
+</head>
+<div class="max-w-7xl mx-auto px-4 mt-6">
+    <h1 class="mb-6 text-center text-3xl font-bold">📊 Estadísticas del Negocio</h1>
+
+    <!-- Filtro por fecha -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="bg-blue-dark text-white px-4 py-3 rounded-t-lg">
+            <h5 class="font-semibold flex items-center gap-2">
+                <i class="fas fa-filter"></i> Filtrar por Fecha
+            </h5>
         </div>
-        <div class="card-body">
-            <form method="GET" action="{% url 'estadisticas' %}" class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label for="fecha_inicio" class="form-label">Fecha de Inicio:</label>
-                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio_str }}">
+        <div class="p-4">
+            <form method="GET" action="{% url 'estadisticas' %}" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label for="fecha_inicio" class="block text-sm font-medium">Fecha de Inicio:</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio_str }}"
+                        class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
-                <div class="col-md-5">
-                    <label for="fecha_fin" class="form-label">Fecha de Fin:</label>
-                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin_str }}">
+                <div>
+                    <label for="fecha_fin" class="block text-sm font-medium">Fecha de Fin:</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin_str }}"
+                        class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
+                <div>
+                    <button type="submit" class="w-full btn-custom text-white py-2 px-4 rounded-lg">Aplicar Filtro</button>
                 </div>
             </form>
+
             {% if messages %}
-                <div class="mt-3">
+                <div class="mt-4 space-y-2">
                     {% for message in messages %}
-                        <div class="alert alert-warning" role="alert">
+                        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg">
                             {{ message }}
                         </div>
                     {% endfor %}
@@ -37,119 +55,90 @@
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-primary"><i class="fas fa-users me-2"></i>Total Clientes</h5>
-                    <p class="card-text fs-2 fw-bold text-center">{{ total_clientes }}</p>
-                    <p class="card-text text-muted text-center"><small>Clientes registrados en el sistema</small></p>
-                </div>
-            </div>
+    <!-- Tarjetas de estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-users"></i> Total Clientes</h5>
+            <p class="text-3xl font-bold text-center mt-2">{{ total_clientes }}</p>
+            <p class="text-gray-500 text-center text-sm">Clientes registrados en el sistema</p>
         </div>
 
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-success"><i class="fas fa-box me-2"></i>Total Productos</h5>
-                    <p class="card-text fs-2 fw-bold text-center">{{ total_productos }}</p>
-                    <p class="card-text text-muted text-center"><small>Productos disponibles en inventario</small></p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-box"></i> Total Productos</h5>
+            <p class="text-3xl font-bold text-center mt-2">{{ total_productos }}</p>
+            <p class="text-gray-500 text-center text-sm">Productos disponibles en inventario</p>
         </div>
 
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-info"><i class="fas fa-file-invoice-dollar me-2"></i>Comprobantes Emitidos</h5>
-                    <p class="card-text fs-2 fw-bold text-center">{{ num_facturas }}</p>
-                    <p class="card-text text-muted text-center"><small>Facturas generadas</small></p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-warning"><i class="fas fa-dollar-sign me-2"></i>Ingresos Totales</h5>
-                    <p class="card-text fs-2 fw-bold text-center">${{ ventas_totales|floatformat:2 }}</p>
-                    <p class="card-text text-muted text-center"><small>Ingresos generados</small></p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-file-invoice-dollar"></i> Comprobantes Emitidos</h5>
+            <p class="text-3xl font-bold text-center mt-2">{{ num_facturas }}</p>
+            <p class="text-gray-500 text-center text-sm">Comprobantes generadas</p>
         </div>
 
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-danger"><i class="fas fa-chart-line me-2"></i>Producto Más Vendido</h5>
-                    <p class="card-text fs-3 fw-bold text-center">{{ producto_mas_vendido_nombre }}</p>
-                    <p class="card-text text-muted text-center"><small>Basado en la cantidad de ventas</small></p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-dollar-sign"></i> Ingresos Totales</h5>
+            <p class="text-3xl font-bold text-center mt-2">${{ ventas_totales|floatformat:2 }}</p>
+            <p class="text-gray-500 text-center text-sm">Ingresos generados</p>
         </div>
 
-        <div class="col">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-secondary"><i class="fas fa-calendar-alt me-2"></i>Último Comprobante</h5>
-                    <p class="card-text fs-3 fw-bold text-center">
-                        {% if ultima_factura %}
-                            {{ ultima_factura.fecha|date:"d/m/Y" }}
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </p>
-                    <p class="card-text text-muted text-center"><small>Factura más reciente</small></p>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i> Producto Más Vendido</h5>
+            <p class="text-2xl font-bold text-center mt-2">{{ producto_mas_vendido_nombre }}</p>
+            <p class="text-gray-500 text-center text-sm">Basado en la cantidad de ventas</p>
         </div>
 
-        <div class="col-lg-12">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-info"><i class="fas fa-chart-pie me-2"></i>Estado de Facturas</h5>
-                    <ul class="list-group list-group-flush mt-3">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Pendientes
-                            <span class="badge bg-warning rounded-pill">{{ estados_data.Vencida }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Pagadas
-                            <span class="badge bg-success rounded-pill">{{ estados_data.Pagada }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Vencidas
-                            <span class="badge bg-danger rounded-pill">{{ estados_data.Pendiente }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-calendar-alt"></i> Último Comprobante</h5>
+            <p class="text-2xl font-bold text-center mt-2">
+                {% if ultima_factura %}
+                    {{ ultima_factura.fecha|date:"d/m/Y" }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+            <p class="text-gray-500 text-center text-sm">Comprobante más reciente</p>
+        </div>
+
+        <!-- Estado de facturas -->
+        <div class="col-span-full bg-white shadow rounded-lg p-4">
+            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-chart-pie"></i> Estado de Comprobantes</h5>
+            <ul class="mt-4 divide-y divide-gray-200">
+                <li class="flex justify-between py-2">
+                    Pendientes
+                    <span class="bg-yellow-500 text-white rounded-full px-3">{{ estados_data.Vencida }}</span>
+                </li>
+                <li class="flex justify-between py-2">
+                    Pagadas
+                    <span class="bg-green-600 text-white rounded-full px-3">{{ estados_data.Pagada }}</span>
+                </li>
+                <li class="flex justify-between py-2">
+                    Vencidas
+                    <span class="bg-red-600 text-white rounded-full px-3">{{ estados_data.Pendiente }}</span>
+                </li>
+            </ul>
         </div>
     </div>
 
-    <div class="row g-4 mt-4">
-        <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>Top Productos Vendidos</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="topProductosChart"></canvas>
-                </div>
+    <!-- Gráficos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white shadow rounded-lg">
+            <div class="bg-gray-800 text-white px-4 py-3 rounded-t-lg">
+                <h5 class="font-semibold flex items-center gap-2"><i class="fas fa-boxes"></i> Top Productos Vendidos</h5>
+            </div>
+            <div class="p-4 h-80"> <!-- altura para gráfico -->
+                <canvas id="topProductosChart" class="w-full h-full"></canvas>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Tendencia de Ventas Diarias</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="ventasDiariasChart"></canvas>
-                </div>
+
+        <div class="bg-white shadow rounded-lg">
+            <div class="bg-gray-800 text-white px-4 py-3 rounded-t-lg">
+                <h5 class="font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i> Tendencia de Ventas Diarias</h5>
+            </div>
+            <div class="p-4 h-80"> <!-- altura para gráfico -->
+                <canvas id="ventasDiariasChart" class="w-full h-full"></canvas>
             </div>
         </div>
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -188,19 +177,11 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                        y: { beginAtZero: true }
                     },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
-        } else {
-            document.getElementById('topProductosChart').parentNode.innerHTML = '<p class="text-center text-muted mt-3">No hay datos de productos vendidos para este período.</p>';
         }
 
         const tendenciaVentasLabels = {{ tendencia_ventas_labels|safe }};
@@ -225,23 +206,12 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            beginAtZero: true
-                        },
-                        x: {
-                            type: 'category',
-                            labels: tendenciaVentasLabels,
-                        }
+                        y: { beginAtZero: true },
+                        x: { type: 'category', labels: tendenciaVentasLabels }
                     },
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    }
+                    plugins: { legend: { display: true } }
                 }
             });
-        } else {
-            document.getElementById('ventasDiariasChart').parentNode.innerHTML = '<p class="text-center text-muted mt-3">No hay datos de ventas diarias para este período.</p>';
         }
     });
 </script>
