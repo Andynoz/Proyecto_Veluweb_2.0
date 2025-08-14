@@ -314,11 +314,11 @@ def bienvenida(request):
 
 @login_required
 def productos_index(request):
-    query = request.GET.get("buscar") 
+    query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
     
     if query:
         productos_lista = Producto.objects.filter(
-            Q(nombre__icontains=query) | Q(descripcion__icontains=query)
+            Q(nombre__icontains=query) | Q(descripcion__istartswith=query)
         ).order_by('-id')
     else:
         productos_lista = Producto.objects.all().order_by('-id')
@@ -329,7 +329,7 @@ def productos_index(request):
 
     return render(request, 'productos/index.html', {
         'page_obj': page_obj,
-        'buscar': query
+        'q': query  # para que el input mantenga el valor buscado
     })
     
 
