@@ -43,13 +43,10 @@ class Producto(models.Model):
     codigo = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    precio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos')
-    stock = models.IntegerField(default=0)  # control de stock
-    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)  # imagen opcional
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
+    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
+    creado = models.DateTimeField(auto_now_add=True)
+    stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
 
     def get_absolute_url(self):
         return reverse('productos:detalle', args=[self.pk])

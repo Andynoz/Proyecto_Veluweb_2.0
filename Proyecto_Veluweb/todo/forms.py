@@ -80,7 +80,7 @@ class LoginForm(AuthenticationForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'codigo', 'precio', 'descripcion','imagen' ,] #'stock', 'categoria' , 'is_active']
+        fields = ['nombre', 'codigo', 'precio', 'descripcion', 'stock', 'imagen']
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control rounded-pill border-0 shadow-sm',

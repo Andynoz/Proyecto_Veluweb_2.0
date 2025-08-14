@@ -24,30 +24,22 @@
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-700 to-slate-600">
-      <div class="grid grid-cols-8 gap-4 px-6 py-4 font-semibold text-white">
-        <div>Img</div>
-        <div>ID</div>
-        <div>Nombre</div>
-        <div>Categoría</div>
-        <div>Stock</div>
-        <div>Descripción</div>
-        <div>Precio</div>
+      <div class="grid grid-cols-5 gap-4 px-6 py-4 font-semibold text-white">
+        <div class="text-left">ID</div>
+        <div class="text-left">Nombre</div>
+        <div class="text-left">Stock</div>
+        <div class="text-left">Precio</div>
         <div class="text-center">Acciones</div>
       </div>
     </div>
 
     <!-- Cuerpo -->
     <div class="divide-y divide-gray-200">
-      {% for producto in productos %}
-      <div class="grid grid-cols-8 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
-        
-        <!-- Imagen -->
-        <div class="flex items-center">
-          {% if producto.imagen %}
-            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-12 h-12 object-cover rounded-md">
-          {% else %}
-            <img src="{% static 'todo/images/no-image.png' %}" alt="No image" class="w-12 h-12 object-cover rounded-md">
-          {% endif %}
+      {% for producto in page_obj %}
+      <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
+        <!-- ID -->
+        <div class="flex items-center text-gray-900 font-semibold">
+          {{ producto.id }}
         </div>
 
         <!-- ID -->
@@ -67,11 +59,7 @@
 
         <!-- Stock -->
         <div class="flex items-center">
-          {% if producto.stock <= 3 %}
-            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-sm">Bajo ({{ producto.stock }})</span>
-          {% else %}
-            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">{{ producto.stock }}</span>
-          {% endif %}
+          <span class="text-dark font-medium">{{ producto.stock }}</span>
         </div>
 
         <!-- Descripción -->
@@ -115,21 +103,14 @@
       {% endfor %}
     </div>
   </div>
+<!-- Información adicional -->
+{% if page_obj %}
+  <div class="mt-6 text-center text-gray-500 text-sm">
+    Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }}
+  </div>
+{% endif %}
 
-  <!-- Paginación -->
-  {% if page_obj %}
-  <nav class="mt-6 flex justify-center">
-    <ul class="flex items-center space-x-2">
-      {% if page_obj.has_previous %}
-        <li><a class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Anterior</a></li>
-      {% endif %}
-      <li class="px-3 py-1 bg-gray-100 rounded">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</li>
-      {% if page_obj.has_next %}
-        <li><a class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Siguiente</a></li>
-      {% endif %}
-    </ul>
-  </nav>
-  {% endif %}
+{% include "todo/paginacion.html" %}
 
 </div>
 {% endblock %}
