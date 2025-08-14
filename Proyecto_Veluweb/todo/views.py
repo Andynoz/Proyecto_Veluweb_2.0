@@ -24,6 +24,9 @@ import random
 from django.db.models import Q, Sum, Count, F
 from django.db.models.functions import TruncDay
 import json
+from django.views.decorators.http import require_POST
+from .models import Producto, Categoria
+from .forms import ProductoForm
 
 
 @login_required
@@ -309,10 +312,9 @@ def guardar_codigo_usuario(email):
 def bienvenida(request):
     return render(request, 'bienvenida.html')
 
+#PRODUCTOS
 
-# PRODUCTOS
 
-@login_required
 def productos_index(request):
     query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
     
@@ -331,51 +333,95 @@ def productos_index(request):
         'page_obj': page_obj,
         'q': query  # para que el input mantenga el valor buscado
     })
-    
 
-@login_required
-def crear_producto(request):
-    form = ProductoForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        form.save()
-        return redirect('productos_index')
-    return render(request, 'productos/crear.html', {'form': form})  # ← plantilla real
 
-@login_required
-def editar_producto(request, pk):
-    producto = get_object_or_404(Producto, pk=pk)
-    form = ProductoForm(request.POST or None, request.FILES or None, instance=producto)
-
-    if form.is_valid():
-        form.save()
-        return redirect('productos_index')
-    else:
-        print(form.errors)  # 👈 Esto mostrará los errores en la consola
-
-    return render(request, 'productos/editar.html', {'form': form})
-
-@login_required
-def eliminar_producto(request, pk):
-    producto = get_object_or_404(Producto, pk=pk)
-    if request.method == 'POST':
-        producto.delete()
-        return redirect('productos_index')
-    return render(request, 'productos/eliminar.html', {'producto': producto})
-
+# DETALLE DE PRODUCTO
 @login_required
 def detalle_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
+    return render(request, 'productos/detalle.html', {'producto': producto})
 
-    producto_anterior = Producto.objects.filter(pk__lt=producto.pk).order_by('-pk').first()
-    producto_siguiente = Producto.objects.filter(pk__gt=producto.pk).order_by('pk').first()
 
-    contexto = {
-        'producto': producto,
-        'producto_anterior': producto_anterior,
-        'producto_siguiente': producto_siguiente
-    }
+# CREAR PRODUCTO
+@login_required
+def crear_producto(request):
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Producto creado')
+            return redirect('productos:lista')
+    else:
+        form = ProductoForm()
+    return render(request, 'productos/crear.html', {'form': form})
 
-    return render(request, 'productos/detalle.html', contexto)
+
+def eliminar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    producto.is_active = False  # en vez de borrar, desactivamos
+    producto.save()
+    return redirect('nombre_de_la_lista_de_productos')
+
+# EDITAR PRODUCTO
+@login_required
+def editar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Producto actualizado')
+            return redirect('productos:lista')
+    else:
+        form = ProductoForm(instance=producto)
+    return render(request, 'productos/editar.html', {'form': form, 'producto': producto})
+
+
+# DESACTIVAR PRODUCTO (soft delete)
+@login_required
+@require_POST
+def desactivar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    producto.is_active = False
+    producto.save()
+    messages.success(request, 'Producto desactivado')
+    return redirect('productos:lista')
+
+
+# LISTA DE PRODUCTOS DESACTIVADOS
+@login_required
+def desactivados(request):
+    productos = Producto.objects.filter(is_active=False).order_by('-updated_at')
+    paginator = Paginator(productos, 8)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'productos/desactivados.html', {'page_obj': page_obj})
+
+@login_required
+def eliminar_producto(request, pk):
+    """
+    Página de confirmación (GET) y acción de desactivar (POST).
+    Mantengo soft-delete (is_active=False) para no perder datos.
+    """
+    producto = get_object_or_404(Producto, pk=pk)
+    if request.method == 'POST':
+        producto.is_active = False
+        producto.save()
+        messages.success(request, 'Producto desactivado correctamente.')
+        return redirect('productos_index')  # coincide con el name en urls.py
+    # GET -> mostrar plantilla confirmation
+    return render(request, 'productos/eliminar.html', {'producto': producto})
+
+# ACTIVAR PRODUCTO
+@login_required
+@require_POST
+def activar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    producto.is_active = True
+    producto.save()
+    messages.success(request, 'Producto activado')
+    return redirect('productos:desactivados')
+
+
 
 #FACTURAS
 

@@ -14,7 +14,7 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
         min_length=10,
         validators=[
             RegexValidator(
-                regex='^\d{10}$',
+                regex = r'^\d{10}$',
                 message='El número de teléfono debe tener exactamente 10 dígitos.'
             )
         ],
@@ -108,12 +108,25 @@ class ProductoForm(forms.ModelForm):
                 'rows': 3,
                 'autocomplete': 'off'
             }),
+            'categoria': forms.Select(attrs={
+                'class': 'form-select border-0 shadow-sm',
+                'required': 'true'
+            }),
+            'stock': forms.NumberInput(attrs={
+                'class': 'form-control rounded-pill border-0 shadow-sm',
+                'placeholder': 'Cantidad en stock',
+                'min': '0',
+                'autocomplete': 'off',
+                'required': 'true'
+            }),
             'imagen': forms.ClearableFileInput(attrs={
                 'class': 'form-control',
                 'onchange': 'previewImage(event)'
             }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+            }),
         }
-
 
 
 # FACTURAS
