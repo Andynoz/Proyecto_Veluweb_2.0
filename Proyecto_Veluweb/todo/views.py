@@ -316,21 +316,14 @@ def bienvenida(request):
 
 
 def productos_index(request):
-    return render(request, 'productos/index.html')  # Ajusta la ruta del template
-
-
-# LISTA DE PRODUCTOS (activos) con búsqueda, categoría y paginación
-@login_required
-def lista_productos(request):
-    q = request.GET.get('q', '').strip()
-    cat = request.GET.get('categoria', '')
-
-    productos = Producto.objects.filter(is_active=True)
-
-    if q:
-        productos = productos.filter(Q(nombre__icontains=q) | Q(descripcion__icontains=q))
-    if cat:
-        productos = productos.filter(categoria__slug=cat)
+    query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
+    
+    if query:
+        productos_lista = Producto.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__istartswith=query)
+        ).order_by('-id')
+    else:
+        productos_lista = Producto.objects.all().order_by('-id')
 
     paginator = Paginator(productos_lista, 5)
     pagina = request.GET.get('page')
@@ -338,7 +331,7 @@ def lista_productos(request):
 
     return render(request, 'productos/index.html', {
         'page_obj': page_obj,
-        'buscar': query
+        'q': query  # para que el input mantenga el valor buscado
     })
 
 
