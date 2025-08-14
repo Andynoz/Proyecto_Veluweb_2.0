@@ -21,7 +21,7 @@
       <div class="grid grid-cols-5 gap-4 px-6 py-4 font-semibold text-white">
         <div class="text-left">ID</div>
         <div class="text-left">Nombre</div>
-        <div class="text-left">Descripción</div>
+        <div class="text-left">Stock</div>
         <div class="text-left">Precio</div>
         <div class="text-center">Acciones</div>
       </div>
@@ -29,7 +29,7 @@
 
     <!-- Cuerpo de la tabla -->
     <div class="divide-y divide-gray-200">
-      {% for producto in productos %}
+      {% for producto in page_obj %}
       <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
         <!-- ID -->
         <div class="flex items-center text-gray-900 font-semibold">
@@ -41,9 +41,9 @@
           <span class="text-dark font-semibold">{{ producto.nombre }}</span>
         </div>
 
-        <!-- Descripción -->
+        <!-- Stock -->
         <div class="flex items-center">
-          <span class="text-dark font-medium">{{ producto.descripcion }}</span>
+          <span class="text-dark font-medium">{{ producto.stock }}</span>
         </div>
 
         <!-- Precio -->
@@ -91,12 +91,13 @@
     </div>
   </div>
 
-  <!-- Información adicional -->
-  {% if productos %}
+<!-- Información adicional -->
+{% if page_obj %}
   <div class="mt-6 text-center text-gray-500 text-sm">
-    Mostrando {{ productos|length }} producto{{ productos|length|pluralize:"s" }}
+    Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }}
   </div>
-  {% endif %}
-</div>
+{% endif %}
+
+{% include "todo/paginacion.html" %}
 
 {% endblock %}

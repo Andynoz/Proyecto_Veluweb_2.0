@@ -130,11 +130,11 @@ def tabla(request):
         lista_clientes = Cliente.objects.all().order_by('id')
 
     paginator = Paginator(lista_clientes, 5)
-    page_number = request.GET.get('page')
-    clientes = paginator.get_page(page_number)
+    pagina = request.GET.get('page')
+    page_obj = paginator.get_page(pagina)
 
     return render(request, 'todo/tabla.html', {
-        'clientes': clientes,
+        'page_obj': page_obj,
         'query': query
     })
 
@@ -325,10 +325,10 @@ def productos_index(request):
 
     paginator = Paginator(productos_lista, 5)
     pagina = request.GET.get('page')
-    productos = paginator.get_page(pagina)
+    page_obj = paginator.get_page(pagina)
 
     return render(request, 'productos/index.html', {
-        'productos': productos,
+        'page_obj': page_obj,
         'buscar': query
     })
     
@@ -393,11 +393,11 @@ def lista_facturas(request):
         facturas_list = Factura.objects.all().order_by('-fecha')
 
     paginator = Paginator(facturas_list, 5)
-    page_number = request.GET.get('page')
-    facturas = paginator.get_page(page_number)
+    pagina = request.GET.get('page')
+    page_obj = paginator.get_page(pagina)
 
     return render(request, 'facturas/lista.html', {
-        'facturas': facturas,
+        'page_obj': page_obj,
         'query': query
     })
 
@@ -408,9 +408,26 @@ def crear_factura(request):
         formset = DetalleFacturaFormSet(request.POST)
 
         if form.is_valid() and formset.is_valid():
-            factura = form.save()
             detalles = formset.save(commit=False)
+            error_stock = []
+            # Validar stock antes de guardar la factura
             for detalle in detalles:
+                producto = detalle.producto
+                if detalle.cantidad > producto.stock:
+                    error_stock.append(f"El producto '{producto.nombre}' no tiene suficiente stock (disponible: {producto.stock}).")
+            if error_stock:
+                # No guardar la factura ni los detalles
+                return render(request, 'facturas/crear.html', {
+                    'form': form,
+                    'formset': formset,
+                    'error_stock': error_stock
+                })
+            # Si todo bien, guardar factura y detalles
+            factura = form.save()
+            for detalle in detalles:
+                producto = detalle.producto
+                producto.stock -= detalle.cantidad
+                producto.save()
                 detalle.factura = factura
                 detalle.save()
             return redirect('lista_facturas')

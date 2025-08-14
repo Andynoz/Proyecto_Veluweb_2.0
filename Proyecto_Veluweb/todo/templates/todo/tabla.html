@@ -30,7 +30,7 @@
 
     <!-- Cuerpo de la tabla -->
     <div class="divide-y divide-gray-200">
-      {% for cliente in clientes %}
+      {% for cliente in page_obj %}
       <div class="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
         <!-- ID -->
         <div class="flex items-center text-gray-900 font-medium">
@@ -94,19 +94,15 @@
     Mostrando {{ clientes|length }} cliente{{ clientes|length|pluralize:"s" }}
   </div>
   {% endif %}
-
-  <!-- Controles de paginación -->
-  {% if clientes.has_other_pages %}
-  <div class="flex justify-center mt-8 gap-2">
-    {% if clientes.has_previous %}
-      <a href="?page={{ clientes.previous_page_number }}" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Anterior</a>
-    {% endif %}
-    <span class="px-4 py-2 bg-gray-100 rounded">{{ clientes.number }} / {{ clientes.paginator.num_pages }}</span>
-    {% if clientes.has_next %}
-      <a href="?page={{ clientes.next_page_number }}" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Siguiente</a>
-    {% endif %}
-  </div>
-  {% endif %}
 </div>
+
+<!-- Información adicional -->
+{% if page_obj %}
+  <div class="mt-6 text-center text-gray-500 text-sm">
+    Mostrando {{ page_obj|length }} cliente{{ page_obj|length|pluralize:"s" }}
+  </div>
+{% endif %}
+
+{% include "todo/paginacion.html" %}
 
 {% endblock %}
