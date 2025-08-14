@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 import uuid
+from django.urls import reverse
+from django.utils.text import slugify
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length=100)
@@ -23,15 +25,35 @@ class PasswordResetToken(models.Model):
 
     def is_valid(self):
         return timezone.now() < self.expires_at
+
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nombre)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.nombre
+        
     
 class Producto(models.Model):
-    nombre = models.CharField(max_length=100)
     codigo = models.CharField(max_length=50, unique=True)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
-    creado = models.DateTimeField(auto_now_add=True)
+    precio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos')
+    stock = models.IntegerField(default=0)  # control de stock
+    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)  # imagen opcional
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
+    def get_absolute_url(self):
+        return reverse('productos:detalle', args=[self.pk])
+    
     def __str__(self):
         return f"{self.nombre} - {self.codigo}"
 
