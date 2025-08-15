@@ -43,16 +43,16 @@ class Producto(models.Model):
     codigo = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos')
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
     stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
+    precio = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Precio Unitario")
 
     def get_absolute_url(self):
-        return reverse('productos:detalle', args=[self.pk])
+        return reverse('detalle_producto', args=[self.pk])
     
     def __str__(self):
-        return f"{self.nombre} - {self.codigo}"
+        return f"{self.nombre}"
 
 class Factura(models.Model):
     ESTADO_CHOICES = [

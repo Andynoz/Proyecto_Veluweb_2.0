@@ -358,7 +358,7 @@ def crear_producto(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Producto creado')
-            return redirect('productos:lista')
+            return redirect('productos_index')
     else:
         form = ProductoForm()
     return render(request, 'productos/crear.html', {'form': form})
@@ -366,9 +366,10 @@ def crear_producto(request):
 
 def eliminar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
-    producto.is_active = False  # en vez de borrar, desactivamos
-    producto.save()
-    return redirect('nombre_de_la_lista_de_productos')
+    if request.method == 'POST':
+        producto.delete()
+        return redirect('productos_index')
+    return render(request, 'productos/eliminar.html', {'producto': producto})
 
 # EDITAR PRODUCTO
 @login_required
@@ -379,56 +380,10 @@ def editar_producto(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Producto actualizado')
-            return redirect('productos:lista')
+            return redirect('productos_index')
     else:
         form = ProductoForm(instance=producto)
     return render(request, 'productos/editar.html', {'form': form, 'producto': producto})
-
-
-# DESACTIVAR PRODUCTO (soft delete)
-@login_required
-@require_POST
-def desactivar_producto(request, pk):
-    producto = get_object_or_404(Producto, pk=pk)
-    producto.is_active = False
-    producto.save()
-    messages.success(request, 'Producto desactivado')
-    return redirect('productos:lista')
-
-
-# LISTA DE PRODUCTOS DESACTIVADOS
-@login_required
-def desactivados(request):
-    productos = Producto.objects.filter(is_active=False).order_by('-updated_at')
-    paginator = Paginator(productos, 8)
-    page_obj = paginator.get_page(request.GET.get('page'))
-    return render(request, 'productos/desactivados.html', {'page_obj': page_obj})
-
-@login_required
-def eliminar_producto(request, pk):
-    """
-    Página de confirmación (GET) y acción de desactivar (POST).
-    Mantengo soft-delete (is_active=False) para no perder datos.
-    """
-    producto = get_object_or_404(Producto, pk=pk)
-    if request.method == 'POST':
-        producto.is_active = False
-        producto.save()
-        messages.success(request, 'Producto desactivado correctamente.')
-        return redirect('productos_index')  # coincide con el name en urls.py
-    # GET -> mostrar plantilla confirmation
-    return render(request, 'productos/eliminar.html', {'producto': producto})
-
-# ACTIVAR PRODUCTO
-@login_required
-@require_POST
-def activar_producto(request, pk):
-    producto = get_object_or_404(Producto, pk=pk)
-    producto.is_active = True
-    producto.save()
-    messages.success(request, 'Producto activado')
-    return redirect('productos:desactivados')
-
 
 
 #FACTURAS

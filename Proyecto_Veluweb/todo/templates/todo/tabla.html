@@ -70,6 +70,7 @@
           </a>
         </div>
       </div>
+      
       {% empty %}
       <div class="px-6 py-12 text-center text-gray-500">
         <div class="text-6xl mb-4">📋</div>
@@ -83,14 +84,14 @@
       {% endfor %}
     </div>
   </div>
-</div>
 
-<!-- Información adicional -->
-{% if page_obj %}
-  <div class="mt-6 text-center text-gray-500 text-sm">
-    Mostrando {{ page_obj|length }} cliente{{ page_obj|length|pluralize:"s" }}
-  </div>
-{% endif %}
+  <!-- Información adicional -->
+  {% if page_obj %}
+    <div class="mt-6 text-center text-gray-500 text-sm">
+      Mostrando {{ page_obj|length }} cliente{{ page_obj|length|pluralize:"s" }}
+    </div>
+  {% endif %}
+</div>
 
 {% include "todo/paginacion.html" %}
 
