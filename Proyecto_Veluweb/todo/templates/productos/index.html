@@ -6,17 +6,23 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
   <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Productos</h1>
-  
-  <!-- Botón crear producto centrado -->
+
+  <!-- Buscador -->
+  <form method="get" class="flex justify-center mb-6">
+    <input type="search" name="q" value="{{ q }}" placeholder="Buscar productos..." class="form-control w-1/2 border rounded-lg px-4 py-2">
+    <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
+  </form>
+
+  <!-- Botón crear producto -->
   <div class="flex justify-center mb-8">
     <a href="{% url 'crear_producto' %}" class="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
       + Crear Producto
     </a>
   </div>
   
-  <!-- Contenedor de la tabla con fondo blanco y sombra -->
+  <!-- Contenedor de la tabla -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
-    <!-- Header de la tabla con gradiente personalizado -->
+    <!-- Header -->
     <div class="bg-gradient-to-r from-slate-700 to-slate-600">
       <div class="grid grid-cols-5 gap-4 px-6 py-4 font-semibold text-white">
         <div class="text-left">ID</div>
@@ -27,7 +33,7 @@
       </div>
     </div>
 
-    <!-- Cuerpo de la tabla -->
+    <!-- Cuerpo -->
     <div class="divide-y divide-gray-200">
       {% for producto in page_obj %}
       <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
@@ -37,9 +43,7 @@
         </div>
 
         <!-- Nombre -->
-        <div class="flex items-center">
-          <span class="text-dark font-semibold">{{ producto.nombre }}</span>
-        </div>
+        <div class="flex items-center font-semibold text-dark">{{ producto.nombre }}</div>
 
         <!-- Stock -->
         <div class="flex items-center">
@@ -48,10 +52,10 @@
 
         <!-- Precio -->
         <div class="flex items-center">
-          <span class="text-dark font-bold">${{ producto.precio|floatformat:2 }}</span>
+          <span class="font-bold text-dark">${{ producto.precio|floatformat:2 }}</span>
         </div>
 
-        <!-- Acciones -->
+          <!-- Acciones -->
         <div class="flex items-center justify-center space-x-2">
           <!-- Botón Ver/Detalles -->
           <a href="{% url 'detalle_producto' producto.pk %}" class="inline-flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
@@ -77,7 +81,7 @@
         </div>
       </div>
       {% empty %}
-      <!-- Estado vacío -->
+      <!-- Sin productos -->
       <div class="px-6 py-12 text-center text-gray-500">
         <div class="text-6xl mb-4">📦</div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No hay productos registrados</h3>
@@ -90,14 +94,14 @@
       {% endfor %}
     </div>
   </div>
+  
+  <!-- Información adicional -->
+  {% if page_obj %}
+    <div class="mt-6 text-center text-gray-500 text-sm">
+      Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }}
+    </div>
+  {% endif %}
 
-<!-- Información adicional -->
-{% if page_obj %}
-  <div class="mt-6 text-center text-gray-500 text-sm">
-    Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }}
-  </div>
-{% endif %}
-
-{% include "todo/paginacion.html" %}
-
+  {% include "todo/paginacion.html" %}
+</div>
 {% endblock %}

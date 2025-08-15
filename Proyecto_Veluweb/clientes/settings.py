@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     
     # Custom apps
-    'todo', # Tu aplicación principal
+    'todo', #Aplicación principal
 ]
 
 MIDDLEWARE = [
@@ -192,3 +192,9 @@ DEFAULT_FROM_EMAIL = 'veluweb1@gmail.com'
 # ==============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

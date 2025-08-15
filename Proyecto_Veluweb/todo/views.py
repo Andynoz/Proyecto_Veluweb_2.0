@@ -24,6 +24,9 @@ import random
 from django.db.models import Q, Sum, Count, F
 from django.db.models.functions import TruncDay
 import json
+from django.views.decorators.http import require_POST
+from .models import Producto, Categoria
+from .forms import ProductoForm
 
 
 @login_required
@@ -144,7 +147,8 @@ def agregar(request):
         form = ClienteForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('tabla')
+            messages.success(request, 'Cliente registrado correctamente.')
+            return redirect('tabla')        
     else:
         form = ClienteForm()
     
@@ -157,12 +161,19 @@ def editar(request, cliente_id):
     if request.method == 'POST':
         form = ClienteForm(request.POST, instance=cliente)
         if form.is_valid():
-            form.save()
-            return redirect('tabla')
+            if form.has_changed():
+                form.save()
+                messages.success(request, "Cliente actualizado correctamente.")
+            else:
+                messages.info(request, "No se realizaron cambios en el cliente.")      
+        return redirect('tabla')
+    
     else:
         form = ClienteForm(instance=cliente)
     
     return render(request, 'todo/editar.html', {'form': form})
+  
+
 
 @login_required
 def eliminar(request, cliente_id):
@@ -309,16 +320,15 @@ def guardar_codigo_usuario(email):
 def bienvenida(request):
     return render(request, 'bienvenida.html')
 
+#PRODUCTOS
 
-# PRODUCTOS
 
-@login_required
 def productos_index(request):
-    query = request.GET.get("buscar") 
+    query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
     
     if query:
         productos_lista = Producto.objects.filter(
-            Q(nombre__icontains=query) | Q(descripcion__icontains=query)
+            Q(nombre__icontains=query) | Q(descripcion__istartswith=query)
         ).order_by('-id')
     else:
         productos_lista = Producto.objects.all().order_by('-id')
@@ -329,32 +339,31 @@ def productos_index(request):
 
     return render(request, 'productos/index.html', {
         'page_obj': page_obj,
-        'buscar': query
+        'q': query  # para que el input mantenga el valor buscado
     })
-    
 
+
+# DETALLE DE PRODUCTO
+@login_required
+def detalle_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    return render(request, 'productos/detalle.html', {'producto': producto})
+
+
+# CREAR PRODUCTO
 @login_required
 def crear_producto(request):
-    form = ProductoForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        form.save()
-        return redirect('productos_index')
-    return render(request, 'productos/crear.html', {'form': form})  # ← plantilla real
-
-@login_required
-def editar_producto(request, pk):
-    producto = get_object_or_404(Producto, pk=pk)
-    form = ProductoForm(request.POST or None, request.FILES or None, instance=producto)
-
-    if form.is_valid():
-        form.save()
-        return redirect('productos_index')
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Producto creado')
+            return redirect('productos_index')
     else:
-        print(form.errors)  # 👈 Esto mostrará los errores en la consola
+        form = ProductoForm()
+    return render(request, 'productos/crear.html', {'form': form})
 
-    return render(request, 'productos/editar.html', {'form': form})
 
-@login_required
 def eliminar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -362,20 +371,20 @@ def eliminar_producto(request, pk):
         return redirect('productos_index')
     return render(request, 'productos/eliminar.html', {'producto': producto})
 
+# EDITAR PRODUCTO
 @login_required
-def detalle_producto(request, pk):
+def editar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Producto actualizado')
+            return redirect('productos_index')
+    else:
+        form = ProductoForm(instance=producto)
+    return render(request, 'productos/editar.html', {'form': form, 'producto': producto})
 
-    producto_anterior = Producto.objects.filter(pk__lt=producto.pk).order_by('-pk').first()
-    producto_siguiente = Producto.objects.filter(pk__gt=producto.pk).order_by('pk').first()
-
-    contexto = {
-        'producto': producto,
-        'producto_anterior': producto_anterior,
-        'producto_siguiente': producto_siguiente
-    }
-
-    return render(request, 'productos/detalle.html', contexto)
 
 #FACTURAS
 
