@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     
     # Custom apps
-    'todo', # Tu aplicación principal
+    'todo', #Aplicación principal
 ]
 
 MIDDLEWARE = [
@@ -190,5 +190,3 @@ DEFAULT_FROM_EMAIL = 'veluweb1@gmail.com'
 # DEFAULT PRIMARY KEY FIELD TYPE
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 # ==============================================================================
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

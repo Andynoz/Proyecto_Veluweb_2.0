@@ -144,7 +144,8 @@ def agregar(request):
         form = ClienteForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('tabla')
+            messages.success(request, 'Cliente registrado correctamente.')
+            return redirect('tabla')        
     else:
         form = ClienteForm()
     
@@ -157,12 +158,19 @@ def editar(request, cliente_id):
     if request.method == 'POST':
         form = ClienteForm(request.POST, instance=cliente)
         if form.is_valid():
-            form.save()
-            return redirect('tabla')
+            if form.has_changed():
+                form.save()
+                messages.success(request, "Cliente actualizado correctamente.")
+            else:
+                messages.info(request, "No se realizaron cambios en el cliente.")      
+        return redirect('tabla')
+    
     else:
         form = ClienteForm(instance=cliente)
     
     return render(request, 'todo/editar.html', {'form': form})
+  
+
 
 @login_required
 def eliminar(request, cliente_id):

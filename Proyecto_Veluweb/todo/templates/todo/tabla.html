@@ -4,7 +4,9 @@
 {% block title %}Clientes | Veluweb{% endblock %}
 
 {% block content %}
+
 <div class="max-w-7xl mx-auto px-4 py-8">
+
   <!-- Encabezado -->
   <div class="text-center mb-8">
     <h2 class="text-3xl font-bold text-dark mb-6">Lista de Clientes</h2>
@@ -18,12 +20,11 @@
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <!-- Encabezado de la tabla -->
     <div class="bg-gray-700 text-white">
-      <div class="grid grid-cols-6 gap-4 px-6 py-4 font-semibold">
+      <div class="grid grid-cols-5 gap-[75px] px-6 py-4 font-semibold">
         <div class="text-left">ID</div>
         <div class="text-left">Cliente</div>
         <div class="text-left">Correo</div>
         <div class="text-left">Teléfono</div>
-        <div class="text-left">Fecha</div>
         <div class="text-center">Acciones</div>
       </div>
     </div>
@@ -31,7 +32,7 @@
     <!-- Cuerpo de la tabla -->
     <div class="divide-y divide-gray-200">
       {% for cliente in page_obj %}
-      <div class="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
+      <div class="grid grid-cols-5 gap-[75px] px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
         <!-- ID -->
         <div class="flex items-center text-gray-900 font-medium">
           {{ cliente.id }}
@@ -50,11 +51,6 @@
         <!-- Teléfono -->
         <div class="flex items-center text-dark">
           {{ cliente.telefono }}
-        </div>
-
-        <!-- Fecha -->
-        <div class="flex items-center">
-          <span class="text-dark font-medium">{{ cliente.date_joined|date:"M d, Y, g:i a" }}</span>
         </div>
 
         <!-- Acciones -->
@@ -87,13 +83,6 @@
       {% endfor %}
     </div>
   </div>
-
-  <!-- Información adicional -->
-  {% if clientes %}
-  <div class="mt-6 text-center text-gray-500 text-sm">
-    Mostrando {{ clientes|length }} cliente{{ clientes|length|pluralize:"s" }}
-  </div>
-  {% endif %}
 </div>
 
 <!-- Información adicional -->

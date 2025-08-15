@@ -25,6 +25,7 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
         },
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
+    
 
     class Meta:     #validación de datos del formulario registro
         model = Cliente
@@ -33,20 +34,41 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
             'correo': forms.EmailInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
         }
         error_messages = {
             'nombre': {'required': 'Este campo es obligatorio.'},
-            # 'apellido': {'required': 'Este campo es obligatorio.'}
+            'apellido': {'required': 'Este campo es obligatorio.'},
             'correo': {
                 'required': 'Este campo es obligatorio.',
                 'invalid': 'Ingrese un correo válido.',
             },
         }
+        
+    def clean(self): #validación de nombre y apellido
+        cleaned_data = super().clean()
+        nombre = cleaned_data.get('nombre')
+        apellido = cleaned_data.get('apellido')
+        
+        if nombre and apellido:
+            if Cliente.objects.filter(
+                nombre__iexact=nombre,
+                apellido__iexact=apellido
+            ).exists():
+                raise ValidationError(
+                    "Este cliente ya está registrado."
+                )
+        return cleaned_data
 
     def clean_correo(self): #validación de correo
         correo = self.cleaned_data.get('correo')
-        if Cliente.objects.filter(correo=correo).exists():
-            raise ValidationError('Este correo ya está registrado.')
+        if correo:
+            qs = Cliente.objects.filter(correo__iexact=correo)
+            #Excluir el mismo cliente en edición
+            if self.instance and self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise ValidationError('Este correo ya está registrado.')
         return correo
 
 #Formulario de login
