@@ -29,11 +29,15 @@ urlpatterns = [
     path('bienvenida/', views.bienvenida, name='bienvenida'),
     
     # CRUD Productos
-    path('productos/', views.productos_index, name='productos_index'),
-    path('productos/crear/', views.crear_producto, name='crear_producto'),
-    path('productos/editar/<int:pk>/', views.editar_producto, name='editar_producto'),
-    path('productos/eliminar/<int:pk>/', views.eliminar_producto, name='eliminar_producto'),
-    path('productos/detalle/<int:pk>/', views.detalle_producto, name='detalle_producto'),
+    path('productos/', views.lista_productos, name='productos_index'),       
+    path('productos/crear/', views.crear_producto, name='crear_producto'),   
+    path('productos/<int:pk>/', views.detalle_producto, name='detalle_producto'), 
+    path('productos/<int:pk>/editar/', views.editar_producto, name='editar_producto'), 
+    path('productos/<int:pk>/eliminar/', views.eliminar_producto, name='eliminar_producto'), 
+    path('productos/desactivados/', views.desactivados, name='desactivados'),
+    path('productos/<int:pk>/desactivar/', views.desactivar_producto, name='desactivar'),
+    path('productos/<int:pk>/activar/', views.activar_producto, name='activar'),
+
 
     # CRUD Facturas
     path('facturas/', views.lista_facturas, name='lista_facturas'),
