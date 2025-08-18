@@ -19,6 +19,14 @@
 <div class="max-w-7xl mx-auto px-4 mt-6">
     <h1 class="mb-6 text-center text-3xl font-bold">📊 Estadísticas del Negocio</h1>
 
+    <!--Botón de Exportar a Excel-->
+    <div class="text-right mb-4">
+        <a href="{% url 'exportar_excel' %}?fecha_inicio={{ fecha_inicio_str }}&fecha_fin={{ fecha_fin_str }}"
+            class="btn-custom text-white py-2 px-4 rounded-lg">
+            📥 Exportar a Excel
+        </a>
+    </div>
+
     <!-- Filtro por fecha -->
     <div class="bg-white shadow rounded-lg mb-6">
         <div class="bg-blue-dark text-white px-4 py-3 rounded-t-lg">

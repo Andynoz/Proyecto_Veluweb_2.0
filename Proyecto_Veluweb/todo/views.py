@@ -18,16 +18,23 @@ from .forms import FacturaForm, DetalleFacturaFormSet, DetalleFacturaForm
 from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
 from django.core.cache import cache
 import random
 from django.db.models import Q, Sum, Count, F
 from django.db.models.functions import TruncDay
 import json
 from django.views.decorators.http import require_POST
-from .models import Producto, Categoria
+from .models import Producto, Factura, DetalleFactura, Cliente
 from .forms import ProductoForm
-
+import openpyxl
+from openpyxl import Workbook
+from openpyxl.chart import BarChart, PieChart, Reference
+from openpyxl.drawing.image import Image as ExcelImage
+import io
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.chart.label import DataLabelList
+from openpyxl.chart.text import RichText
+from openpyxl.drawing.text import Paragraph, ParagraphProperties, CharacterProperties
 
 @login_required
 def estadisticas_view(request):
@@ -518,3 +525,134 @@ def eliminar_factura(request, pk):
 #ROLES 
 def roles(request):
     return render(request, 'todo/roles.html')
+
+
+#EXPORTAR A EXCEL
+@login_required
+def exportar_excel(request):
+    
+    #Leer parametros de fecha
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    
+    facturas = Factura.objects.all()
+    
+    #Si hay filtros de fecha, aplicar
+    if fecha_inicio and fecha_fin:
+        facturas = facturas.filter(fecha__range=[fecha_inicio, fecha_fin])
+    elif fecha_inicio:
+        facturas = facturas.filter(fecha__gte=fecha_inicio)
+    elif fecha_fin:
+        facturas = facturas.filter(fecha__lte=fecha_fin)
+    
+    #Crear el libro y hoja de excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Estadísticas"
+    
+    #Estilos básicos
+    bold_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+    align_center = Alignment(horizontal="center", vertical="center")
+    border_style = Border(
+        left=Side(border_style="thin", color="000000"),
+        right=Side(border_style="thin", color="000000"),
+        top=Side(border_style="thin", color="000000"),
+        bottom=Side(border_style="thin", color="000000"),
+    )
+    #Encabezados
+    ws.append(["Métrica", "Valor"])
+    for cell in ws[1]:
+        cell.font = bold_font
+        cell.fill = header_fill
+        cell.alignment = align_center
+        cell.border = border_style
+    
+    #Datos
+    ventas_totales = facturas.aggregate(total=Sum('monto_total'))['total'] or 0
+    num_facturas = facturas.count()
+    total_clientes = Cliente.objects.count()
+    total_productos = Producto.objects.count()
+    ultima_factura = facturas.order_by('-fecha').first()
+    ultima_fecha = ultima_factura.fecha.strftime('%Y-%m-%d') if ultima_factura else "N/A"
+    
+    #Agregar filas con los datos
+    ws.append(["Ventas Totales", float(ventas_totales)])
+    ws.append(["Número de Facturas", num_facturas])
+    ws.append(["Total Clientes", total_clientes])
+    ws.append(["Total Productos", total_productos])
+    ws.append(["Última Venta", ultima_fecha])
+    
+    
+    #AGREGAR GRÁFICOS
+    
+    #Productos más vendidos
+    ws["Z1"] = "Producto"
+    ws["AA1"] = "Cantidad Vendida"
+
+    #Query directo a DetalleFactura
+    top_productos = (
+        DetalleFactura.objects.filter(factura__in=facturas)
+        .values("producto__nombre")
+        .annotate(total_vendido=Sum("cantidad"))
+        .order_by("-total_vendido")[:5]
+    )
+
+    for i, prod in enumerate(top_productos, start=2):
+        ws[f"Z{i}"] = prod["producto__nombre"]
+        ws[f"AA{i}"] = int(prod["total_vendido"])
+
+    #Crear gráficos
+    datos = Reference(ws, min_col=27, min_row=2, max_row=1 + len(top_productos))
+    etiquetas = Reference(ws, min_col=26, min_row=2, max_row=1 + len(top_productos))
+
+    # Gráfico de barras
+    chart_barras = BarChart()
+    chart_barras.add_data(datos, titles_from_data=False)
+    chart_barras.set_categories(etiquetas)
+    
+    ws["F2"] = "Top 5 Productos Más Vendidos"
+    ws["F2"].font = Font(size=14, bold=True)
+    ws["F2"].alignment = Alignment(horizontal="center")
+        
+    ws.add_chart(chart_barras, "D4")
+
+    ws["F20"] = "Distribución Ventas Productos"
+    ws["F20"].font = Font(size=14, bold=True)
+    ws["F20"].alignment = Alignment(horizontal="center")
+    
+    # Gráfico circular
+    chart_pie = PieChart()
+    chart_pie.add_data(datos, titles_from_data=False)
+    chart_pie.set_categories(etiquetas)
+    
+        
+    chart_pie.dataLabels = DataLabelList()
+    chart_pie.dataLabels.showPercent = True
+    chart_pie.dataLabels.showSerName = False
+    chart_pie.dataLabels.showVal = False
+    chart_pie.dataLabels.showCatName = False
+    
+    ws.add_chart(chart_pie, "D22")
+
+    
+    # Aplicar estilo a todas las celdas con borde y alineación
+    for row in ws.iter_rows(min_row=2, max_row=6, min_col=1, max_col=2):
+        for cell in row:
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            cell.border = border_style
+    
+    # Ajustar ancho de columnas
+    ws.column_dimensions["A"].width = 25
+    ws.column_dimensions["B"].width = 20
+    
+    
+    #Respuesta HTTP
+    filename = f"estadisticas_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(response)
+
+    return response
