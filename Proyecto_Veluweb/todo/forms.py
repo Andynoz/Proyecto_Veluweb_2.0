@@ -23,13 +23,39 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
             'min_length': 'Debe tener al menos 10 dígitos.',
             'max_length': 'Debe tener como máximo 10 dígitos.',
         },
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+            })
     )
+    
+    ciudad = forms.CharField(
+        max_length=100,
+        error_messages={
+            'required': 'Este campo es obligatorio.',
+            'max_length': 'La ciudad no puede tener más de 100 caracteres'
+        },
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'        
+        })
+    )
+    
+    direccion = forms.CharField(
+        max_length=255,
+        error_messages={
+            'required': 'Este campo es obligatorio.',
+            'max_length': 'La dirección no puede tener más de 255 caracteres.'
+        },
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 2
+        })
+    )
+    
     
 
     class Meta:     #validación de datos del formulario registro
         model = Cliente
-        fields = ['nombre', 'apellido', 'correo', 'telefono']
+        fields = ['nombre', 'apellido', 'correo', 'telefono', 'ciudad', 'direccion']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
@@ -144,9 +170,6 @@ class ProductoForm(forms.ModelForm):
             'imagen': forms.ClearableFileInput(attrs={
                 'class': 'form-control',
                 'onchange': 'previewImage(event)'
-            }),
-            'is_active': forms.CheckboxInput(attrs={
-                'class': 'form-check-input',
             }),
         }
 

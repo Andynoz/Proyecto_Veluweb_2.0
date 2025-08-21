@@ -10,6 +10,8 @@ class Cliente(models.Model):
     apellido = models.CharField(max_length=100)
     correo = models.EmailField(unique=True)
     telefono = models.CharField(max_length=15)
+    ciudad = models.CharField(max_length=100, verbose_name="Ciudad", default='Sin especificar')
+    direccion = models.CharField(max_length=255, verbose_name="Dirección", default='Sin especificar')
     
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
@@ -47,6 +49,7 @@ class Producto(models.Model):
     creado = models.DateTimeField(auto_now_add=True)
     stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
     precio = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="Precio Unitario")
+    estado = models.BooleanField(default=True)
 
     def get_absolute_url(self):
         return reverse('detalle_producto', args=[self.pk])
