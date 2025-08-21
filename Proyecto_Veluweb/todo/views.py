@@ -170,9 +170,9 @@ def editar(request, cliente_id):
         if form.is_valid():
             if form.has_changed():
                 form.save()
-                messages.success(request, "Cliente actualizado correctamente.")
+                messages.success(request, 'Cliente actualizado correctamente.')
             else:
-                messages.info(request, "No se realizaron cambios en el cliente.")      
+                messages.info(request, 'No se realizaron cambios en el cliente.')      
         return redirect('tabla')
     
     else:
@@ -327,18 +327,19 @@ def guardar_codigo_usuario(email):
 def bienvenida(request):
     return render(request, 'bienvenida.html')
 
-#PRODUCTOS
 
+#PRODUCTOS
 
 def productos_index(request):
     query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
     
     if query:
         productos_lista = Producto.objects.filter(
-            Q(nombre__icontains=query) | Q(descripcion__istartswith=query)
+            Q(nombre__icontains=query) | Q(descripcion__istartswith=query),
+            activo = True
         ).order_by('-id')
     else:
-        productos_lista = Producto.objects.all().order_by('-id')
+        productos_lista = Producto.objects.filter(estado=True).order_by('-id')
 
     paginator = Paginator(productos_lista, 5)
     pagina = request.GET.get('page')
@@ -371,12 +372,32 @@ def crear_producto(request):
     return render(request, 'productos/crear.html', {'form': form})
 
 
-def eliminar_producto(request, pk):
+def deshabilitar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
-        producto.delete()
+        producto.estado = False
+        producto.save()
+        messages.warning(request, f'El producto "{{producto.nombre}}" fue deshabilitado')
         return redirect('productos_index')
-    return render(request, 'productos/eliminar.html', {'producto': producto})
+    return render(request, 'productos/deshabilitar.html', {'producto': producto})
+
+def productos_inactivos(request): 
+    productos_lista = Producto.objects.filter(estado=False).order_by('-id')
+    paginator = Paginator(productos_lista, 5)
+    pagina = request.GET.get('page')
+    page_obj = paginator.get_page(pagina)
+
+    return render(request, 'productos/inactivos.html', {
+        'page_obj': page_obj
+    })
+    
+def habilitar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    producto.estado = True
+    producto.save()
+    return redirect('productos_inactivos')
+
+
 
 # EDITAR PRODUCTO
 @login_required

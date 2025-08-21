@@ -30,7 +30,7 @@
       </div>
 
       <!-- Título principal -->
-      <h1 class="text-red-600 text-3xl mb-6 text-center font-bold">¿Eliminar Producto?</h1>
+      <h1 class="text-red-600 text-3xl mb-6 text-center font-bold">¿Deshabilitar Producto?</h1>
       
       <!-- Mensaje de confirmación -->
       <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
@@ -41,10 +41,10 @@
           <div>
             <h3 class="text-red-800 font-semibold mb-2">⚠️ Confirmación Requerida</h3>
             <p class="text-red-700 text-base leading-relaxed">
-              ¿Estás seguro de que deseas eliminar el producto <strong class="text-red-900 bg-red-100 px-2 py-1 rounded">{{ producto.nombre }}</strong>?
+              ¿Estás seguro de que deseas deshabilitar el producto <strong class="text-red-900 bg-red-100 px-2 py-1 rounded">{{ producto.nombre }}</strong>?
             </p>
             <p class="text-red-600 text-sm mt-2">
-              Esta acción no se puede deshacer.
+              Podrás volver a activarlo en la sección de productos inactivos.
             </p>
           </div>
         </div>
@@ -85,14 +85,14 @@
         </div>
       </div>
 
-      <!-- Formulario de eliminación -->
+      <!-- Formulario de deshabilitación -->
       <form method="post">
         {% csrf_token %}
         
         <!-- Botones de acción -->
         <div class="flex flex-col sm:flex-row justify-center gap-4">
           <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl border-2 border-red-600 hover:border-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">
-            🗑️ Sí, eliminar definitivamente
+            🚫 Sí, deshabilitar producto
           </button>
           <a href="{% url 'productos_index' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block text-center border-2 border-gray-500 hover:border-gray-600">
             ↩️ Cancelar
@@ -103,7 +103,7 @@
       <!-- Mensaje adicional -->
       <div class="mt-6 text-center">
         <p class="text-gray-500 text-sm">
-          💡 <strong>Sugerencia:</strong> Si necesitas el producto más tarde, es mejor editarlo que eliminarlo.
+          💡 <strong>Sugerencia:</strong> Puedes reactivar este producto más tarde desde la sección de <em>Productos Inactivos</em>.
         </p>
       </div>
     </div>

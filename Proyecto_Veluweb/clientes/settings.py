@@ -106,7 +106,7 @@ DATABASES = {
         'NAME': 'bd_veluweb',
         'USER': 'postgres',
         'PASSWORD': '141006',
-        'HOST': 'localhost',
+        'HOST': '192.168.1.27',
         'PORT': '5432',
     }
 }
@@ -154,7 +154,7 @@ USE_TZ = True # Habilita zonas horarias (muy recomendable)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 # ==============================================================================
 
-STATIC_URL = 'static/' 
+STATIC_URL = 'static/'
 
 
 STATICFILES_DIRS = [
@@ -162,7 +162,7 @@ STATICFILES_DIRS = [
 ]
 
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+#STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # ==============================================================================
