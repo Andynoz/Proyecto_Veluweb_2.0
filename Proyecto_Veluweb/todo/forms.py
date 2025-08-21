@@ -60,7 +60,6 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
             'correo': forms.EmailInput(attrs={'class': 'form-control'}),
-            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
         }
         error_messages = {
             'nombre': {'required': 'Este campo es obligatorio.'},
@@ -77,23 +76,29 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
         apellido = cleaned_data.get('apellido')
         
         if nombre and apellido:
-            if Cliente.objects.filter(
+            # Buscar clientes con el mismo nombre y apellido
+            queryset = Cliente.objects.filter(
                 nombre__iexact=nombre,
                 apellido__iexact=apellido
-            ).exists():
-                raise ValidationError(
-                    "Este cliente ya está registrado."
-                )
+            )
+            
+            # CLAVE: Excluir el cliente actual si estamos editando
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            
+            if queryset.exists():
+                raise ValidationError("Este cliente ya está registrado.")
+        
         return cleaned_data
+
 
     def clean_correo(self): #validación de correo
         correo = self.cleaned_data.get('correo')
-        if correo:
-            qs = Cliente.objects.filter(correo__iexact=correo)
-            #Excluir el mismo cliente en edición
-            if self.instance and self.instance.pk:
-                qs = qs.exclude(pk=self.instance.pk)
-            if qs.exists():
+        queryset = Cliente.objects.filter(correo=correo)            #Excluir el mismo cliente en edición
+        
+        if self.instance.pk:
+            queryset = queryset.exclude(pk=self.instance.pk)         
+        if queryset.exists():
                 raise ValidationError('Este correo ya está registrado.')
         return correo
 
@@ -173,7 +178,18 @@ class ProductoForm(forms.ModelForm):
             }),
         }
 
-
+    #VALIDACIÓN DE NOMBRE
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if nombre:
+            queryset = Producto.objects.filter(nombre__iexact=nombre)
+            if self.instance.pk:
+                queryset = queryset.exclude(pk=self.instance.pk)
+            if queryset.exists():
+                raise ValidationError('Ya existe un producto con este nombre.')
+        return nombre
+        
+        
 # FACTURAS
 
 class FacturaForm(forms.ModelForm):
