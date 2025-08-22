@@ -106,7 +106,7 @@ DATABASES = {
         'NAME': 'bd_veluweb',
         'USER': 'postgres',
         'PASSWORD': '141006',
-        'HOST': '192.168.1.27',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

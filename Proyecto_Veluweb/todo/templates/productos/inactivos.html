@@ -1,58 +1,70 @@
 {% extends "todo/layout2.html" %}
-
 {% block content %}
-<div class="container mt-4">
-    <h2>📦 Productos Inactivos</h2>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Título -->
+  <h1 class="text-gray-900 text-4xl mb-8 text-center font-semibold">Productos Inactivos</h1>
 
-    {% if page_obj %}
-        <table class="table table-striped mt-3">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for producto in page_obj %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.descripcion }}</td>
-                    <td>
-                        <form method="post" action="{% url 'habilitar_producto' producto.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-sm">Habilitar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">No hay productos inactivos.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  <!-- Botón volver -->
+  <div class="flex justify-center mb-8">
+    <a href="{% url 'productos_index' %}"
+       class="bg-slate-600 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+      ↩️ Volver a activos
+    </a>
+  </div>
 
-        <!-- Paginador -->
-        <div class="d-flex justify-content-center">
-            <nav>
-                <ul class="pagination">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
-                    {% endif %}
+  <!-- Contenedor -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-700 to-slate-600">
+      <div class="grid grid-cols-4 gap-4 px-6 py-4 font-semibold text-white">
+        <div class="text-left">ID</div>
+        <div class="text-left">Nombre</div>
+        <div class="text-left">Precio</div>
+        <div class="text-center">Acciones</div>
+      </div>
+    </div>
 
-                    <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
+    <!-- Cuerpo -->
+    <div class="divide-y divide-gray-200">
+      {% for producto in page_obj %}
+      <div class="grid grid-cols-4 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
+        <!-- ID -->
+        <div class="flex items-center font-semibold text-gray-900">{{ producto.id }}</div>
+        <!-- Nombre -->
+        <div class="flex items-center font-semibold text-gray-900">{{ producto.nombre }}</div>
+        <!-- Precio -->
+        <div class="flex items-center font-bold text-gray-900">${{ producto.precio|floatformat:2 }}</div>
+        <!-- Reactivar -->
+        <div class="flex items-center justify-center">
+          <a href="{% url 'activar_producto' producto.pk %}"
+             class="inline-flex items-center justify-center w-10 h-10 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+             title="Reactivar"
+             aria-label="Reactivar">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </a>
         </div>
-    {% else %}
-        <p>No hay productos inactivos.</p>
-    {% endif %}
+      </div>
+
+      {% empty %}
+      <!-- No inactivos -->
+      <div class="px-6 py-12 text-center text-gray-500">
+        <div class="text-6xl mb-4">🌿</div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay productos inactivos</h3>
+        <p class="text-gray-500">Todo está activo como debe ser.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  {% if page_obj %}
+    <div class="mt-6 text-center text-gray-500 text-sm">
+      Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }}
+    </div>
+  {% endif %}
+
+  {% include "todo/paginacion.html" %}
 </div>
 {% endblock %}

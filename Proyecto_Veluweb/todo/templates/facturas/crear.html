@@ -89,6 +89,12 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <!-- Total parcial -->
+                    <div class="flex justify-end mt-4">
+                        <h3 class="text-xl font-semibold text-gray-800">
+                            Total parcial: $<span id="total-parcial">0</span>
+                        </h3>
+                    </div>
             </div>
 
             <!-- Botón agregar producto -->
@@ -114,6 +120,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const agregarBtn = document.getElementById('agregar-producto');
     const formsetBody = document.getElementById('formset-body');
     const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
+    const totalParcialElement = document.getElementById('total-parcial');
+
+    //Función para calcular el total parcial
+    function calcularTotal() {
+        let total = 0;
+        document.querySelectorAll('#formset-body tr').forEach(row => {
+            const cantidad = parseFloat(row.querySelector('input[name$="-cantidad"]')?.value) || 0;
+            const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
+            total += cantidad * precio;
+        });
+        totalParcialElement.textContent = total.toFixed(2)
+    
+    }
 
     // Evento al cambiar un producto
     function handleProductoChange(event) {
@@ -130,22 +149,35 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.precio) {
                     inputPrecio.value = data.precio;
+                    calcularTotal();
                 } else {
                     inputPrecio.value = '';
                 }
             });
     }
 
-    // Asignar eventos a todos los selects de productos
-    function asignarEventosPrecio() {
-        document.querySelectorAll('select[name$="-producto"]').forEach(function(select) {
+    // Asignar eventos a todos los selects, cantidades y precios
+    function asignarEventosFila(row) {
+        const select = row.querySelector('select[name$="-producto"]');
+        const inputCantidad = row.querySelector('input[name$="-cantidad"]');
+        const inputPrecio = row.querySelector('input[name$="-precio_unitario"]');
+        
+        if (select) {
             select.removeEventListener('change', handleProductoChange);
             select.addEventListener('change', handleProductoChange);
-        });
+        }
+        if (inputCantidad) {
+            inputCantidad.removeEventListener('input', calcularTotal);
+            inputCantidad.addEventListener('input', calcularTotal);
+        }
+        if (inputPrecio) {
+            inputPrecio.removeEventListener('input', calcularTotal);
+            inputPrecio.addEventListener('input', calcularTotal);
+        }
     }
 
     // Asigna eventos al cargar la página
-    asignarEventosPrecio();
+    document.querySelectorAll('#formset-body tr').forEach(asignarEventosFila);
 
     // Evento para agregar nuevas filas
     agregarBtn.addEventListener('click', function () {
@@ -161,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
         totalForms.value = formCount + 1;
 
         // Reasignar eventos
-        asignarEventosPrecio();
+        asignarEventosFila(newRow);
     });
 
     formsetBody.addEventListener('click', function (e) {
@@ -169,11 +201,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (formsetBody.children.length > 1) {
                 e.target.closest('tr').remove();
                 totalForms.value = formsetBody.children.length;
+                calcularTotal();
             } else {
                 alert('Debe mantener al menos un producto en la factura');
             }
         }
     });
+    calcularTotal();
 });
 </script>
 {% endblock %}

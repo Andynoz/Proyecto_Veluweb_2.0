@@ -19,7 +19,7 @@
     <div class="bg-white rounded-xl shadow-lg p-6">
         
         <!-- Título -->
-        <h2 class="text-center mb-6 font-bold text-2xl text-blue-800">Comprobante #{{ factura.id }}</h2>
+        <h2 class="text-center mb-6 font-bold text-2xl text-blue-800">Venta #{{ factura.id }}</h2>
 
         <!-- Tabla -->
         <div class="overflow-x-auto">
@@ -29,7 +29,7 @@
                     <tr class="bg-gray-100 font-semibold text-gray-700">
                         <td class="p-4 text-center">Cliente</td>
                         <td class="p-4 text-center">Fecha</td>
-                        <td class="p-4 text-center" colspan="2">ID Factura</td>
+                        <td class="p-4 text-center" colspan="2">ID Venta</td>
                     </tr>
                     <tr>
                         <td class="p-4 text-center">{{ factura.cliente.nombre }}</td>
@@ -64,7 +64,7 @@
 
                     <!-- Total -->
                     <tr class="bg-gray-100 font-semibold">
-                        <td colspan="3" class="p-4 text-right">Total del comprobante:</td>
+                        <td colspan="3" class="p-4 text-right">Total de Venta:</td>
                         <td class="p-4 text-center">${{ total_factura|floatformat:0 }}</td>
                     </tr>
                 </tbody>
