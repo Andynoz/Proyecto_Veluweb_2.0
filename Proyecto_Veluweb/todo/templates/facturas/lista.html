@@ -4,12 +4,12 @@
 <!-- Contenedor principal -->
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
-  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Comprobantes</h1>
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Ventas</h1>
   
   <!-- Botón crear producto centrado -->
   <div class="flex justify-center mb-8">
     <a href="{% url 'crear_factura' %}" class="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
-      + Crear Comprobante
+      + Registrar Venta
     </a>
   </div>
 
@@ -93,7 +93,7 @@
   <!-- Información adicional -->
   {% if page_obj %}
   <div class="mt-6 text-center text-gray-500 text-sm">
-    Mostrando {{ page_obj|length }} comprobante{{ page_obj|length|pluralize:"s" }}
+    Mostrando {{ page_obj|length }} venta{{ page_obj|length|pluralize:"s" }}
   </div>
   {% endif %}
 </div>

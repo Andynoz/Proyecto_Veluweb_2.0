@@ -18,7 +18,7 @@
 <!-- Contenedor principal -->
 <div class="max-w-4xl mx-auto px-4 py-8">
   <!-- Título principal -->
-  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Editar Factura #{{ factura.id }}</h1>
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Editar Venta #{{ factura.id }}</h1>
   
   <!-- Contenedor del formulario con fondo blanco y sombra -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
@@ -64,7 +64,7 @@
 
         <!-- Detalles de la Factura -->
         <div class="mb-8">
-          <h4 class="text-dark text-2xl mb-6 font-semibold">Detalles de la Factura</h4>
+          <h4 class="text-dark text-2xl mb-6 font-semibold">Detalles de la Venta</h4>
           
           {{ formset.management_form }}
           
@@ -80,9 +80,9 @@
             </div>
 
             <!-- Cuerpo de la tabla -->
-            <div class="divide-y divide-gray-200">
+            <div class="divide-y divide-gray-200" id="formset-container">
               {% for form in formset %}
-              <div class="grid grid-cols-3 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300">
+              <div class="formset-row grid grid-cols-3 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300">
                 <!-- Campos ocultos del formset -->
                 {{ form.id }}
                 {% for hidden in form.hidden_fields %}
@@ -93,7 +93,7 @@
                 <div class="flex items-center">
                   {% if form.producto.field.widget.input_type == 'select' %}
                     <select name="{{ form.producto.name }}" id="{{ form.producto.id_for_label }}" 
-                            class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white">
+                            class="producto-select w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white">
                       {% for choice in form.producto.field.choices %}
                         <option value="{{ choice.0 }}" {% if choice.0 == form.producto.value %}selected{% endif %}>{{ choice.1 }}</option>
                       {% endfor %}
@@ -116,7 +116,7 @@
                          name="{{ form.cantidad.name }}" 
                          id="{{ form.cantidad.id_for_label }}" 
                          value="{{ form.cantidad.value|default:"" }}"
-                         class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm text-center transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white">
+                         class="cantidad-input w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm text-center transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white">
                   {% if form.cantidad.errors %}
                     <div class="mt-1 text-red-600 text-xs">
                       {% for error in form.cantidad.errors %}
@@ -133,7 +133,7 @@
                          name="{{ form.precio_unitario.name }}" 
                          id="{{ form.precio_unitario.id_for_label }}" 
                          value="{{ form.precio_unitario.value|default:"" }}"
-                         class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm text-center transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white">
+                         class="precio-input w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm text-center transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white">
                   {% if form.precio_unitario.errors %}
                     <div class="mt-1 text-red-600 text-xs">
                       {% for error in form.precio_unitario.errors %}
@@ -148,9 +148,16 @@
           </div>
         </div>
 
+        <!-- Total parcial -->
+        <div class="flex justify-end mt-4">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Total parcial: $<span id="total-parcial">0</span>
+            </h3>
+        </div>
+
         <!-- Botones de acción -->
         <div class="flex justify-center space-x-4 pt-6">
-          <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
+          <button type="submit" class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
                 Guardar Cambios
             </button>
           <a href="{% url 'lista_facturas' %}" class="bg-red-500 hover:bg-red-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
@@ -162,4 +169,130 @@
   </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Seleccionar elementos que SÍ existen en el HTML actual
+    const formsetContainer = document.getElementById('formset-container');
+    const totalForms = document.querySelector('input[name*="TOTAL_FORMS"]');
+    const totalParcialElement = document.getElementById('total-parcial');
+
+    console.log('Elementos encontrados:', {
+        formsetContainer: formsetContainer,
+        totalForms: totalForms,
+        totalParcial: totalParcialElement
+    });
+
+    // Función para calcular el total parcial
+    function calcularTotal() {
+        let total = 0;
+        
+        // Buscar todas las filas del formset que existen realmente
+        document.querySelectorAll('.formset-row').forEach(row => {
+            const cantidadInput = row.querySelector('.cantidad-input');
+            const precioInput = row.querySelector('.precio-input');
+            
+            const cantidad = parseFloat(cantidadInput?.value) || 0;
+            const precio = parseFloat(precioInput?.value) || 0;
+            
+            total += cantidad * precio;
+        });
+        
+        if (totalParcialElement) {
+            totalParcialElement.textContent = total.toFixed(2);
+        }
+    }
+
+    // Evento al cambiar un producto
+    function handleProductoChange(event) {
+        const select = event.target;
+        const productoId = select.value;
+
+        if (!productoId) return;
+
+        const fila = select.closest('.formset-row');
+        const inputPrecio = fila.querySelector('.precio-input');
+
+        if (!inputPrecio) {
+            console.error('No se encontró el input de precio');
+            return;
+        }
+
+        fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.precio) {
+                    inputPrecio.value = data.precio;
+                    calcularTotal();
+                } else {
+                    inputPrecio.value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener precio:', error);
+            });
+    }
+
+    // Asignar eventos a una fila específica
+    function asignarEventosFila(row) {
+        const select = row.querySelector('.producto-select');
+        const inputCantidad = row.querySelector('.cantidad-input');
+        const inputPrecio = row.querySelector('.precio-input');
+        
+        if (select) {
+            select.addEventListener('change', handleProductoChange);
+        }
+        if (inputCantidad) {
+            inputCantidad.addEventListener('input', calcularTotal);
+        }
+        if (inputPrecio) {
+            inputPrecio.addEventListener('input', calcularTotal);
+        }
+    }
+
+    // Función para obtener precio de un producto específico
+    function obtenerPrecioProducto(productoId, inputPrecio) {
+        if (!productoId || !inputPrecio) return;
+
+        fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.precio && !inputPrecio.value) {
+                    // Solo actualizar si el campo de precio está vacío
+                    inputPrecio.value = data.precio;
+                    calcularTotal();
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener precio:', error);
+            });
+    }
+
+    // Inicializar precios para productos ya seleccionados
+    function inicializarPrecios() {
+        document.querySelectorAll('.formset-row').forEach(row => {
+            const select = row.querySelector('.producto-select');
+            const inputPrecio = row.querySelector('.precio-input');
+            
+            if (select && select.value && inputPrecio) {
+                // Si hay un producto seleccionado pero no hay precio, obtenerlo
+                if (!inputPrecio.value || inputPrecio.value === '0' || inputPrecio.value === '0.00') {
+                    obtenerPrecioProducto(select.value, inputPrecio);
+                }
+            }
+        });
+    }
+
+    // Asignar eventos a todas las filas existentes
+    if (formsetContainer) {
+        document.querySelectorAll('.formset-row').forEach(asignarEventosFila);
+    }
+
+    // Inicializar precios y calcular total
+    inicializarPrecios();
+    
+    // Pequeña pausa para que se carguen los precios antes de calcular
+    setTimeout(calcularTotal, 500);
+    
+});
+</script>
 {% endblock %}

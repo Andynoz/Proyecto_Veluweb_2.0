@@ -336,7 +336,7 @@ def productos_index(request):
     if query:
         productos_lista = Producto.objects.filter(
             Q(nombre__icontains=query) | Q(descripcion__istartswith=query),
-            activo = True
+            estado = True
         ).order_by('-id')
     else:
         productos_lista = Producto.objects.filter(estado=True).order_by('-id')
@@ -372,6 +372,32 @@ def crear_producto(request):
     return render(request, 'productos/crear.html', {'form': form})
 
 
+# LISTAR PRODUCTOS INACTIVOS
+@login_required
+def productos_inactivos(request):
+    query = request.GET.get("q", "").strip()
+    productos_inactivos = Producto.objects.filter(estado=False).order_by('-id')
+    paginator = Paginator(productos_inactivos, 5)
+    pagina = request.GET.get('page')
+    page_obj = paginator.get_page(pagina)
+
+    return render(request, 'productos/inactivos.html', {
+        'page_obj': page_obj,
+        'q': query
+    })
+
+
+# ACTIVAR PRODUCTO
+@login_required
+def activar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    if request.method == 'POST':
+        producto.estado = True
+        producto.save()
+        messages.success(request, f'Producto "{producto.nombre}" reactivado')
+        return redirect('productos_inactivos')
+    return render(request, 'productos/activar_producto.html', {'producto': producto})
+
 def deshabilitar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -379,23 +405,7 @@ def deshabilitar_producto(request, pk):
         producto.save()
         messages.warning(request, f'El producto "{{producto.nombre}}" fue deshabilitado')
         return redirect('productos_index')
-    return render(request, 'productos/deshabilitar.html', {'producto': producto})
-
-def productos_inactivos(request): 
-    productos_lista = Producto.objects.filter(estado=False).order_by('-id')
-    paginator = Paginator(productos_lista, 5)
-    pagina = request.GET.get('page')
-    page_obj = paginator.get_page(pagina)
-
-    return render(request, 'productos/inactivos.html', {
-        'page_obj': page_obj
-    })
-    
-def habilitar_producto(request, id):
-    producto = get_object_or_404(Producto, id=id)
-    producto.estado = True
-    producto.save()
-    return redirect('productos_inactivos')
+    return render(request, 'productos/deshabilitar.html', {'producto': producto}) 
 
 
 

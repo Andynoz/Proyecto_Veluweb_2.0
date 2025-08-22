@@ -20,6 +20,13 @@
     </a>
   </div>
 
+  <!-- Botón Productos Inactivos -->
+  <div class="flex justify-center mb-8">
+    <a href="{% url 'productos_inactivos' %}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+      Ir a Productos Inactivos
+    </a>
+  </div>
+
 
 {% if messages %}
   <div class="mb-4 space-y-2">
@@ -84,7 +91,7 @@
           </a>
 
           <!-- Botón Eliminar -->
-          <a href="{% url 'deshabilitar_producto' producto.pk %}" onclick="return confirm('¿Estás seguro de que deseas deshabilitar este producto?')" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          <a href="{% url 'deshabilitar_producto' producto.pk %}" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
             </svg>
