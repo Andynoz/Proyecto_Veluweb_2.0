@@ -119,5 +119,23 @@
     </ul>
   </footer>
 
+  <script>
+    let timer;
+    const logoutUrl = "{% url 'logout' %}";
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = logoutUrl;
+        }, 15 * 60 * 1000);4
+    }
+
+    window.onload = resetTimer;
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+    document.onclick = resetTimer;
+    document.onscroll = resetTimer;
+</script>
+
 </body>
 </html>
