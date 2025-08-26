@@ -198,3 +198,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# ==========================
+# Configuración de Sesiones
+# ==========================
+
+SESSION_COOKIE_AGE = 30
+
+
+
+# Refresca el tiempo de expiración
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
