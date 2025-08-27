@@ -105,7 +105,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bd_veluweb',
         'USER': 'postgres',
-        'PASSWORD': 'Sebasmv28',
+        'PASSWORD': 'skividitoilet',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -203,7 +203,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Configuración de Sesiones
 # ==========================
 
-SESSION_COOKIE_AGE = 30
+SESSION_COOKIE_AGE = 900
 
 
 
