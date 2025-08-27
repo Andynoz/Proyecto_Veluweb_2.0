@@ -102,8 +102,9 @@
       Mostrando {{ page_obj|length }} cliente{{ page_obj|length|pluralize:"s" }}
     </div>
   {% endif %}
+  {% include "todo/paginacion.html" %}
+  
 </div>
 
-{% include "todo/paginacion.html" %}
 
 {% endblock %}
