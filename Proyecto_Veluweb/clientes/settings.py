@@ -203,7 +203,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Configuración de Sesiones
 # ==========================
 
-SESSION_COOKIE_AGE = 30
+SESSION_COOKIE_AGE = 900
 
 
 
