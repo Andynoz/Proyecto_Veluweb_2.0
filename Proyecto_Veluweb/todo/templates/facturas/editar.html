@@ -25,6 +25,15 @@
     <div class="p-8">
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <div class="mb-6 text-right">
+         <p class="text-gray-700">
+            Creado por: 
+        <span class="font-semibold text-blue-700">
+            {{ factura.creado_por.username }}
+        </span>
+        </p>
+        </div>
         
         <!-- Información básica de la factura -->
         <div class="mb-8">

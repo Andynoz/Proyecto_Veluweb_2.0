@@ -35,6 +35,14 @@
         <!-- Título principal -->
         <h1 class="text-blue-800 text-4xl font-semibold mb-8 text-center">Crear Comprobante</h1>
 
+         <!-- Mostrar usuario y correo -->
+        <div class="mb-6 text-right">
+            <p class="text-gray-700">
+                Creado por: <span class="font-semibold text-blue-700">{{ request.user.username }}</span><br>
+            </p>
+        </div>
+
+
         <!-- Formulario principal -->
         <form method="post" class="bg-white rounded-xl shadow-lg p-8 mb-8">
             {% csrf_token %}

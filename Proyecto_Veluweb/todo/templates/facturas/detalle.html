@@ -21,6 +21,17 @@
         <!-- Título -->
         <h2 class="text-center mb-6 font-bold text-2xl text-blue-800">Venta #{{ factura.id }}</h2>
 
+        <!-- Mostrar usuario y correo -->
+        <div class="mb-6 text-right">
+         <p class="text-gray-700">
+            Creado por: 
+        <span class="font-semibold text-blue-700">
+            {{ factura.creado_por.username }}
+        </span>
+        </p>
+        </div>
+
+
         <!-- Tabla -->
         <div class="overflow-x-auto">
             <table class="w-full border-collapse">
