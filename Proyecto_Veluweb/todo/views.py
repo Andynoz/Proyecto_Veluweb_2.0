@@ -466,25 +466,34 @@ def crear_factura(request):
         if form.is_valid() and formset.is_valid():
             detalles = formset.save(commit=False)
             error_stock = []
+            error_productos_desactivados = []
 
-            # Validar stock
+            # Validar stock y estado de los productos
             for detalle in detalles:
                 producto = detalle.producto
+                
+                if not producto.estado:
+                    error_productos_desactivados.append(
+                        f"El producto '{producto.nombre}' está desactivado y no se puede vender."
+                    )
+                    continue #No validar stock si está desactivado
+                
                 if detalle.cantidad > producto.stock:
                     error_stock.append(
                         f"El producto '{producto.nombre}' no tiene suficiente stock (disponible: {producto.stock})."
                     )
 
-            if error_stock:
+            if error_stock or error_productos_desactivados:
                 return render(request, 'facturas/crear.html', {
                     'form': form,
                     'formset': formset,
-                    'error_stock': error_stock
+                    'error_stock': error_stock,
+                    'error_productos_desactivados': error_productos_desactivados
                 })
 
             # Guardar factura con el usuario
             factura = form.save(commit=False)
-            factura.creado_por = request.user   # 👈 Aquí guardamos el usuario
+            factura.creado_por = request.user   #Aquí guardamos el usuario
             factura.save()
 
             # Guardar detalles y actualizar stock
@@ -495,6 +504,7 @@ def crear_factura(request):
                 detalle.factura = factura
                 detalle.save()
 
+            messages.success(request, 'Factura creada ')
             return redirect('lista_facturas')
     else:
         form = FacturaForm()

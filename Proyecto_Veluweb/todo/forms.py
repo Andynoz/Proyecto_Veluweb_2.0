@@ -201,10 +201,26 @@ class DetalleFacturaForm(forms.ModelForm):
     class Meta:
         model = DetalleFactura
         fields = ['producto', 'cantidad', 'precio_unitario']
+        widgets = {
+            'cantidad': forms.NumberInput(attrs={'min': 1, 'class': 'form-control'}),
+            'precio_unitario': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
+        }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #Filtrar Productos activos
+        self.fields['producto'].queryset = Producto.objects.filter(
+            estado=True,  # Solo productos activos
+        ).order_by('nombre')
+        
+        # Agregar clases CSS
+        self.fields['producto'].widget.attrs.update({'class': 'form-control'})
+
+# Formset actualizado
 DetalleFacturaFormSet = inlineformset_factory(
     Factura,
     DetalleFactura,
     form=DetalleFacturaForm,
-    extra=1,  # Puede ajustar la cantidad de líneas iniciales
+    extra=1,  # Una línea inicial
+    can_delete=False  # No permitir eliminar desde el formset (se maneja con JavaScript)
 )
