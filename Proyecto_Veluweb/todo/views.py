@@ -35,6 +35,15 @@ from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.chart.label import DataLabelList
 from openpyxl.chart.text import RichText
 from openpyxl.drawing.text import Paragraph, ParagraphProperties, CharacterProperties
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+from io import BytesIO
+from xhtml2pdf import pisa
+
+
+
 
 @login_required
 def estadisticas_view(request):
@@ -687,3 +696,44 @@ def exportar_excel(request):
     wb.save(response)
 
     return response
+
+
+def generar_pdf(template_src, context_dict={}):
+    html = render_to_string(template_src, context_dict)
+    result = BytesIO()
+    pdf = pisa.CreatePDF(html, dest=result)
+    if not pdf.err:
+        return result.getvalue()
+    return None
+
+@require_POST
+def enviar_factura_email(request, pk):
+    factura = get_object_or_404(Factura, pk=pk)
+    
+    detalles = factura.detallefactura_set.all()  # los detalles de esa factura
+    total_factura = sum(d.subtotal() for d in detalles)  # suma de todos los subtotales
+
+    context = {
+        "factura": factura,
+        "detalles": detalles,
+        "total_factura": total_factura,
+    }
+
+    pdf = generar_pdf("facturas/pdf.html", context)
+
+    
+    if pdf:
+        # Crear correo
+        asunto = f"Comprobante_{factura.id}_{factura.fecha.strftime('%Y%m%d')}"
+        mensaje = "Adjunto encontrarás tu factura en PDF."
+        email = EmailMessage(asunto, mensaje, to=[factura.cliente.correo])
+        
+        # Adjuntar PDF
+        email.attach(f"comprobante_{factura.id}_{detalles[0].producto.nombre}_{factura.fecha.strftime('%Y%m%d')}.pdf", pdf, "application/pdf")
+        email.send()
+
+        messages.success(request, "Comprobante enviado correctamente al cliente.")
+    else:
+        messages.error(request, "Hubo un error generando el PDF.")
+    
+    return redirect("detalle_factura", pk=factura.id)
