@@ -1,5 +1,5 @@
 {% extends "todo/layout2.html" %}
-
+{% load humanize %}
 {% block content %}
 <!-- Contenedor principal -->
 <div class="max-w-7xl mx-auto px-4 py-8">
@@ -47,7 +47,7 @@
 
         <!-- Total -->
         <div class="flex items-center">
-          <span class="text-dark font-bold">${{ factura.monto_total|floatformat:2 }}</span>
+          <span class="text-dark font-bold">${{ factura.monto_total|floatformat:0|intcomma }}</span>
         </div>
 
         <!-- Acciones -->
@@ -106,5 +106,14 @@
   {% endif %}
   {% include "todo/paginacion.html" %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-format-number').forEach(function(el) {
+        const numero = parseInt(el.textContent);
+        el.textContent = numero.toLocaleString('es-CO');
+    });
+});
+</script>
 
 {% endblock %}

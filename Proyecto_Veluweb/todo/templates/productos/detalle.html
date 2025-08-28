@@ -40,10 +40,20 @@
     <div class="md:w-1/2 flex flex-col justify-between">
       <div>
         <h2 class="mb-3 text-3xl font-bold text-blue-800">{{ producto.nombre }}</h2>
-        <p class="mb-2 text-lg"><span class="font-semibold text-gray-700">Precio:</span> <span class="text-green-600 font-bold">${{ producto.precio|floatformat:0 }}</span></p>
+        <p class="mb-2 text-lg"><span class="font-semibold text-gray-700">Precio:</span> <span class="text-green-600 font-bold">${{ producto.precio|floatformat:0|intcomma }}</span></p>
         <p class="mb-4 text-base"><span class="font-semibold text-gray-700">Descripción:</span> {{ producto.descripcion }}</p>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-format-number').forEach(function(el) {
+        const numero = parseInt(el.textContent);
+        el.textContent = numero.toLocaleString('es-CO');
+    });
+});
+</script>
+
 {% endblock %}

@@ -108,7 +108,7 @@
                                 {{ form.cantidad }}
                             </td>
                             <td class="py-5 px-4 text-center">
-                                {{ form.precio_unitario }}
+                                {{ form.precio_unitario|floatformat:0|intcomma }}
                             </td>
                             <td class="py-5 px-4 text-center">
                                 <button type="button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg remove-row">
@@ -160,7 +160,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
             total += cantidad * precio;
         });
-        totalParcialElement.textContent = total.toFixed(2)
+
+        //Separador de miles
+        const totalFormateado = total.toLocaleString('es-CO', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        })
+
+        totalParcialElement.textContent = totalFormateado
     
     }
 

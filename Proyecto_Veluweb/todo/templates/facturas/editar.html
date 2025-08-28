@@ -205,9 +205,13 @@ document.addEventListener('DOMContentLoaded', function () {
             
             total += cantidad * precio;
         });
-        
+        //Separador de miles
+        const totalFormateado = total.toLocaleString('es-CO', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        })
         if (totalParcialElement) {
-            totalParcialElement.textContent = total.toFixed(2);
+            totalParcialElement.textContent = totalFormateado;
         }
     }
 

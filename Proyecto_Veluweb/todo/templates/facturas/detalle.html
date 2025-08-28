@@ -1,5 +1,5 @@
 {% extends 'todo/layout2.html' %}
-
+{% load humanize %}
 {% block content %}
 <head>
     <style>
@@ -69,14 +69,14 @@
                             {% endif %}
                         </td>
                         <td class="p-4 text-center">{{ detalle.cantidad }}</td>
-                        <td class="p-4 text-green-600 font-semibold text-center">${{ detalle.precio_unitario|floatformat:0 }}</td>
+                        <td class="p-4 text-green-600 font-semibold text-center">${{ detalle.precio_unitario|floatformat:0|intcomma }}</td>
                     </tr>
                     {% endfor %}
 
                     <!-- Total -->
                     <tr class="bg-gray-100 font-semibold">
                         <td colspan="3" class="p-4 text-right">Total de Venta:</td>
-                        <td class="p-4 text-center">${{ total_factura|floatformat:0 }}</td>
+                        <td class="p-4 text-center">${{ total_factura|floatformat:0|intcomma }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -95,4 +95,14 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-format-number').forEach(function(el) {
+        const numero = parseInt(el.textContent);
+        el.textContent = numero.toLocaleString('es-CO');
+    });
+});
+</script>
+
 {% endblock %}
