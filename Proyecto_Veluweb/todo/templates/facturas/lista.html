@@ -61,26 +61,31 @@
           </a>
 
           <!-- Botón Editar -->
-          <a href="{% url 'editar_factura' factura.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-          </a>
+          {% if perms.facturas.change_facturas %}
+            <a href="{% url 'editar_factura' factura.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </a>
+          {% endif %}
 
           <!-- Botón Eliminar -->
-          <a href="{% url 'eliminar_factura' factura.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este comprobante?')" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-          </a>
+          {% if perms.facturas.delete_factura %}
+            <a href="{% url 'eliminar_factura' factura.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este comprobante?')" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </a>
+          {% endif %}
 
+          <!-- Botón Enviar correo con Font Awesome -->
           <form action="{% url 'enviar_factura' factura.id %}" method="post" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
-              Enviar al correo
+            <button type="submit" class="inline-flex items-center justify-center w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+              <i class="fa-solid fa-paper-plane w-4 h-4"></i>
             </button>
           </form>
-
+          
         </div>
       </div>
       {% empty %}
@@ -89,10 +94,12 @@
         <div class="text-6xl mb-4">📄</div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No hay comprobantes registrados</h3>
         <p class="text-gray-500 mb-4">Comienza creando tu primer comprobante</p>
-        <a href="{% url 'crear_factura' %}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
-          <span class="text-lg mr-2">+</span>
-          Crear Comprobante
-        </a>
+        {% if perms.facturas.add_factura %}
+          <a href="{% url 'crear_factura' %}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
+            <span class="text-lg mr-2">+</span>
+            Crear Comprobante
+          </a>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
