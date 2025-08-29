@@ -78,13 +78,14 @@
             </a>
           {% endif %}
 
+          <!-- Botón Enviar correo con Font Awesome -->
           <form action="{% url 'enviar_factura' factura.id %}" method="post" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">
-              Enviar al correo
+            <button type="submit" class="inline-flex items-center justify-center w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+              <i class="fa-solid fa-paper-plane w-4 h-4"></i>
             </button>
           </form>
-
+          
         </div>
       </div>
       {% empty %}
