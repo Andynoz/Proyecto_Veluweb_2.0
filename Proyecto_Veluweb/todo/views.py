@@ -5,7 +5,7 @@ from .models import Cliente, Producto, Factura, DetalleFactura
 from .forms import ClienteForm
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from .models import PasswordResetToken
 from django.utils import timezone
@@ -41,6 +41,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from io import BytesIO
 from xhtml2pdf import pisa
+from django.contrib.auth.decorators import permission_required
 
 
 
@@ -135,6 +136,7 @@ def home(request):
     return render(request, 'todo/home.html')  
 
 @login_required
+@permission_required("todo.view_cliente", raise_exception=True)
 def tabla(request):
     query = request.GET.get('buscar')
 
@@ -158,6 +160,7 @@ def tabla(request):
     })
 
 @login_required
+@permission_required("todo.add_cliente", raise_exception=True)
 def agregar(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
@@ -171,6 +174,7 @@ def agregar(request):
     return render(request, 'todo/agregar.html', {'form': form})
 
 @login_required
+@permission_required("todo.change_cliente", raise_exception=True)
 def editar(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
     
@@ -192,6 +196,7 @@ def editar(request, cliente_id):
 
 
 @login_required
+@permission_required("todo.delete_cliente", raise_exception=True)
 def eliminar(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
     cliente.delete()
@@ -339,6 +344,8 @@ def bienvenida(request):
 
 #PRODUCTOS
 
+@login_required
+@permission_required("todo.view_producto", raise_exception=True)
 def productos_index(request):
     query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
     
@@ -362,6 +369,7 @@ def productos_index(request):
 
 # DETALLE DE PRODUCTO
 @login_required
+@permission_required("todo.view_producto", raise_exception=True)
 def detalle_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     return render(request, 'productos/detalle.html', {'producto': producto})
@@ -369,6 +377,7 @@ def detalle_producto(request, pk):
 
 # CREAR PRODUCTO
 @login_required
+@permission_required("todo.add_producto", raise_exception=True)
 def crear_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
@@ -383,6 +392,7 @@ def crear_producto(request):
 
 # LISTAR PRODUCTOS INACTIVOS
 @login_required
+@permission_required("todo.view_producto", raise_exception=True)
 def productos_inactivos(request):
     query = request.GET.get("q", "").strip()
     productos_inactivos = Producto.objects.filter(estado=False).order_by('-id')
@@ -398,6 +408,7 @@ def productos_inactivos(request):
 
 # ACTIVAR PRODUCTO
 @login_required
+@permission_required("todo.change_producto", raise_exception=True)
 def activar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -407,6 +418,9 @@ def activar_producto(request, pk):
         return redirect('productos_inactivos')
     return render(request, 'productos/activar_producto.html', {'producto': producto})
 
+# DESHABILITAR PRODUCTO
+@login_required
+@permission_required("todo.change_producto", raise_exception=True)
 def deshabilitar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -420,6 +434,7 @@ def deshabilitar_producto(request, pk):
 
 # EDITAR PRODUCTO
 @login_required
+@permission_required("todo.change_producto", raise_exception=True)
 def editar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -436,6 +451,7 @@ def editar_producto(request, pk):
 #FACTURAS
 
 @login_required
+@permission_required("todo.view_factura", raise_exception=True)
 def lista_facturas(request):
     query = request.GET.get('buscar')
 
@@ -458,6 +474,7 @@ def lista_facturas(request):
     })
 
 @login_required
+@permission_required("todo.add_factura", raise_exception=True)
 def crear_factura(request):
     if request.method == 'POST':
         form = FacturaForm(request.POST)
@@ -507,6 +524,7 @@ def obtener_precio_producto(request):
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
 @login_required
+@permission_required("todo.view_factura", raise_exception=True)
 def detalle_factura(request, pk):
     factura = get_object_or_404(Factura, pk=pk)
     detalles = DetalleFactura.objects.filter(factura=factura)
@@ -520,7 +538,7 @@ def detalle_factura(request, pk):
 
 
 @login_required
-
+@permission_required("todo.change_factura", raise_exception=True)
 def editar_factura(request, pk):
     factura = get_object_or_404(Factura, pk=pk)
     DetalleFormSet = modelformset_factory(DetalleFactura, form=DetalleFacturaForm, extra=1, can_delete=True)
@@ -554,6 +572,7 @@ def editar_factura(request, pk):
 
 
 @login_required
+@permission_required("todo.delete_factura", raise_exception=True)
 def eliminar_factura(request, pk):
     factura = Factura.objects.get(pk=pk)
     if request.method == 'POST':
@@ -563,8 +582,42 @@ def eliminar_factura(request, pk):
 
 
 #ROLES 
+@permission_required("auth.change_user", raise_exception=True)
 def roles(request):
-    return render(request, 'todo/roles.html')
+    grupos_validos = ["Invitado", "Empleado", "Admin"]
+    grupos = {g.name: g for g in Group.objects.filter(name__in=grupos_validos)}
+
+    if request.method == "POST":
+        # Esperamos inputs tipo name="rol_{{ user.id }}" con valores Invitado/Empleado/Admin
+        cambios = 0
+        for user in User.objects.all().select_related():
+            key = f"rol_{user.id}"
+            nuevo = request.POST.get(key)
+            if not nuevo or nuevo not in grupos_validos:
+                continue
+
+            # Evitar que un admin se auto-degrade sin querer (opcional)
+            if user.is_superuser and nuevo != "Admin":
+                messages.warning(request, f"No puedes quitar Admin a un superusuario: {user.username}")
+                continue
+
+            # Limpia grupos anteriores y asigna el nuevo (solo 1 grupo)
+            current_names = set(user.groups.values_list("name", flat=True))
+            if current_names == {nuevo}:
+                continue
+
+            user.groups.clear()
+            user.groups.add(grupos[nuevo])
+            cambios += 1
+
+        if cambios:
+            messages.success(request, f"Roles actualizados: {cambios} cambios")
+        else:
+            messages.info(request, "No hubo cambios")
+        return redirect("roles")
+
+    usuarios = User.objects.all().order_by("username")
+    return render(request, "todo/roles.html", {"usuarios": usuarios, "grupos": grupos_validos})
 
 
 #EXPORTAR A EXCEL
