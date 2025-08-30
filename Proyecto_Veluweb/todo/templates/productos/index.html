@@ -2,6 +2,45 @@
 {% load static %}
 {% load humanize %}
 {% block content %}
+
+ <style>
+    .stock-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stock-low {
+      background-color: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+    }
+
+    .stock-ok {
+      background-color: #dcfce7;
+      color: #16a34a;
+      border: 1px solid #86efac;
+    }
+
+    .stock-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .stock-low .stock-indicator {
+      background-color: #dc2626;
+    }
+
+    .stock-ok .stock-indicator {
+      background-color: #16a34a;
+    }
+  </style>
+
 <!-- Contenedor principal -->
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
@@ -69,7 +108,10 @@
 
         <!-- Stock -->
         <div class="flex items-center">
-          <span class="text-dark font-medium">{{ producto.stock }}</span>
+          <span class="stock-badge {{ producto.get_stock_class }}">
+            <span class="stock-indicator"></span>
+            {{ producto.stock }}
+          </span>
         </div>
 
         <!-- Precio -->
