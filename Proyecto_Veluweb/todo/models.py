@@ -54,6 +54,13 @@ class Producto(models.Model):
     def get_absolute_url(self):
         return reverse('detalle_producto', args=[self.pk])
     
+    #Métodos para los colores del Stock
+    def get_stock_class(self):
+        return 'stock-low' if self.stock < 5 else 'stock-ok'
+    
+    def get_stock_status(self):
+        return 'Stock Bajo' if self.stock < 5 else 'Stock Disponible'
+            
     def __str__(self):
         return f"{self.nombre}"
 
