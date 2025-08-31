@@ -124,7 +124,6 @@ class LoginForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Personalizar mensajes de error
         self.error_messages['invalid_login'] = 'Correo o contraseña incorrectos.'
         self.error_messages['inactive'] = 'Esta cuenta está inactiva.' 
 
@@ -195,7 +194,27 @@ class ProductoForm(forms.ModelForm):
 class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
-        fields = ['cliente']
+        fields = ['cliente', 'fecha', 'estado'] 
+        widgets = {
+            'fecha': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'estado': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700'
+            }),
+            'cliente': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700'
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fecha'].input_formats = ['%Y-%m-%dT%H:%M']
+        
+        self.fields['estado'].choices = Factura.ESTADO_CHOICES
+
+
 
 class DetalleFacturaForm(forms.ModelForm):
     class Meta:
@@ -208,12 +227,10 @@ class DetalleFacturaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #Filtrar Productos activos
         self.fields['producto'].queryset = Producto.objects.filter(
-            estado=True,  # Solo productos activos
+            estado=True,  
         ).order_by('nombre')
         
-        # Agregar clases CSS
         self.fields['producto'].widget.attrs.update({'class': 'form-control'})
 
 # Formset actualizado
@@ -221,6 +238,6 @@ DetalleFacturaFormSet = inlineformset_factory(
     Factura,
     DetalleFactura,
     form=DetalleFacturaForm,
-    extra=1,  # Una línea inicial
-    can_delete=False  # No permitir eliminar desde el formset (se maneja con JavaScript)
+    extra=1,
+    can_delete=True
 )

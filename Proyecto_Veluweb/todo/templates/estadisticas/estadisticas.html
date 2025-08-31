@@ -14,16 +14,47 @@
     .btn-custom {
       background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
     }
+
+    /* Nuevos estilos para las cards de estado */
+    .card-estado {
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card-estado:hover {
+        transform: translateY(-2px);
+    }
+
+    .bg-green-gradient {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+
+    .bg-yellow-gradient {
+        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    }
+
+    .bg-red-gradient {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    }
+
+    /* Estilos para los iconos de estado */
+    .estado-icon {
+        font-size: 2rem;
+        opacity: 0.8;
+    }
   </style>
 </head>
 <div class="max-w-7xl mx-auto px-4 mt-6">
-    <h1 class="mb-6 text-center text-3xl font-bold">📊 Estadísticas del Negocio</h1>
+    <h1 class="mb-6 text-center text-3xl font-bold">
+        <i class="fas fa-chart-bar mr-2"></i>Estadísticas del Negocio
+    </h1>
 
     <!--Botón de Exportar a Excel-->
     <div class="text-right mb-4">
         <a href="{% url 'exportar_excel' %}?fecha_inicio={{ fecha_inicio_str }}&fecha_fin={{ fecha_fin_str }}"
             class="btn-custom text-white py-2 px-4 rounded-lg">
-            📥 Exportar a Excel
+            <i class="fas fa-file-excel mr-2"></i>Exportar a Excel
         </a>
     </div>
 
@@ -53,7 +84,7 @@
         </div>
     </div>
 
-    <!-- Tarjetas de estadísticas -->
+    <!-- Tarjetas de estadísticas generales -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <div class="bg-white shadow rounded-lg p-4">
             <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-users"></i> Total Clientes</h5>
@@ -70,13 +101,13 @@
         <div class="bg-white shadow rounded-lg p-4">
             <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-file-invoice-dollar"></i> Comprobantes Emitidos</h5>
             <p class="text-3xl font-bold text-center mt-2">{{ num_facturas }}</p>
-            <p class="text-gray-500 text-center text-sm">Comprobantes generadas</p>
+            <p class="text-gray-500 text-center text-sm">Comprobantes generados</p>
         </div>
 
         <div class="bg-white shadow rounded-lg p-4">
             <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-dollar-sign"></i> Ingresos Totales</h5>
             <p class="text-3xl font-bold text-center mt-2">${{ ventas_totales|floatformat:0|intcomma }}</p>
-            <p class="text-gray-500 text-center text-sm">Ingresos generados</p>
+            <p class="text-gray-500 text-center text-sm">Solo facturas pagadas</p>
         </div>
 
         <div class="bg-white shadow rounded-lg p-4">
@@ -96,34 +127,75 @@
             </p>
             <p class="text-gray-500 text-center text-sm">Comprobante más reciente</p>
         </div>
+    </div>
 
-        <!-- Estado de facturas -->
-        <div class="col-span-full bg-white shadow rounded-lg p-4">
-            <h5 class="text-blue-600 font-semibold flex items-center gap-2"><i class="fas fa-chart-pie"></i> Estado de Comprobantes</h5>
-            <ul class="mt-4 divide-y divide-gray-200">
-                <li class="flex justify-between py-2">
-                    Pendientes
-                    <span class="bg-yellow-500 text-white rounded-full px-3">{{ estados_data.Vencida }}</span>
-                </li>
-                <li class="flex justify-between py-2">
-                    Pagadas
-                    <span class="bg-green-600 text-white rounded-full px-3">{{ estados_data.Pagada }}</span>
-                </li>
-                <li class="flex justify-between py-2">
-                    Vencidas
-                    <span class="bg-red-600 text-white rounded-full px-3">{{ estados_data.Pendiente }}</span>
-                </li>
-            </ul>
+    <!-- Cards de estadísticas por estado de facturas con iconos minimalistas -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Estado de Comprobantes</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Facturas Pagadas -->
+            <div class="card-estado bg-green-gradient text-white p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium opacity-90">Facturas Pagadas</h3>
+                        <p class="text-3xl font-bold">{{ estados_data.PAGADA }}</p>
+                        <p class="opacity-90 text-sm">${{ ventas_totales|floatformat:0|intcomma }}</p>
+                    </div>
+                    <div class="estado-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturas Pendientes -->
+            <div class="card-estado bg-yellow-gradient text-white p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium opacity-90">Facturas Pendientes</h3>
+                        <p class="text-3xl font-bold">{{ estados_data.PENDIENTE }}</p>
+                        <p class="opacity-90 text-sm">${{ facturas_pendientes_monto|floatformat:0|intcomma }}</p>
+                    </div>
+                    <div class="estado-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturas Vencidas -->
+            <div class="card-estado bg-red-gradient text-white p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium opacity-90">Facturas Vencidas</h3>
+                        <p class="text-3xl font-bold">{{ estados_data.VENCIDA }}</p>
+                        <p class="opacity-90 text-sm">${{ facturas_vencidas_monto|floatformat:0|intcomma }}</p>
+                    </div>
+                    <div class="estado-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- Gráfico de distribución de estados -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="bg-gray-800 text-white px-4 py-3 rounded-t-lg">
+            <h5 class="font-semibold flex items-center gap-2">
+                <i class="fas fa-chart-pie"></i> Distribución de Estados de Facturas
+            </h5>
+        </div>
+        <div class="p-4 h-80">
+            <canvas id="estadosChart" class="w-full h-full"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráficos existentes -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div class="bg-white shadow rounded-lg">
             <div class="bg-gray-800 text-white px-4 py-3 rounded-t-lg">
                 <h5 class="font-semibold flex items-center gap-2"><i class="fas fa-boxes"></i> Top Productos Vendidos</h5>
             </div>
-            <div class="p-4 h-80"> <!-- altura para gráfico -->
+            <div class="p-4 h-80">
                 <canvas id="topProductosChart" class="w-full h-full"></canvas>
             </div>
         </div>
@@ -132,7 +204,7 @@
             <div class="bg-gray-800 text-white px-4 py-3 rounded-t-lg">
                 <h5 class="font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i> Tendencia de Ventas Diarias</h5>
             </div>
-            <div class="p-4 h-80"> <!-- altura para gráfico -->
+            <div class="p-4 h-80">
                 <canvas id="ventasDiariasChart" class="w-full h-full"></canvas>
             </div>
         </div>
@@ -142,6 +214,41 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Gráfico de estados de facturas
+        const ctxEstados = document.getElementById('estadosChart').getContext('2d');
+        new Chart(ctxEstados, {
+            type: 'doughnut',
+            data: {
+                labels: {{ estados_labels|safe }},
+                datasets: [{
+                    data: {{ estados_valores|safe }},
+                    backgroundColor: [
+                        '#10B981', // Verde para Pagadas
+                        '#F59E0B', // Amarillo para Pendientes  
+                        '#EF4444'  // Rojo para Vencidas
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de top productos
         const topProductosLabels = {{ top_productos_labels|safe }};
         const topProductosData = {{ top_productos_data|safe }};
 
@@ -182,6 +289,7 @@
             });
         }
 
+        // Gráfico de tendencia de ventas
         const tendenciaVentasLabels = {{ tendencia_ventas_labels|safe }};
         const tendenciaVentasData = {{ tendencia_ventas_data|safe }};
 

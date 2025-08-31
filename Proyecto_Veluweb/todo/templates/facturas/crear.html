@@ -80,7 +80,24 @@
             </div>
             {% endif %}
 
-            {{ form.as_p }}
+            <!-- Cliente y Fecha -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Cliente</label>
+                    {{ form.cliente }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Fecha</label>
+                    {{ form.fecha }}
+                </div>
+            </div>
+
+            <!-- Campo Estado -->
+            <div class="mb-6">
+                <label for="id_estado" class="block text-gray-700 font-medium mb-2">Estado de la Factura</label>
+                {{ form.estado }}
+                <p class="text-sm text-gray-500 mt-1">Por defecto queda en <strong>Pendiente</strong>, pero puedes cambiarlo a Pagada o Vencida.</p>
+            </div>
 
             <!-- Título de detalles -->
             <h4 class="text-xl font-semibold text-gray-800 mb-6">Detalles Comprobante</h4>
@@ -108,7 +125,7 @@
                                 {{ form.cantidad }}
                             </td>
                             <td class="py-5 px-4 text-center">
-                                {{ form.precio_unitario|floatformat:0|intcomma }}
+                                {{ form.precio_unitario }}
                             </td>
                             <td class="py-5 px-4 text-center">
                                 <button type="button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg remove-row">
@@ -160,14 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
             total += cantidad * precio;
         });
-
-        //Separador de miles
-        const totalFormateado = total.toLocaleString('es-CO', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        })
-
-        totalParcialElement.textContent = totalFormateado
+        totalParcialElement.textContent = total.toFixed(2)
     
     }
 

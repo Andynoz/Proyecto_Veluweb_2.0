@@ -1,16 +1,281 @@
 {% extends "todo/layout2.html" %}
 {% load static %}
-
-{% block title %}Inicio | Veluweb{% endblock %}
-
+{% load humanize %}
+{% block title %}Dashboard | Veluweb{% endblock %}
 {% block content %}
-<section class="text-center py-20 px-5 bg-cover bg-center text-black">
-    <h2 class="text-5xl mb-5 drop-shadow-lg" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);">
-        Bienvenido a Veluweb
-    </h2>
-    <p class="text-xl drop-shadow-md" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);">
-        Tu sistema inteligente para la gestión de clientes, productos y más.
-    </p>
-</section>
+
+<head>
+    <style>
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 4px solid #183a5e;
+        }
+
+        .quick-action-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+        }
+
+        .quick-action-card:hover {
+            border-color: #183a5e;
+        }
+
+        .welcome-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+    </style>
+</head>
+
+<div class="min-h-screen bg-gray-50">
+    <!-- Header de Bienvenida -->
+    <div class="welcome-gradient text-white py-8 mb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">¡Bienvenido, {{ user.username }}!</h1>
+                <p class="text-xl opacity-90">Dashboard Veluweb</p>
+                <div class="mt-4 text-sm opacity-75">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    {{ "now"|date:"l, d de F de Y - g:i a" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- Estadísticas Rápidas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Clientes -->
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Total Clientes</p>
+                        <p class="text-3xl font-bold text-gray-900" id="total-clientes">--</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Productos -->
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Total Productos</p>
+                        <p class="text-3xl font-bold text-gray-900" id="total-productos">--</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-box text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturas Este Mes -->
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Ventas Este Mes</p>
+                        <p class="text-3xl font-bold text-gray-900" id="ventas-mes">--</p>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <i class="fas fa-file-invoice-dollar text-yellow-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos con Stock Bajo -->
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Stock Bajo</p>
+                        <p class="text-3xl font-bold text-red-600" id="stock-bajo">--</p>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-full">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Acciones Rápidas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Crear Venta -->
+                {% if perms.todo.add_factura %}
+                <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer" onclick="location.href='{% url 'crear_factura' %}'">
+                    <div class="text-center">
+                        <div class="bg-green-100 p-4 rounded-full inline-block mb-4">
+                            <i class="fas fa-plus-circle text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Nueva Venta</h3>
+                        <p class="text-gray-600 text-sm">Registrar una nueva venta</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Agregar Cliente -->
+                {% if perms.todo.add_cliente %}
+                <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer" onclick="location.href='{% url 'agregar' %}'">
+                    <div class="text-center">
+                        <div class="bg-blue-100 p-4 rounded-full inline-block mb-4">
+                            <i class="fas fa-user-plus text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Nuevo Cliente</h3>
+                        <p class="text-gray-600 text-sm">Registrar un nuevo cliente</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Crear Producto -->
+                {% if perms.todo.add_producto %}
+                <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer" onclick="location.href='{% url 'crear_producto' %}'">
+                    <div class="text-center">
+                        <div class="bg-purple-100 p-4 rounded-full inline-block mb-4">
+                            <i class="fas fa-box-open text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Nuevo Producto</h3>
+                        <p class="text-gray-600 text-sm">Agregar producto al inventario</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Ver Estadísticas -->
+                <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer" onclick="location.href='{% url 'estadisticas' %}'">
+                    <div class="text-center">
+                        <div class="bg-indigo-100 p-4 rounded-full inline-block mb-4">
+                            <i class="fas fa-chart-bar text-indigo-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Estadísticas</h3>
+                        <p class="text-gray-600 text-sm">Ver reportes y gráficos</p>
+                    </div>
+                </div>
+
+                <!-- Gestionar Roles -->
+                {% if perms.auth.change_user %}
+                <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer" onclick="location.href='{% url 'roles' %}'">
+                    <div class="text-center">
+                        <div class="bg-orange-100 p-4 rounded-full inline-block mb-4">
+                            <i class="fas fa-user-cog text-orange-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Gestionar Roles</h3>
+                        <p class="text-gray-600 text-sm">Administrar permisos de usuarios</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Ver Todas las Ventas -->
+                {% if perms.todo.view_factura %}
+                <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer" onclick="location.href='{% url 'lista_facturas' %}'">
+                    <div class="text-center">
+                        <div class="bg-teal-100 p-4 rounded-full inline-block mb-4">
+                            <i class="fas fa-list-alt text-teal-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Ver Ventas</h3>
+                        <p class="text-gray-600 text-sm">Lista completa de ventas</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Navegación Rápida -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Navegación Rápida</h2>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {% if perms.todo.view_cliente %}
+                    <a href="{% url 'tabla' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-users text-blue-600 mr-3"></i>
+                        <span class="text-gray-700 font-medium">Clientes</span>
+                    </a>
+                    {% endif %}
+
+                    {% if perms.todo.view_producto %}
+                    <a href="{% url 'productos_index' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-box text-green-600 mr-3"></i>
+                        <span class="text-gray-700 font-medium">Productos</span>
+                    </a>
+                    {% endif %}
+
+                    {% if perms.todo.view_factura %}
+                    <a href="{% url 'lista_facturas' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-file-invoice-dollar text-yellow-600 mr-3"></i>
+                        <span class="text-gray-700 font-medium">Facturas</span>
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'estadisticas' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-chart-line text-purple-600 mr-3"></i>
+                        <span class="text-gray-700 font-medium">Reportes</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer del Dashboard -->
+        <div class="text-center text-gray-500 text-sm mb-8">
+            <p>Sistema de Gestión Veluweb - Desarrollado para optimizar tu negocio</p>
+        </div>
+    </div>
+</div>
+
+<!-- Script para cargar estadísticas -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener los valores reales desde Django
+    const realValues = {
+        clientes: parseInt('{{ total_clientes|default:0 }}'),
+        productos: parseInt('{{ total_productos|default:0 }}'),
+        ventas: parseInt('{{ ventas_mes|default:0 }}'),
+        stock: parseInt('{{ stock_bajo|default:0 }}')
+    };
+
+    // Animación de contador
+    function animateCounter(element, target) {
+        let current = 0;
+        const increment = target / 20;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            } else {
+                element.textContent = Math.floor(current);
+            }
+        }, 50);
+    }
+
+    // Aplicar animación con valores reales
+    setTimeout(() => {
+        const elements = [
+            { el: document.getElementById('total-clientes'), target: realValues.clientes },
+            { el: document.getElementById('total-productos'), target: realValues.productos },
+            { el: document.getElementById('ventas-mes'), target: realValues.ventas },
+            { el: document.getElementById('stock-bajo'), target: realValues.stock }
+        ];
+
+        elements.forEach(item => {
+            if (item.el) {
+                animateCounter(item.el, item.target);
+            }
+        });
+    }, 300);
+});
+</script>
 
 {% endblock %}

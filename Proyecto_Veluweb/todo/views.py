@@ -42,6 +42,10 @@ from django.contrib import messages
 from io import BytesIO
 from xhtml2pdf import pisa
 from django.contrib.auth.decorators import permission_required
+from django.forms.models import inlineformset_factory
+from .forms import FacturaForm, DetalleFacturaFormSet
+
+
 
 
 
@@ -66,7 +70,8 @@ def estadisticas_view(request):
         start_date = end_date - timedelta(days=29)
 
     ventas_totales = Factura.objects.filter(
-        fecha__date__range=[start_date, end_date]
+        fecha__date__range=[start_date, end_date],
+        estado='PAGADA'
     ).aggregate(total=Sum('monto_total'))['total'] or 0
 
     num_facturas = Factura.objects.filter(
@@ -78,14 +83,21 @@ def estadisticas_view(request):
     ).values('estado').annotate(count=Count('id')).order_by('estado')
 
     estado_dict = {item['estado']: item['count'] for item in estado_facturas}
+    
     estados_data = {
-        'Pagada': estado_dict.get('Pagada', 0),
-        'Pendiente': estado_dict.get('Pendiente', 0),
-        'Vencida': estado_dict.get('Vencida', 0),
+        'PAGADA': estado_dict.get('PAGADA', 0),
+        'PENDIENTE': estado_dict.get('PENDIENTE', 0),
+        'VENCIDA': estado_dict.get('VENCIDA', 0),
     }
 
+    # Para mostrar labels legibles en el frontend
+    estados_labels = ['Pagadas', 'Pendientes', 'Vencidas']
+    estados_valores = [estados_data['PAGADA'], estados_data['PENDIENTE'], estados_data['VENCIDA']]
+
+    # Top productos vendidos (solo de facturas PAGADAS)
     top_productos_vendidos = DetalleFactura.objects.filter(
-        factura__fecha__date__range=[start_date, end_date]
+        factura__fecha__date__range=[start_date, end_date],
+        factura__estado='PAGADA'  # ← SOLO FACTURAS PAGADAS
     ).values('producto__nombre').annotate(
         total_cantidad=Sum('cantidad')
     ).order_by('-total_cantidad')[:5]
@@ -95,9 +107,10 @@ def estadisticas_view(request):
 
     producto_mas_vendido_nombre = top_productos_labels[0] if top_productos_labels else "N/A"
 
-
+    # Ventas diarias (solo facturas PAGADAS)
     ventas_diarias = Factura.objects.filter(
-        fecha__date__range=[start_date, end_date]
+        fecha__date__range=[start_date, end_date],
+        estado='PAGADA'  # ← SOLO FACTURAS PAGADAS
     ).annotate(
         day=TruncDay('fecha')
     ).values('day').annotate(
@@ -114,20 +127,48 @@ def estadisticas_view(request):
     total_productos = Producto.objects.count()
     ultima_factura = Factura.objects.order_by('-fecha').first()
 
+    # NUEVOS DATOS: Estadísticas adicionales por estado
+    facturas_pagadas_monto = estados_data['PAGADA'] * (ventas_totales / estados_data['PAGADA'] if estados_data['PAGADA'] > 0 else 0)
+    facturas_pendientes_monto = Factura.objects.filter(
+        fecha__date__range=[start_date, end_date],
+        estado='PENDIENTE'
+    ).aggregate(total=Sum('monto_total'))['total'] or 0
+    
+    facturas_vencidas_monto = Factura.objects.filter(
+        fecha__date__range=[start_date, end_date],
+        estado='VENCIDA'
+    ).aggregate(total=Sum('monto_total'))['total'] or 0
+
     context = {
         'ventas_totales': ventas_totales,
         'num_facturas': num_facturas,
+        
+        # Estados de facturas (corregido)
         'estados_data': estados_data,
+        'estados_labels': json.dumps(estados_labels),
+        'estados_valores': json.dumps(estados_valores),
+        
+        # Productos
         'top_productos_labels': json.dumps(top_productos_labels),
         'top_productos_data': json.dumps(top_productos_data),
         'producto_mas_vendido_nombre': producto_mas_vendido_nombre,
+        
+        # Tendencias
         'tendencia_ventas_labels': json.dumps(tendencia_ventas_labels),
         'tendencia_ventas_data': json.dumps(tendencia_ventas_data),
+        
+        # Fechas
         'fecha_inicio_str': start_date.strftime('%Y-%m-%d'),
         'fecha_fin_str': end_date.strftime('%Y-%m-%d'),
+        
+        # Datos generales
         'total_clientes': total_clientes,
         'total_productos': total_productos,
         'ultima_factura': ultima_factura,
+        
+        # NUEVOS: Desglose por estado
+        'facturas_pendientes_monto': facturas_pendientes_monto,
+        'facturas_vencidas_monto': facturas_vencidas_monto,
     }
 
     return render(request, 'estadisticas/estadisticas.html', context)
@@ -192,7 +233,7 @@ def editar(request, cliente_id):
         form = ClienteForm(instance=cliente)
     
     return render(request, 'todo/editar.html', {'form': form})
-  
+
 
 
 @login_required
@@ -204,7 +245,18 @@ def eliminar(request, cliente_id):
 
 @login_required
 def index(request):
-    return render(request, 'todo/index.html')
+    context = {
+        'total_clientes': Cliente.objects.count(),
+        'total_productos': Producto.objects.filter(estado=True).count(),
+        'ventas_mes': Factura.objects.filter(
+            fecha__month=timezone.now().month,
+            fecha__year=timezone.now().year
+        ).count(),
+        'stock_bajo': Producto.objects.filter(
+            stock__lte=5, estado=True
+        ).count(),
+    }
+    return render(request, 'todo/index.html', context)
 
 
 
@@ -476,62 +528,33 @@ def lista_facturas(request):
 @login_required
 @permission_required("todo.add_factura", raise_exception=True)
 def crear_factura(request):
-    if request.method == 'POST':
-        form = FacturaForm(request.POST)
-        formset = DetalleFacturaFormSet(request.POST)
+    DetalleFormSet = inlineformset_factory(
+        Factura, DetalleFactura,
+        form=DetalleFacturaForm,
+        extra=1, can_delete=True
+    )
 
-        if form.is_valid() and formset.is_valid():
-            detalles = formset.save(commit=False)
-            error_stock = []
-            error_productos_desactivados = []
-
-            # Validar stock y estado de los productos
-            for detalle in detalles:
-                producto = detalle.producto
-                
-                if not producto.estado:
-                    error_productos_desactivados.append(
-                        f"El producto '{producto.nombre}' está desactivado y no se puede vender."
-                    )
-                    continue #No validar stock si está desactivado
-                
-                if detalle.cantidad > producto.stock:
-                    error_stock.append(
-                        f"El producto '{producto.nombre}' no tiene suficiente stock (disponible: {producto.stock})."
-                    )
-
-            if error_stock or error_productos_desactivados:
-                return render(request, 'facturas/crear.html', {
-                    'form': form,
-                    'formset': formset,
-                    'error_stock': error_stock,
-                    'error_productos_desactivados': error_productos_desactivados
-                })
-
-            # Guardar factura con el usuario
-            factura = form.save(commit=False)
-            factura.creado_por = request.user   #Aquí guardamos el usuario
+    if request.method == "POST":
+        factura_form = FacturaForm(request.POST, request.FILES)
+        if factura_form.is_valid():
+            factura = factura_form.save(commit=False)
+            factura.creado_por = request.user
             factura.save()
 
-            # Guardar detalles y actualizar stock
-            for detalle in detalles:
-                producto = detalle.producto
-                producto.stock -= detalle.cantidad
-                producto.save()
-                detalle.factura = factura
-                detalle.save()
-
-            messages.success(request, 'Factura creada ')
-            return redirect('lista_facturas')
+            formset = DetalleFormSet(request.POST, instance=factura)
+            if formset.is_valid():
+                formset.save()
+                return redirect("lista_facturas")
+        else:
+            formset = DetalleFormSet(request.POST)
     else:
-        form = FacturaForm()
-        formset = DetalleFacturaFormSet()
+        factura_form = FacturaForm()
+        formset = DetalleFormSet()
 
-    return render(request, 'facturas/crear.html', {
-        'form': form,
-        'formset': formset
+    return render(request, "facturas/crear.html", {
+        "form": factura_form,
+        "formset": formset,
     })
-
     
     
 @login_required
@@ -561,33 +584,38 @@ def detalle_factura(request, pk):
 @permission_required("todo.change_factura", raise_exception=True)
 def editar_factura(request, pk):
     factura = get_object_or_404(Factura, pk=pk)
-    DetalleFormSet = modelformset_factory(DetalleFactura, form=DetalleFacturaForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
+        nuevo_estado = request.POST.get("estado")
+        
         form = FacturaForm(request.POST, instance=factura)
-        formset = DetalleFormSet(request.POST, queryset=DetalleFactura.objects.filter(factura=factura))
+        formset = DetalleFacturaFormSet(request.POST, instance=factura)
 
         if form.is_valid() and formset.is_valid():
-            form.save()
-            detalles = formset.save(commit=False)
-
-            for detalle in detalles:
-                detalle.factura = factura
-                detalle.save()
-
+            factura = form.save(commit=False)
             
-            for obj in formset.deleted_objects:
-                obj.delete()
-
+            if nuevo_estado and nuevo_estado in ['PENDIENTE', 'PAGADA', 'VENCIDA']:
+                factura.estado = nuevo_estado
+            
+            factura.save()
+            
+            formset.save()
+            
+            if nuevo_estado and nuevo_estado in ['PENDIENTE', 'PAGADA', 'VENCIDA']:
+                Factura.objects.filter(pk=factura.pk).update(estado=nuevo_estado)
+            
+            messages.success(request, f'Factura actualizada correctamente. Estado: {nuevo_estado}')
             return redirect('lista_facturas')
+        else:
+            messages.error(request, 'Error al actualizar la factura')
     else:
         form = FacturaForm(instance=factura)
-        formset = DetalleFormSet(queryset=DetalleFactura.objects.filter(factura=factura))
+        formset = DetalleFacturaFormSet(instance=factura)
 
     return render(request, 'facturas/editar.html', {
         'form': form,
         'formset': formset,
-        'factura': factura,
+        'factura': factura
     })
 
 
@@ -608,7 +636,6 @@ def roles(request):
     grupos = {g.name: g for g in Group.objects.filter(name__in=grupos_validos)}
 
     if request.method == "POST":
-        # Esperamos inputs tipo name="rol_{{ user.id }}" con valores Invitado/Empleado/Admin
         cambios = 0
         for user in User.objects.all().select_related():
             key = f"rol_{user.id}"
@@ -616,12 +643,10 @@ def roles(request):
             if not nuevo or nuevo not in grupos_validos:
                 continue
 
-            # Evitar que un admin se auto-degrade sin querer (opcional)
             if user.is_superuser and nuevo != "Admin":
                 messages.warning(request, f"No puedes quitar Admin a un superusuario: {user.username}")
                 continue
 
-            # Limpia grupos anteriores y asigna el nuevo (solo 1 grupo)
             current_names = set(user.groups.values_list("name", flat=True))
             if current_names == {nuevo}:
                 continue
@@ -682,16 +707,24 @@ def exportar_excel(request):
         cell.border = border_style
     
     #Datos
-    ventas_totales = facturas.aggregate(total=Sum('monto_total'))['total'] or 0
+    ventas_totales = facturas.filter(estado='PAGADA').aggregate(total=Sum('monto_total'))['total'] or 0
     num_facturas = facturas.count()
+    num_facturas_pagadas = facturas.filter(estado='PAGADA').count()
+    num_facturas_pendientes = facturas.filter(estado='PENDIENTE').count() 
+    num_facturas_vencidas = facturas.filter(estado='VENCIDA').count()
+    
     total_clientes = Cliente.objects.count()
     total_productos = Producto.objects.count()
     ultima_factura = facturas.order_by('-fecha').first()
     ultima_fecha = ultima_factura.fecha.strftime('%Y-%m-%d') if ultima_factura else "N/A"
+
     
     #Agregar filas con los datos
-    ws.append(["Ventas Totales", float(ventas_totales)])
-    ws.append(["Número de Facturas", num_facturas])
+    ws.append(["Ingresos Reales (Solo Pagadas)", float(ventas_totales)])
+    ws.append(["Total de Facturas", num_facturas])
+    ws.append(["Facturas Pagadas", num_facturas_pagadas])
+    ws.append(["Facturas Pendientes", num_facturas_pendientes])
+    ws.append(["Facturas Vencidas", num_facturas_vencidas])
     ws.append(["Total Clientes", total_clientes])
     ws.append(["Total Productos", total_productos])
     ws.append(["Última Venta", ultima_fecha])
@@ -703,13 +736,14 @@ def exportar_excel(request):
     ws["Z1"] = "Producto"
     ws["AA1"] = "Cantidad Vendida"
 
-    #Query directo a DetalleFactura
     top_productos = (
-        DetalleFactura.objects.filter(factura__in=facturas)
-        .values("producto__nombre")
-        .annotate(total_vendido=Sum("cantidad"))
-        .order_by("-total_vendido")[:5]
+    DetalleFactura.objects.filter(
+        factura__in=facturas.filter(estado='PAGADA')
     )
+    .values("producto__nombre")
+    .annotate(total_vendido=Sum("cantidad"))
+    .order_by("-total_vendido")[:5]
+)
 
     for i, prod in enumerate(top_productos, start=2):
         ws[f"Z{i}"] = prod["producto__nombre"]

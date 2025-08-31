@@ -40,12 +40,24 @@
                     <tr class="bg-gray-100 font-semibold text-gray-700">
                         <td class="p-4 text-center">Cliente</td>
                         <td class="p-4 text-center">Fecha</td>
-                        <td class="p-4 text-center" colspan="2">ID Venta</td>
+                        <td class="p-4 text-center">Estado</td>
+                        <td class="p-4 text-center">ID Venta</td>
                     </tr>
                     <tr>
                         <td class="p-4 text-center">{{ factura.cliente.nombre }}</td>
                         <td class="p-4 text-center">{{ factura.fecha|date:"F d, Y, g:i a" }}</td>
-                        <td class="p-4 text-center" colspan="2">{{ factura.id }}</td>
+                        <td class="p-4 text-center">
+                            {% with raw=factura.estado display=factura.get_estado_display %}
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full
+                                {% if raw == 'PAGADA' %}bg-green-100 text-green-800
+                                {% elif raw == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
+                                {% elif raw == 'VENCIDA' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {{ display|default:raw|default:"Pendiente" }}
+                                </span>
+                            {% endwith %}
+                        </td>
+                        <td class="p-4 text-center">{{ factura.id }}</td>
                     </tr>
 
                     <!-- Encabezado productos -->
