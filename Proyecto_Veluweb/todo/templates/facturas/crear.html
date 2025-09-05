@@ -177,8 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
             total += cantidad * precio;
         });
-        totalParcialElement.textContent = total.toFixed(2)
-    
+        totalParcialElement.textContent = total.toLocaleString('es-CO');    
     }
 
     // Evento al cambiar un producto
