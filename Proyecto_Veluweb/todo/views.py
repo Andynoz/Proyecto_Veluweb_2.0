@@ -562,7 +562,8 @@ def obtener_precio_producto(request):
     producto_id = request.GET.get('producto_id')
     try:
         producto = Producto.objects.get(id=producto_id)
-        return JsonResponse({'precio': str(producto.precio)})
+        precio = float(producto.precio)
+        return JsonResponse({'precio': f"{precio:.2f}"})
     except Producto.DoesNotExist:
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 

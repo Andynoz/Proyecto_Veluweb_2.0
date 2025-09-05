@@ -175,6 +175,20 @@
     {% endblock %}
   </main>
 
+  {% if messages %}
+  <div class="fixed top-4 right-4 z-50">
+    {% for message in messages %}
+      <div class="mb-2 px-4 py-2 rounded shadow-lg
+        {% if message.tags == 'success' %}bg-green-100 text-green-800
+        {% elif message.tags == 'error' %}bg-red-100 text-red-800
+        {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800
+        {% else %}bg-gray-100 text-gray-700{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
   <!-- Footer -->
   <footer class="bg-blue-dark text-white text-center py-6 px-5 mt-auto">
     <p class="mb-4 text-sm">Veluweb &copy; 2025 - Todos los derechos reservados</p>
