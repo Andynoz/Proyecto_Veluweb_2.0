@@ -169,58 +169,74 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
     const totalParcialElement = document.getElementById('total-parcial');
 
-    //Función para calcular el total parcial
-    function calcularTotal() {
-        let total = 0;
-        document.querySelectorAll('#formset-body tr').forEach(row => {
-            const cantidad = parseFloat(row.querySelector('input[name$="-cantidad"]')?.value) || 0;
-            const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
-            total += cantidad * precio;
+    // Función para formatear el input de precio_unitario con miles
+function formatearMilesInput(input) {
+    let valor = input.value.replace(/\D/g, '');
+    if (valor) {
+        input.value = parseInt(valor, 10).toLocaleString('es-CO');
+    } else {
+        input.value = '';
+    }
+}
+
+// Modifica calcularTotal para leer el valor sin formato
+function calcularTotal() {
+    let total = 0;
+    document.querySelectorAll('#formset-body tr').forEach(row => {
+        const cantidad = parseFloat(row.querySelector('input[name$="-cantidad"]')?.value) || 0;
+        // Quita puntos de miles antes de parsear
+        const precioRaw = row.querySelector('input[name$="-precio_unitario"]')?.value.replace(/\./g, '').replace(/,/g, '') || '0';
+        const precio = parseFloat(precioRaw) || 0;
+        total += cantidad * precio;
+    });
+    totalParcialElement.textContent = total.toLocaleString('es-CO');
+}
+
+// Evento al cambiar un producto
+function handleProductoChange(event) {
+    const select = event.target;
+    const productoId = select.value;
+
+    if (!productoId) return;
+
+    const fila = select.closest('tr');
+    const inputPrecio = fila.querySelector('input[name$="-precio_unitario"]');
+
+    fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.precio) {
+                inputPrecio.value = parseInt(data.precio, 10).toLocaleString('es-CO');
+                calcularTotal();
+            } else {
+                inputPrecio.value = '';
+            }
         });
-        totalParcialElement.textContent = total.toLocaleString('es-CO');    
+}
+
+// Asignar eventos a todos los selects, cantidades y precios
+function asignarEventosFila(row) {
+    const select = row.querySelector('select[name$="-producto"]');
+    const inputCantidad = row.querySelector('input[name$="-cantidad"]');
+    const inputPrecio = row.querySelector('input[name$="-precio_unitario"]');
+    
+    if (select) {
+        select.removeEventListener('change', handleProductoChange);
+        select.addEventListener('change', handleProductoChange);
     }
-
-    // Evento al cambiar un producto
-    function handleProductoChange(event) {
-        const select = event.target;
-        const productoId = select.value;
-
-        if (!productoId) return;
-
-        const fila = select.closest('tr');
-        const inputPrecio = fila.querySelector('input[name$="-precio_unitario"]');
-
-        fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.precio) {
-                    inputPrecio.value = data.precio;
-                    calcularTotal();
-                } else {
-                    inputPrecio.value = '';
-                }
-            });
+    if (inputCantidad) {
+        inputCantidad.removeEventListener('input', calcularTotal);
+        inputCantidad.addEventListener('input', calcularTotal);
     }
+    if (inputPrecio) {
+        inputPrecio.removeEventListener('input', calcularTotal);
+        inputPrecio.addEventListener('input', calcularTotal);
 
-    // Asignar eventos a todos los selects, cantidades y precios
-    function asignarEventosFila(row) {
-        const select = row.querySelector('select[name$="-producto"]');
-        const inputCantidad = row.querySelector('input[name$="-cantidad"]');
-        const inputPrecio = row.querySelector('input[name$="-precio_unitario"]');
-        
-        if (select) {
-            select.removeEventListener('change', handleProductoChange);
-            select.addEventListener('change', handleProductoChange);
-        }
-        if (inputCantidad) {
-            inputCantidad.removeEventListener('input', calcularTotal);
-            inputCantidad.addEventListener('input', calcularTotal);
-        }
-        if (inputPrecio) {
-            inputPrecio.removeEventListener('input', calcularTotal);
-            inputPrecio.addEventListener('input', calcularTotal);
-        }
+        // Evento para formatear al perder el foco
+        inputPrecio.removeEventListener('blur', () => formatearMilesInput(inputPrecio));
+        inputPrecio.addEventListener('blur', () => formatearMilesInput(inputPrecio));
     }
+}
 
     // Asigna eventos al cargar la página
     document.querySelectorAll('#formset-body tr').forEach(asignarEventosFila);
