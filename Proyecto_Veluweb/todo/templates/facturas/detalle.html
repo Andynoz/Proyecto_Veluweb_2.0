@@ -1,66 +1,120 @@
 {% extends 'todo/layout2.html' %}
-
+{% load humanize %}
 {% block content %}
-<div class="container mt-5 mb-5">
-    <div class="card shadow-lg border-0">
-        <div class="card-body p-4">
-            <h2 class="text-center mb-4 fw-bold">Comprobante #{{ factura.id }}</h2>
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle text-center">
-                    <tbody>
-                        <tr class="table-light fw-bold">
-                            <td>Cliente</td>
-                            <td>Fecha</td>
-                            <td colspan="2">ID Factura</td>
-                        </tr>
-                        <tr>
-                            <td>{{ factura.cliente.nombre }}</td>
-                            <td>{{ factura.fecha|date:"F d, Y, g:i a" }}</td>
-                            <td colspan="2">{{ factura.id }}</td>
-                        </tr>
+<head>
+    <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+    </style>
+</head>
 
-                        <tr class="table-dark text-white">
-                            <th>Producto</th>
-                            <th>Imagen</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                        </tr>
+<div class="max-w-6xl mx-auto mt-10 mb-10">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        
+        <!-- Título -->
+        <h2 class="text-center mb-6 font-bold text-2xl text-blue-800">Venta #{{ factura.id }}</h2>
 
-                        {% for detalle in detalles %}
-                        <tr>
-                            <td>{{ detalle.producto.nombre }}</td>
+        <!-- Mostrar usuario y correo -->
+        <div class="mb-6 text-right">
+         <p class="text-gray-700">
+            Creado por: 
+        <span class="font-semibold text-blue-700">
+            {{ factura.creado_por.username }}
+        </span>
+        </p>
+        </div>
 
-                            <td>
-                                {% if detalle.producto.imagen %}
-                                    <img src="{{ detalle.producto.imagen.url }}" alt="Imagen de {{ detalle.producto.nombre }}" 
-                                         class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
-                                {% else %}
-                                    <span class="text-muted fst-italic">Sin imagen</span>
-                                {% endif %}
-                            </td>
 
-                            <td>{{ detalle.cantidad }}</td>
-                            <td class="text-success fw-semibold">${{ detalle.precio_unitario|floatformat:0 }}</td>
-                        </tr>
-                        {% endfor %}
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <tbody>
+                    <!-- Encabezado datos factura -->
+                    <tr class="bg-gray-100 font-semibold text-gray-700">
+                        <td class="p-4 text-center">Cliente</td>
+                        <td class="p-4 text-center">Fecha</td>
+                        <td class="p-4 text-center">Estado</td>
+                        <td class="p-4 text-center">ID Venta</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 text-center">{{ factura.cliente.nombre }}</td>
+                        <td class="p-4 text-center">{{ factura.fecha|date:"F d, Y, g:i a" }}</td>
+                        <td class="p-4 text-center">
+                            {% with raw=factura.estado display=factura.get_estado_display %}
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full
+                                {% if raw == 'PAGADA' %}bg-green-100 text-green-800
+                                {% elif raw == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
+                                {% elif raw == 'VENCIDA' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {{ display|default:raw|default:"Pendiente" }}
+                                </span>
+                            {% endwith %}
+                        </td>
+                        <td class="p-4 text-center">{{ factura.id }}</td>
+                    </tr>
 
-                        <tr class="table-light fw-bold">
-                            <td colspan="3" class="text-end">Total del comprobante:</td>
-                            <td>${{ total_factura|floatformat:0 }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <!-- Encabezado productos -->
+                    <tr class="bg-gray-800 text-white font-semibold">
+                        <th class="p-4 text-center">Producto</th>
+                        <th class="p-4 text-center">Imagen</th>
+                        <th class="p-4 text-center">Cantidad</th>
+                        <th class="p-4 text-center">Precio Unitario</th>
+                    </tr>
 
-            <div class="d-flex justify-content-end gap-3 mt-4">
-                <a href="{% url 'lista_facturas' %}" class="btn btn-primary">
-                    <i class="bi bi-arrow-left-circle"></i> Volver
-                </a>
-                <a href="{% url 'editar_factura' factura.id %}" class="btn btn-primary">
-                    <i class="bi bi-pencil-square"></i> Editar
-                </a>
-            </div>
+                    <!-- Detalles -->
+                    {% for detalle in detalles %}
+                    <tr class="hover:bg-gray-50 transition-all duration-300">
+                        <td class="p-4 text-center">{{ detalle.producto.nombre }}</td>
+                        <td class="p-4 text-center">
+                            {% if detalle.producto.imagen %}
+                                <img src="{{ detalle.producto.imagen.url }}" alt="Imagen de {{ detalle.producto.nombre }}"
+                                     class="rounded-md shadow-sm mx-auto" style="max-width: 100px; max-height: 100px;">
+                            {% else %}
+                                <span class="text-gray-500 italic">Sin imagen</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 text-center">{{ detalle.cantidad }}</td>
+                        <td class="p-4 text-green-600 font-semibold text-center">${{ detalle.precio_unitario|floatformat:0|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- Total -->
+                    <tr class="bg-gray-100 font-semibold">
+                        <td colspan="3" class="p-4 text-right">Total de Venta:</td>
+                        <td class="p-4 text-center">${{ total_factura|floatformat:0|intcomma }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-6">
+            <a href="{% url 'lista_facturas' %}" 
+               class="btn-custom text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
+                <i class="bi bi-arrow-left-circle">Volver</i> 
+            </a>
+            <a href="{% url 'editar_factura' factura.id %}" 
+               class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
+                <i class="bi bi-pencil-square">Editar</i> 
+            </a>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-format-number').forEach(function(el) {
+        const numero = parseInt(el.textContent);
+        el.textContent = numero.toLocaleString('es-CO');
+    });
+});
+</script>
+
 {% endblock %}
