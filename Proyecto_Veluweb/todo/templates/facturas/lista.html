@@ -12,6 +12,18 @@
       + Registrar Venta
     </a>
   </div>
+  <!-- Buscador -->
+  <form method="get" class="flex justify-center mb-6">
+    <input 
+      type="search" 
+      name="q" 
+      value="{{ q }}" 
+      placeholder="Buscar por ID, nombre, correo o teléfono..." 
+      class="form-control w-1/2 border rounded-lg px-4 py-2"
+      >
+        <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎
+        </button>
+    </form>
 
   <!-- Contenedor de la tabla con fondo blanco y sombra -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
