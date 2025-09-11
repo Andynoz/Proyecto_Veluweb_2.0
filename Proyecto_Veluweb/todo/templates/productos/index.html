@@ -76,11 +76,12 @@
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-700 to-slate-600">
-      <div class="grid grid-cols-5 gap-4 px-6 py-4 font-semibold text-white">
+      <div class="grid grid-cols-6 gap-4 px-6 py-4 font-semibold text-white">
         <div class="text-left">ID</div>
         <div class="text-left">Nombre</div>
         <div class="text-left">Stock</div>
         <div class="text-left">Precio</div>
+        <div class="text-left">Estado</div>
         <div class="text-center">Acciones</div>
       </div>
     </div>
@@ -88,7 +89,7 @@
     <!-- Cuerpo -->
     <div class="divide-y divide-gray-200">
       {% for producto in page_obj %}
-      <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
+      <div class="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
         <!-- ID -->
         <div class="flex items-center text-gray-900 font-semibold">
           {{ producto.id }}
@@ -108,6 +109,19 @@
         <!-- Precio -->
         <div class="flex items-center">
           <span class="font-bold text-dark">${{ producto.precio|floatformat:0|intcomma }}</span>
+        </div>
+
+        <!-- Estado -->
+        <div class="flex items-center">
+          {% if producto.stock > 0 %}
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-300">
+            Activo
+          </span>
+          {% else %}
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300">
+            Inactivo
+          </span>
+          {% endif %}
         </div>
 
           <!-- Acciones -->

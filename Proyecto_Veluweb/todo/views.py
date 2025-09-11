@@ -447,7 +447,15 @@ def crear_producto(request):
 @permission_required("todo.view_producto", raise_exception=True)
 def productos_inactivos(request):
     query = request.GET.get("q", "").strip()
-    productos_inactivos = Producto.objects.filter(estado=False).order_by('-id')
+    
+    if query:
+        productos_inactivos = Producto.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__istartswith=query),
+            estado=False
+        ).order_by('-id')
+    else:
+        productos_inactivos = Producto.objects.filter(estado=False).order_by('-id')
+
     paginator = Paginator(productos_inactivos, 5)
     pagina = request.GET.get('page')
     page_obj = paginator.get_page(pagina)
@@ -457,30 +465,28 @@ def productos_inactivos(request):
         'q': query
     })
 
-
 # ACTIVAR PRODUCTO
 @login_required
-@permission_required("todo.change_producto", raise_exception=True)
+@permission_required('productos.change_producto', raise_exception=True)
 def activar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
         producto.estado = True
         producto.save()
-        messages.success(request, f'Producto "{producto.nombre}" reactivado')
         return redirect('productos_inactivos')
-    return render(request, 'productos/activar_producto.html', {'producto': producto})
+    return render(request, "productos/activar_producto.html", {"producto": producto})
 
 # DESHABILITAR PRODUCTO
 @login_required
-@permission_required("todo.change_producto", raise_exception=True)
+@permission_required('productos.delete_producto', raise_exception=True)
 def deshabilitar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
         producto.estado = False
         producto.save()
-        messages.warning(request, f'El producto "{{producto.nombre}}" fue deshabilitado')
         return redirect('productos_index')
-    return render(request, 'productos/deshabilitar.html', {'producto': producto}) 
+    return render(request, "productos/deshabilitar.html", {"producto": producto})
+
 
 
 

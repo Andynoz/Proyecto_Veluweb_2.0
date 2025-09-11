@@ -63,7 +63,10 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"{self.nombre}"
-
+    
+    def estado_stock(self):
+        return self.stock > 0
+    
 class Factura(models.Model):
     ESTADO_CHOICES = [
         ('PENDIENTE', 'Pendiente'),
