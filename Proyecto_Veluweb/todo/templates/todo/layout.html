@@ -5,34 +5,46 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Velurapp{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Estilo personalizado -->
-  <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Definir color azul oscuro para header y footer */
+    .bg-blue-dark {
+      background-color: #183a5e; /* Azul oscuro de tu layout */
+    }
+
+    .btn-custom {
+      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-  <!-- Encabezado y logo -->
-  <header>
-    <div class="contenedor-encabezado">
-      <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros">
+  <!-- Header con azul oscuro -->
+  <header class="bg-blue-dark text-white shadow-md">
+    <div class="max-w-6xl mx-auto flex items-center justify-between px-5 h-[100px]">
+      <img src="{% static 'todo/images/logo.png' %}" alt="Logo de Veluros" class="h-12 w-auto rounded-lg">
     </div>
-
   </header>
 
   <!-- Contenido dinámico -->
-  <main id="contenido-principal">
+  <main id="contenido-principal" class="flex-1">
     {% block content %}
     {% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer class="pie-de-pagina">
-    <p class="texto-copyright">Velurapp &copy; 2025 - Todos los derechos reservados</p>
-    <ul class="redes-sociales">
-      <li class="item-social"><a href="#" class="enlace-red">Facebook</a></li>
-      <li class="item-social"><a href="#" class="enlace-red">TikTok</a></li>
-      <li class="item-social"><a href="#" class="enlace-red">Instagram</a></li>
+  <!-- Footer con azul oscuro -->
+  <footer class="bg-blue-dark text-white text-center py-6 px-5">
+    <p class="mb-4 text-sm">Veluweb &copy; 2025 - Todos los derechos reservados</p>
+    <ul class="list-none flex justify-center gap-6 flex-wrap">
+      <li><a href="#" class="text-gray-300 no-underline transition-colors duration-300 text-sm hover:text-blue-400">Facebook</a></li>
+      <li><a href="#" class="text-gray-300 no-underline transition-colors duration-300 text-sm hover:text-blue-400">TikTok</a></li>
+      <li><a href="#" class="text-gray-300 no-underline transition-colors duration-300 text-sm hover:text-blue-400">Instagram</a></li>
     </ul>
   </footer>
 

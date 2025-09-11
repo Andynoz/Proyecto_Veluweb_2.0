@@ -1,0 +1,58 @@
+{% extends "todo/layout2.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 border-emerald-500">
+    <div class="p-8">
+      <!-- Icono -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-emerald-100 rounded-full p-4">
+          <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Título -->
+      <h1 class="text-emerald-600 text-3xl mb-6 text-center font-bold">¿activar Producto?</h1>
+
+      <!-- Mensaje -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-8">
+        <h3 class="text-emerald-800 font-semibold mb-2">✅ Confirmación</h3>
+        <p class="text-emerald-700">
+          ¿Deseas <strong>activar</strong> el producto
+          <strong class="text-emerald-900 bg-emerald-100 px-2 py-1 rounded">{{ producto.nombre }}</strong>?
+        </p>
+      </div>
+
+      <!-- Info del producto -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-8">
+        <h4 class="text-gray-800 font-semibold mb-3">📦 Información del Producto:</h4>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between"><span class="text-gray-600">Nombre:</span><span class="font-medium text-gray-900">{{ producto.nombre }}</span></div>
+          {% if producto.descripcion %}
+            <div class="flex justify-between"><span class="text-gray-600 mr-4">Descripción:</span><span class="font-medium text-gray-900 text-right max-w-xs">{{ producto.descripcion|truncatewords:15 }}</span></div>
+          {% endif %}
+          {% if producto.precio %}
+            <div class="flex justify-between"><span class="text-gray-600">Precio:</span><span class="font-bold text-green-600 text-lg">${{ producto.precio|floatformat:2 }}</span></div>
+          {% endif %}
+          {% if producto.stock %}
+            <div class="flex justify-between"><span class="text-gray-600">Stock:</span><span class="font-medium text-gray-900">{{ producto.stock }} unidades</span></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <form method="post">{% csrf_token %}
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-lg border-2 border-emerald-600 hover:border-emerald-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
+            ✅ Sí, reactivar
+          </button>
+          <a href="{% url 'productos_inactivos' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl text-center">
+            ↩️ Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

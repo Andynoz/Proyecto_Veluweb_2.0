@@ -1,39 +1,161 @@
-{% extends "todo/layout.html" %}
+{% extends "todo/layout2.html" %}
+{% load humanize %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Editar Factura #{{ factura.id }}</h1>
-    <form method="post" enctype="multipart/form-data">
+<header>
+     <style>
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+    </style>
+</header>
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">
+    Editar Venta #{{ factura.id }}
+  </h1>
+
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <div class="p-8">
+      <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
 
-        <h4>Detalles de la Factura</h4>
-        {{ formset.management_form }}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form in formset %}
-                <tr>
-                    {{ form.id }}
-                    {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
+        <!-- Creado por -->
+        <div class="mb-6 text-right">
+         <p class="text-gray-700">
+            Creado por: 
+            <span class="font-semibold text-blue-700">
+              {{ factura.creado_por.username }}
+            </span>
+         </p>
+        </div>
+
+        <!-- Formulario de factura -->
+        <div class="mb-8">
+          {% for field in form %}
+            {% if field.name != "estado" %}
+              <div class="mb-6">
+                <label for="{{ field.id_for_label }}" class="block text-slate-700 font-semibold mb-2 text-base">
+                  {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="mt-2 text-red-600 text-sm">
+                    {% for error in field.errors %}
+                      <p>{{ error }}</p>
                     {% endfor %}
-                    <td>{{ form.producto }}</td>
-                    <td>{{ form.cantidad }}</td>
-                    <td>{{ form.precio_unitario }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
 
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{% url 'lista_facturas' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+          <!-- Estado -->
+<div class="mb-6">
+  <label for="id_estado" class="block text-slate-700 font-semibold mb-2 text-base">
+    Estado de la factura
+  </label>
+  <select name="estado" id="id_estado" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700">
+    <option value="PENDIENTE" {% if factura.estado == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+    <option value="PAGADA" {% if factura.estado == 'PAGADA' %}selected{% endif %}>Pagada</option>
+    <option value="VENCIDA" {% if factura.estado == 'VENCIDA' %}selected{% endif %}>Vencida</option>
+  </select>
+  <!-- Debug info -->
+  <p class="text-xs text-gray-500 mt-1">Estado actual: {{ factura.estado }}</p>
+  {% if form.estado.errors %}
+    <div class="mt-2 text-red-600 text-sm">
+      {% for error in form.estado.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
 </div>
+
+
+        <!-- Detalles -->
+        <div class="mb-8">
+          <h4 class="text-dark text-2xl mb-6 font-semibold">Detalles de la Venta</h4>
+          {{ formset.management_form }}
+
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+            <div class="bg-gradient-to-r from-slate-700 to-slate-600">
+              <div class="grid grid-cols-3 gap-4 px-6 py-4 font-semibold text-white">
+                <div class="text-left">Producto</div>
+                <div class="text-center">Cantidad</div>
+                <div class="text-center">Precio Unitario</div>
+              </div>
+            </div>
+
+            <div class="divide-y divide-gray-200" id="formset-container">
+              {% for form in formset %}
+              <div class="formset-row grid grid-cols-3 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300">
+                {{ form.id }}
+                {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                <!-- Producto -->
+                <div class="flex items-center">
+                  {{ form.producto }}
+                </div>
+
+                <!-- Cantidad -->
+                <div class="flex items-center justify-center">
+                  {{ form.cantidad }}
+                </div>
+
+                <!-- Precio -->
+                <div class="flex items-center justify-center">
+                  {{ form.precio_unitario }}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="flex justify-end mt-4">
+          <h3 class="text-xl font-semibold text-gray-800">
+            Total parcial: $<span id="total-parcial">0</span>
+          </h3>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-center space-x-4 pt-6">
+          <button type="submit" class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm">
+            Guardar Cambios
+          </button>
+          <a href="{% url 'lista_facturas' %}" 
+             class="bg-red-500 hover:bg-red-600 text-white font-medium px-8 py-3 rounded-lg">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const totalParcialElement = document.getElementById('total-parcial');
+
+    function calcularTotal() {
+        let total = 0;
+        document.querySelectorAll('.formset-row').forEach(row => {
+            const cantidad = parseFloat(row.querySelector('[name$="-cantidad"]')?.value) || 0;
+            const precio = parseFloat(row.querySelector('[name$="-precio_unitario"]')?.value) || 0;
+            total += cantidad * precio;
+        });
+        totalParcialElement.textContent = total.toLocaleString('es-CO');
+    }
+
+    document.querySelectorAll('[name$="-cantidad"], [name$="-precio_unitario"]').forEach(input => {
+        input.addEventListener('input', calcularTotal);
+    });
+
+    calcularTotal();
+});
+</script>
 {% endblock %}

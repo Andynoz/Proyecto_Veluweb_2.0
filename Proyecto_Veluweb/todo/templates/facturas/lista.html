@@ -1,48 +1,151 @@
 {% extends "todo/layout2.html" %}
-
+{% load humanize %}
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Lista de Comprobantes</h1>
-    <div class="d-flex justify-content-center mb-4">
-        <a href="{% url 'crear_factura' %}" class="btn btn-success">+ Crear Comprobante</a>
-    </div>
-    <div class="table-container">
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for factura in facturas %}
-                <tr>
-                    <td>{{ factura.id }}</td>
-                    <td>{{ factura.cliente }}</td>
-                    <td>{{ factura.fecha }}</td>
-                    <td>${{ factura.total }}</td>
-                    <td>
-                        <a href="{% url 'detalle_factura' factura.id %}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{% url 'editar_factura' factura.id %}" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'eliminar_factura' factura.id %}" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">No hay comprobantes registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<!-- Contenedor principal -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Título principal -->
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Ventas</h1>
+  
+  <!-- Botón crear producto centrado -->
+  <div class="flex justify-center mb-8">
+    <a href="{% url 'crear_factura' %}" class="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+      + Registrar Venta
+    </a>
+  </div>
+  <!-- Buscador -->
+  <form method="get" class="flex justify-center mb-6">
+    <input 
+      type="search" 
+      name="q" 
+      value="{{ q }}" 
+      placeholder="Buscar por ID, nombre, correo o teléfono..." 
+      class="form-control w-1/2 border rounded-lg px-4 py-2"
+      >
+        <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎
+        </button>
+    </form>
+
+  <!-- Contenedor de la tabla con fondo blanco y sombra -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <!-- Header de la tabla con gradiente personalizado -->
+<div class="bg-gradient-to-r from-slate-700 to-slate-600">
+  <div class="grid grid-cols-6 gap-4 px-6 py-4 font-semibold text-white">
+    <div class="text-left">ID</div>
+    <div class="text-left">Cliente</div>
+    <div class="text-left">Fecha</div>
+    <div class="text-left">Total</div>
+    <div class="text-center">Estado</div>
+    <div class="text-center">Acciones</div>
+  </div>
 </div>
+
+<!-- Cuerpo de la tabla -->
+<div class="divide-y divide-gray-200">
+  {% for factura in page_obj %}
+  <div class="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
+    <!-- ID -->
+    <div class="flex items-center text-gray-900 font-semibold">
+      {{ factura.id }}
+    </div>
+
+    <!-- Cliente -->
+    <div class="flex items-center">
+      <span class="text-dark font-medium">{{ factura.cliente }}</span>
+    </div>
+
+    <!-- Fecha -->
+    <div class="flex items-center">
+      <span class="text-dark font-medium">{{ factura.fecha|date:"M d, Y, g:i a" }}</span>
+    </div>
+
+    <!-- Total -->
+    <div class="flex items-center">
+      <span class="text-dark font-bold">${{ factura.monto_total|floatformat:0|intcomma }}</span>
+    </div>
+
+    <!-- Estado -->
+<div class="flex items-center justify-center">
+  {% with raw=factura.estado display=factura.get_estado_display %}
+    <span class="px-3 py-1 text-xs font-semibold rounded-full
+      {% if raw == 'PAGADA' %}bg-green-100 text-green-800
+      {% elif raw == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
+      {% elif raw == 'VENCIDA' %}bg-red-100 text-red-800
+      {% else %}bg-gray-100 text-gray-700{% endif %}">
+      {{ display|default:raw|default:"Pendiente" }}
+    </span>
+  {% endwith %}
+</div>
+
+    <!-- Acciones -->
+    <div class="flex items-center justify-center space-x-2">
+      <!-- Botón Ver -->
+      <a href="{% url 'detalle_factura' factura.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+      </a>
+
+      <!-- Botón Editar -->
+      {% if perms.facturas.change_facturas %}
+        <a href="{% url 'editar_factura' factura.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+        </a>
+      {% endif %}
+
+      <!-- Botón Eliminar -->
+      {% if perms.facturas.delete_factura %}
+        <a href="{% url 'eliminar_factura' factura.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este comprobante?')" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </a>
+      {% endif %}
+
+      <!-- Botón Enviar -->
+      <form action="{% url 'enviar_factura' factura.id %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="inline-flex items-center justify-center w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          <i class="fa-solid fa-paper-plane w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+  {% empty %}
+      <!-- Estado vacío -->
+      <div class="px-6 py-12 text-center text-gray-500">
+        <div class="text-6xl mb-4">📄</div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay comprobantes registrados</h3>
+        <p class="text-gray-500 mb-4">Comienza creando tu primer comprobante</p>
+        {% if perms.facturas.add_factura %}
+          <a href="{% url 'crear_factura' %}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
+            <span class="text-lg mr-2">+</span>
+            Crear Comprobante
+          </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  {% if page_obj %}
+  <div class="mt-6 text-center text-gray-500 text-sm">
+    Mostrando {{ page_obj|length }} venta{{ page_obj|length|pluralize:"s" }}
+  </div>
+  {% endif %}
+  {% include "todo/paginacion.html" %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-format-number').forEach(function(el) {
+        const numero = parseInt(el.textContent);
+        el.textContent = numero.toLocaleString('es-CO');
+    });
+});
+</script>
+
 {% endblock %}
