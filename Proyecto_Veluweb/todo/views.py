@@ -220,6 +220,12 @@ def agregar(request):
     return render(request, 'todo/agregar.html', {'form': form})
 
 @login_required
+@permission_required("todo.view_cliente", raise_exception=True)
+def detalle_cliente(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    return render(request, 'todo/detalle_cliente.html', {'cliente': cliente})
+
+@login_required
 @permission_required("todo.change_cliente", raise_exception=True)
 def editar(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
