@@ -44,6 +44,11 @@ from xhtml2pdf import pisa
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from .forms import FacturaForm, DetalleFacturaFormSet
+from .forms import CustomUserCreationForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+
+
 
 
 
@@ -259,57 +264,45 @@ def index(request):
     return render(request, 'todo/index.html', context)
 
 
-
-def registro(request):  # Vista para registrar un nuevo usuario
-    if request.method == 'GET':
-        return render(request, 'todo/registro.html', {
-            'form': UserCreationForm()
+def registro(request):
+    if request.method == "GET":
+        return render(request, "todo/registro.html", {
+            "form": CustomUserCreationForm()
         })
     else:
-        if request.POST['password1'] == request.POST['password2']:
-            try:
-                email = request.POST['email']
-                user = User.objects.create_user(
-                    username=email,
-                    email=email,                    
-                    password=request.POST['password1'])
-                user.save()
-                login(request, user)
-                return redirect('signIn')
-            except IntegrityError:
-                return render(request, 'todo/registro.html', {
-                    'form': UserCreationForm(),
-                    'error': 'El usuario ya existe'
-                })
-        return render(request, 'todo/registro.html', {
-                    'form': UserCreationForm(),
-                    'error': 'Las contraseñas no coinciden'
-        })
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("signIn")
+        else:
+            return render(request, "todo/registro.html", {
+                "form": form
+            })
 
 def signout(request): # Vista para cerrar sesión
     logout(request)
     return redirect('home')
     
-    
-def signIn(request): #Vista para iniciar sesión
-    if request.method == 'GET':
-        return render(request, 'todo/signIn.html', {
-            'form': AuthenticationForm()
-        })
-    else:
-        user = authenticate(
-            request, username=request.POST['email'],
-            password=request.POST['password'])
-        
+
+def signIn(request):
+    if request.method == 'POST':
+        username = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
         if user is None:
             return render(request, 'todo/signIn.html', {
-                'form': AuthenticationForm,
-                'error': 'Usuario o contraseña incorrectos'
+                'form': AuthenticationForm(),
+                'error': 'Correo o contraseña incorrectos'
             })
         else:
             login(request, user)
             return redirect('index')
-        
+
+    return render(request, 'todo/signIn.html', {'form': AuthenticationForm()})
+
         
 def enviar_codigo_reset(user):
     codigo = generar_codigo_corto()
