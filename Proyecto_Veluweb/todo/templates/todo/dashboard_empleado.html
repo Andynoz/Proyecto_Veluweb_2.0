@@ -1,0 +1,121 @@
+{% extends "todo/layout2.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Dashboard | Veluweb{% endblock %}
+{% block content %}
+
+<head>
+    <style>
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 4px solid #183a5e;
+        }
+
+        .quick-action-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+        }
+
+        .quick-action-card:hover {
+            border-color: #183a5e;
+        }
+
+        .welcome-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+    </style>
+</head>
+
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="welcome-gradient text-white py-8 mb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">¡Bienvenido, {{ user.username }}!</h1>
+                <p class="text-xl opacity-90">Panel de Empleado</p>
+                <div class="mt-4 text-sm opacity-75">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    {{ "now"|date:"l, d de F de Y - g:i a" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <p class="text-gray-600 text-sm font-medium">Clientes</p>
+                <p class="text-3xl font-bold text-gray-900">{{ total_clientes }}</p>
+            </div>
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <p class="text-gray-600 text-sm font-medium">Productos</p>
+                <p class="text-3xl font-bold text-gray-900">{{ total_productos }}</p>
+            </div>
+            <div class="stat-card p-6 rounded-lg shadow-md card-hover">
+                <p class="text-gray-600 text-sm font-medium">Ventas este mes</p>
+                <p class="text-3xl font-bold text-gray-900">{{ ventas_mes }}</p>
+            </div>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Acciones Rápidas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Crear cliente -->
+            <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer"
+                onclick="location.href='{% url 'agregar' %}'">
+                <div class="text-center">
+                    <div class="bg-blue-100 p-4 rounded-full inline-block mb-4">
+                        <i class="fas fa-user-plus text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Nuevo Cliente</h3>
+                    <p class="text-gray-600 text-sm">Registrar un cliente</p>
+                </div>
+            </div>
+
+            <!-- Ver productos -->
+            <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer"
+                onclick="location.href='{% url 'productos_index' %}'">
+                <div class="text-center">
+                    <div class="bg-green-100 p-4 rounded-full inline-block mb-4">
+                        <i class="fas fa-box text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Ver Productos</h3>
+                    <p class="text-gray-600 text-sm">Visualizar inventario</p>
+                </div>
+            </div>
+
+            <!-- Ver ventas -->
+            <div class="quick-action-card p-6 rounded-lg shadow-md card-hover cursor-pointer"
+                onclick="location.href='{% url 'lista_facturas' %}'">
+                <div class="text-center">
+                    <div class="bg-yellow-100 p-4 rounded-full inline-block mb-4">
+                        <i class="fas fa-file-invoice text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Ventas</h3>
+                    <p class="text-gray-600 text-sm">Visualizar o enviar comprobantes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-500 text-sm mb-8">
+            <p>Sistema de Gestión Veluweb - Panel Empleado</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
