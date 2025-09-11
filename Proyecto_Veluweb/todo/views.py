@@ -184,7 +184,7 @@ def home(request):
 @login_required
 @permission_required("todo.view_cliente", raise_exception=True)
 def tabla(request):
-    query = request.GET.get('buscar')
+    query = request.GET.get("Buscar", "").strip()
 
     if query:
         lista_clientes = Cliente.objects.filter(
@@ -202,7 +202,7 @@ def tabla(request):
 
     return render(request, 'todo/tabla.html', {
         'page_obj': page_obj,
-        'query': query
+        'q': query 
     })
 
 @login_required
@@ -396,8 +396,9 @@ def productos_index(request):
     
     if query:
         productos_lista = Producto.objects.filter(
-            Q(nombre__icontains=query) | Q(descripcion__istartswith=query),
-            estado = True
+        Q(nombre__istartswith=query) | Q(nombre__iexact=query) |
+        Q(descripcion__istartswith=query) | Q(descripcion__iexact=query),
+        estado=True
         ).order_by('-id')
     else:
         productos_lista = Producto.objects.filter(estado=True).order_by('-id')
@@ -498,10 +499,11 @@ def editar_producto(request, pk):
 @login_required
 @permission_required("todo.view_factura", raise_exception=True)
 def lista_facturas(request):
-    query = request.GET.get('buscar')
+    query = request.GET.get('q', "").strip()
 
     if query:
         facturas_list = Factura.objects.filter(
+            Q(id__iexact=query) |
             Q(cliente__nombre__icontains=query) |
             Q(cliente__apellido__icontains=query) |
             Q(fecha__icontains=query)
@@ -515,7 +517,7 @@ def lista_facturas(request):
 
     return render(request, 'facturas/lista.html', {
         'page_obj': page_obj,
-        'query': query
+        'q': query
     })
 
 @login_required
