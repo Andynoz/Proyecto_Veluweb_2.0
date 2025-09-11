@@ -17,9 +17,23 @@
       </a>
     {% endif %}
   </div>
-
+    
+    <!-- Buscador -->
+    <form method="get" class="flex justify-center mb-6">
+      <input 
+      type="search" 
+      name="q" 
+      value="{{ q }}" 
+      placeholder="Buscar clientes..." 
+      class="form-control w-1/2 border rounded-lg px-4 py-2"
+      >
+      <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
+    </form>
+    
   <!-- Tabla moderna -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+
+
     <!-- Encabezado de la tabla -->
     <div class="bg-gray-700 text-white">
       <div class="grid grid-cols-{% if perms.todo.change_cliente or perms.todo.delete_cliente %}5{% else %}4{% endif %} gap-[75px] px-6 py-4 font-semibold">

@@ -5,7 +5,19 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
   <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Ventas</h1>
-  
+
+  <!-- Buscador -->
+  <form method="get" class="flex justify-center mb-6">
+    <input 
+    type="search" 
+    name="q" 
+    value="{{ q }}" 
+    placeholder="Buscar por cliente, ID o estado..." 
+    class="form-control w-1/2 border rounded-lg px-4 py-2"
+    >
+    <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
+  </form>
+
   <!-- Botón crear producto centrado -->
   <div class="flex justify-center mb-8">
     <a href="{% url 'crear_factura' %}" class="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
