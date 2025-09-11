@@ -58,7 +58,7 @@
                     {% endif %}
                     name="{{ field.name }}" 
                     id="{{ field.id_for_label }}" 
-                    value="{% if field.value != None and field.value != '' %}{{ field.value|stringformat:'g' }}{% elif field.initial != None and field.initial != '' %}{{ field.initial|stringformat:'g' }}{% else %}0{% endif %}"
+                    value="{% if field.value != None and field.value != '' %}{{ field.value|floatformat:0 }}{% elif field.initial != None and field.initial != '' %}{{ field.initial|stringformat:'g' }}{% else %}0{% endif %}"
                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
             {% else %}
               <input type="{{ field.field.widget.input_type|default:'text' }}" 
