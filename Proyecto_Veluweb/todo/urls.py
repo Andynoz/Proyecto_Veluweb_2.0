@@ -9,6 +9,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('tabla/', views.tabla, name='tabla'),
     path('agregar/', views.agregar, name='agregar'),
+    path('detalle/<int:pk>/', views.detalle_cliente, name='detalle_cliente'),
     path('editar/<int:cliente_id>/', views.editar, name='editar'),
     path('eliminar/<int:cliente_id>/', views.eliminar, name='eliminar'),
 

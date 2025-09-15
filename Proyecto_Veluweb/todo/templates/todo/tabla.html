@@ -17,16 +17,17 @@
       </a>
     {% endif %}
   </div>
-
-  {% if messages %}
-    <div class="mb-4 space-y-2">
-      {% for message in messages %}
-        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
+<!-- Buscador -->
+  <form method="get" class="flex justify-center mb-6">
+    <input 
+      type="search" 
+      name="q" 
+      value="{{ q }}" 
+      placeholder="Buscar por ID, nombre, correo o teléfono..." 
+      class="form-control w-1/2 border rounded-lg px-4 py-2"
+      >
+      <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
+    </form>
 
   <!-- Tabla moderna -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
@@ -70,6 +71,16 @@
         <!-- Acciones -->
         {% if perms.todo.change_cliente or perms.todo.delete_cliente %}
         <div class="flex items-center justify-center space-x-2">
+
+          {% if perms.todo.delete_cliente %}
+          <a href="{% url 'detalle_cliente' cliente.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg" title="Ver detalle">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </a>
+          {% endif %}
+          
           {% if perms.todo.change_cliente %}
             <a href="{% url 'editar' cliente.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

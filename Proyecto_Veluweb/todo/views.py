@@ -44,6 +44,11 @@ from xhtml2pdf import pisa
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from .forms import FacturaForm, DetalleFacturaFormSet
+from .forms import CustomUserCreationForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+
+
 
 
 
@@ -179,7 +184,7 @@ def home(request):
 @login_required
 @permission_required("todo.view_cliente", raise_exception=True)
 def tabla(request):
-    query = request.GET.get('buscar')
+    query = request.GET.get("Buscar", "").strip()
 
     if query:
         lista_clientes = Cliente.objects.filter(
@@ -197,7 +202,7 @@ def tabla(request):
 
     return render(request, 'todo/tabla.html', {
         'page_obj': page_obj,
-        'query': query
+        'q': query 
     })
 
 @login_required
@@ -213,6 +218,12 @@ def agregar(request):
         form = ClienteForm()
     
     return render(request, 'todo/agregar.html', {'form': form})
+
+@login_required
+@permission_required("todo.view_cliente", raise_exception=True)
+def detalle_cliente(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+    return render(request, 'todo/detalle_cliente.html', {'cliente': cliente})
 
 @login_required
 @permission_required("todo.change_cliente", raise_exception=True)
@@ -270,57 +281,45 @@ def index(request):
 
     return render(request, template, context)
 
-
-def registro(request):  # Vista para registrar un nuevo usuario
-    if request.method == 'GET':
-        return render(request, 'todo/registro.html', {
-            'form': UserCreationForm()
+def registro(request):
+    if request.method == "GET":
+        return render(request, "todo/registro.html", {
+            "form": CustomUserCreationForm()
         })
     else:
-        if request.POST['password1'] == request.POST['password2']:
-            try:
-                email = request.POST['email']
-                user = User.objects.create_user(
-                    username=email,
-                    email=email,                    
-                    password=request.POST['password1'])
-                user.save()
-                login(request, user)
-                return redirect('signIn')
-            except IntegrityError:
-                return render(request, 'todo/registro.html', {
-                    'form': UserCreationForm(),
-                    'error': 'El usuario ya existe'
-                })
-        return render(request, 'todo/registro.html', {
-                    'form': UserCreationForm(),
-                    'error': 'Las contraseñas no coinciden'
-        })
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("signIn")
+        else:
+            return render(request, "todo/registro.html", {
+                "form": form
+            })
 
 def signout(request): # Vista para cerrar sesión
     logout(request)
     return redirect('home')
     
-    
-def signIn(request): #Vista para iniciar sesión
-    if request.method == 'GET':
-        return render(request, 'todo/signIn.html', {
-            'form': AuthenticationForm()
-        })
-    else:
-        user = authenticate(
-            request, username=request.POST['email'],
-            password=request.POST['password'])
-        
+
+def signIn(request):
+    if request.method == 'POST':
+        username = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
         if user is None:
             return render(request, 'todo/signIn.html', {
-                'form': AuthenticationForm,
-                'error': 'Usuario o contraseña incorrectos'
+                'form': AuthenticationForm(),
+                'error': 'Correo o contraseña incorrectos'
             })
         else:
             login(request, user)
             return redirect('index')
-        
+
+    return render(request, 'todo/signIn.html', {'form': AuthenticationForm()})
+
         
 def enviar_codigo_reset(user):
     codigo = generar_codigo_corto()
@@ -414,8 +413,9 @@ def productos_index(request):
     
     if query:
         productos_lista = Producto.objects.filter(
-            Q(nombre__icontains=query) | Q(descripcion__istartswith=query),
-            estado = True
+        Q(nombre__istartswith=query) | Q(nombre__iexact=query) |
+        Q(descripcion__istartswith=query) | Q(descripcion__iexact=query),
+        estado=True
         ).order_by('-id')
     else:
         productos_lista = Producto.objects.filter(estado=True).order_by('-id')
@@ -458,7 +458,15 @@ def crear_producto(request):
 @permission_required("todo.view_producto", raise_exception=True)
 def productos_inactivos(request):
     query = request.GET.get("q", "").strip()
-    productos_inactivos = Producto.objects.filter(estado=False).order_by('-id')
+    
+    if query:
+        productos_inactivos = Producto.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__istartswith=query),
+            estado=False
+        ).order_by('-id')
+    else:
+        productos_inactivos = Producto.objects.filter(estado=False).order_by('-id')
+
     paginator = Paginator(productos_inactivos, 5)
     pagina = request.GET.get('page')
     page_obj = paginator.get_page(pagina)
@@ -468,30 +476,28 @@ def productos_inactivos(request):
         'q': query
     })
 
-
 # ACTIVAR PRODUCTO
 @login_required
-@permission_required("todo.change_producto", raise_exception=True)
+@permission_required('productos.change_producto', raise_exception=True)
 def activar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
         producto.estado = True
         producto.save()
-        messages.success(request, f'Producto "{producto.nombre}" reactivado')
         return redirect('productos_inactivos')
-    return render(request, 'productos/activar_producto.html', {'producto': producto})
+    return render(request, "productos/activar_producto.html", {"producto": producto})
 
 # DESHABILITAR PRODUCTO
 @login_required
-@permission_required("todo.change_producto", raise_exception=True)
+@permission_required('productos.delete_producto', raise_exception=True)
 def deshabilitar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
         producto.estado = False
         producto.save()
-        messages.warning(request, f'El producto "{{producto.nombre}}" fue deshabilitado')
         return redirect('productos_index')
-    return render(request, 'productos/deshabilitar.html', {'producto': producto}) 
+    return render(request, "productos/deshabilitar.html", {"producto": producto})
+
 
 
 
@@ -516,10 +522,11 @@ def editar_producto(request, pk):
 @login_required
 @permission_required("todo.view_factura", raise_exception=True)
 def lista_facturas(request):
-    query = request.GET.get('buscar')
+    query = request.GET.get('q', "").strip()
 
     if query:
         facturas_list = Factura.objects.filter(
+            Q(id__iexact=query) |
             Q(cliente__nombre__icontains=query) |
             Q(cliente__apellido__icontains=query) |
             Q(fecha__icontains=query)
@@ -533,7 +540,7 @@ def lista_facturas(request):
 
     return render(request, 'facturas/lista.html', {
         'page_obj': page_obj,
-        'query': query
+        'q': query
     })
 
 @login_required
@@ -573,7 +580,8 @@ def obtener_precio_producto(request):
     producto_id = request.GET.get('producto_id')
     try:
         producto = Producto.objects.get(id=producto_id)
-        return JsonResponse({'precio': str(producto.precio)})
+        precio = float(producto.precio)
+        return JsonResponse({'precio': f"{precio:.2f}"})
     except Producto.DoesNotExist:
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
