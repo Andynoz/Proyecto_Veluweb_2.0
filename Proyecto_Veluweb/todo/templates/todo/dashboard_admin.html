@@ -193,40 +193,6 @@
             </div>
         </div>
 
-        <!-- Navegación Rápida -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Navegación Rápida</h2>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {% if perms.todo.view_cliente %}
-                    <a href="{% url 'tabla' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-users text-blue-600 mr-3"></i>
-                        <span class="text-gray-700 font-medium">Clientes</span>
-                    </a>
-                    {% endif %}
-
-                    {% if perms.todo.view_producto %}
-                    <a href="{% url 'productos_index' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-box text-green-600 mr-3"></i>
-                        <span class="text-gray-700 font-medium">Productos</span>
-                    </a>
-                    {% endif %}
-
-                    {% if perms.todo.view_factura %}
-                    <a href="{% url 'lista_facturas' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-file-invoice-dollar text-yellow-600 mr-3"></i>
-                        <span class="text-gray-700 font-medium">Ventas</span>
-                    </a>
-                    {% endif %}
-
-                    <a href="{% url 'estadisticas' %}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-chart-line text-purple-600 mr-3"></i>
-                        <span class="text-gray-700 font-medium">Reportes</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
         <!-- Footer del Dashboard -->
         <div class="text-center text-gray-500 text-sm mb-8">
             <p>Sistema de Gestión Veluweb - Desarrollado para optimizar tu negocio</p>

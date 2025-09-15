@@ -256,6 +256,17 @@ def eliminar(request, cliente_id):
 
 @login_required
 def index(request):
+    user = request.user
+
+    # Selección de template según el rol
+    if user.groups.filter(name="Admin").exists():
+        template = "todo/dashboard_admin.html"   # tu index actual con todas las opciones
+    elif user.groups.filter(name="Empleado").exists():
+        template = "todo/dashboard_empleado.html"  # el que mostraste para empleados
+    else:  # Invitado (rol por defecto)
+        template = "todo/dashboard_invitado.html"
+
+    # Contexto (estadísticas)
     context = {
         'total_clientes': Cliente.objects.count(),
         'total_productos': Producto.objects.filter(estado=True).count(),
@@ -267,8 +278,8 @@ def index(request):
             stock__lte=5, estado=True
         ).count(),
     }
-    return render(request, 'todo/index.html', context)
 
+    return render(request, template, context)
 
 def registro(request):
     if request.method == "GET":
