@@ -184,7 +184,7 @@ def home(request):
 @login_required
 @permission_required("todo.view_cliente", raise_exception=True)
 def tabla(request):
-    query = request.GET.get("Buscar", "").strip()
+    query = request.GET.get("q", "").strip()  
 
     if query:
         lista_clientes = Cliente.objects.filter(
@@ -202,7 +202,7 @@ def tabla(request):
 
     return render(request, 'todo/tabla.html', {
         'page_obj': page_obj,
-        'q': query 
+        'q': query  # para que el input de búsqueda se mantenga con el valor
     })
 
 @login_required
@@ -409,16 +409,24 @@ def bienvenida(request):
 @login_required
 @permission_required("todo.view_producto", raise_exception=True)
 def productos_index(request):
-    query = request.GET.get("q", "").strip()  # ahora usa 'q' como en el input
+    query = request.GET.get("q", "").strip()
     
+    productos_lista = Producto.objects.filter(estado=True).order_by('-id')
+
     if query:
-        productos_lista = Producto.objects.filter(
-        Q(nombre__istartswith=query) | Q(nombre__iexact=query) |
-        Q(descripcion__istartswith=query) | Q(descripcion__iexact=query),
-        estado=True
-        ).order_by('-id')
-    else:
-        productos_lista = Producto.objects.filter(estado=True).order_by('-id')
+        if query.lower() in ["activo", "inactivo"]:
+            if query.lower() == "activo":
+                productos_lista = productos_lista.filter(stock__gt=0)
+            else:
+                productos_lista = productos_lista.filter(stock=0)
+        else:
+            productos_lista = productos_lista.filter(
+                Q(nombre__icontains=query) |
+                Q(descripcion__icontains=query) |
+                Q(id__icontains=query) |
+                Q(stock__icontains=query) |
+                Q(precio__icontains=query)
+            ).order_by('-id')
 
     paginator = Paginator(productos_lista, 5)
     pagina = request.GET.get('page')
@@ -426,7 +434,7 @@ def productos_index(request):
 
     return render(request, 'productos/index.html', {
         'page_obj': page_obj,
-        'q': query  # para que el input mantenga el valor buscado
+        'q': query
     })
 
 
@@ -529,7 +537,9 @@ def lista_facturas(request):
             Q(id__iexact=query) |
             Q(cliente__nombre__icontains=query) |
             Q(cliente__apellido__icontains=query) |
-            Q(fecha__icontains=query)
+            Q(fecha__icontains=query) |
+            Q(estado__icontains=query) |
+            Q(monto_total__icontains=query)    
         ).order_by('-fecha')
     else:
         facturas_list = Factura.objects.all().order_by('-fecha')
@@ -542,6 +552,7 @@ def lista_facturas(request):
         'page_obj': page_obj,
         'q': query
     })
+
 
 @login_required
 @permission_required("todo.add_factura", raise_exception=True)
@@ -648,11 +659,14 @@ def eliminar_factura(request, pk):
     return render(request, 'facturas/eliminar.html', {'factura': factura})
 
 
-#ROLES 
+# ROLES
 @permission_required("auth.change_user", raise_exception=True)
 def roles(request):
     grupos_validos = ["Invitado", "Empleado", "Admin"]
     grupos = {g.name: g for g in Group.objects.filter(name__in=grupos_validos)}
+
+    # Búsqueda
+    query = request.GET.get("q", "").strip()
 
     if request.method == "POST":
         cambios = 0
@@ -680,8 +694,23 @@ def roles(request):
             messages.info(request, "No hubo cambios")
         return redirect("roles")
 
-    usuarios = User.objects.all().order_by("username")
-    return render(request, "todo/roles.html", {"usuarios": usuarios, "grupos": grupos_validos})
+    # Filtrar usuarios
+    if query:
+        usuarios = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query) |
+            Q(groups__name__icontains=query) 
+        ).order_by("username")
+    else:
+        usuarios = User.objects.all().order_by("username")
+
+    return render(request, "todo/roles.html", {
+        "usuarios": usuarios,
+        "grupos": grupos_validos,
+        "q": query
+    })
 
 
 #EXPORTAR A EXCEL
