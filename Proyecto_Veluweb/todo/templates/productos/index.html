@@ -3,6 +3,7 @@
 {% load humanize %}
 {% block content %}
 
+
  <style>
     .stock-badge {
       padding: 4px 8px;
@@ -61,17 +62,7 @@
     {% endif %}
   </div>
 
-  <!-- Botón Productos Inactivos -->
-  <div class="flex justify-center mb-8">
-    {% if perms.productos.change_producto %}
-      <a href="{% url 'productos_inactivos' %}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
-        Ir a Productos Inactivos
-      </a>
-    {% endif %}
-  </div>
 
-
-  
   <!-- Contenedor de la tabla -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <!-- Header -->
@@ -110,10 +101,10 @@
         <div class="flex items-center">
           <span class="font-bold text-dark">${{ producto.precio|floatformat:0|intcomma }}</span>
         </div>
-
+        
         <!-- Estado -->
         <div class="flex items-center">
-          {% if producto.stock > 0 %}
+          {% if producto.estado %}
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-300">
             Activo
           </span>
@@ -123,6 +114,7 @@
           </span>
           {% endif %}
         </div>
+
 
           <!-- Acciones -->
         <div class="flex items-center justify-center space-x-2">
@@ -143,16 +135,22 @@
             </a>
           {% endif %}
 
-          <!-- Botón Eliminar -->
-          {% if perms.productos.delete_producto %}
-            <a href="{% url 'deshabilitar_producto' producto.pk %}" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </a>
+          <!-- Cambiar estado  -->
+          <a href="{% url 'toggle_estado_producto' producto.pk %}" 
+          class="inline-flex items-center justify-center w-10 h-10 
+          bg-yellow-100 hover:bg-yellow-600 text-white rounded-lg 
+          transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          {% if producto.estado %}
+          <!-- Icono candado abierto -->
+          🔓
+          {% else %}
+          <!-- Icono candado cerrado -->
+          🔒
           {% endif %}
-        </div>
-      </div>
+        </a>
+      </div> 
+    </div>
+
       {% empty %}
       <!-- Sin productos -->
       <div class="px-6 py-12 text-center text-gray-500">
