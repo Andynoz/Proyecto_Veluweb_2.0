@@ -17,7 +17,6 @@ class ClienteForm(forms.ModelForm): #Formulario para registrar clientes
         validators=[
             RegexValidator(
                 regex = r'^\d{10}$',
-                message='El número de teléfono debe tener exactamente 10 dígitos.'
             )
         ],
         error_messages={
