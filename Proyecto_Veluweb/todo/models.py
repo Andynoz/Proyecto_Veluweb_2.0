@@ -67,6 +67,10 @@ class Producto(models.Model):
     def estado_stock(self):
         return self.stock > 0
     
+    def get_estado_display(self):
+        return "Activo" if self.estado else "Inactivo"
+    
+
 class Factura(models.Model):
     ESTADO_CHOICES = [
         ('PENDIENTE', 'Pendiente'),

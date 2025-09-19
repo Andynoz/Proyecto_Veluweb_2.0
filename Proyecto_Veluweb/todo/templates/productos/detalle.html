@@ -32,10 +32,15 @@
   <div class="flex flex-col md:flex-row gap-8 bg-white rounded-xl shadow-lg p-8">
     <!-- Imagen del producto -->
     <div class="md:w-1/2 flex items-start justify-center">
+      {% if producto.imagen %}
       <img src="{{ producto.imagen.url }}" alt="Imagen del producto"
-           class="rounded shadow-sm w-full max-w-xs object-cover">
+      class="rounded shadow-sm w-full max-w-xs object-cover">
+      {% else %}
+      <img src="{% static 'img/no-image.png' %}" alt="Sin imagen disponible"
+      class="rounded shadow-sm w-full max-w-xs object-cover">
+      {% endif %}
     </div>
-
+    
     <!-- Info del producto -->
     <div class="md:w-1/2 flex flex-col justify-between">
       <div>
