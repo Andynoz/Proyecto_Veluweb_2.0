@@ -46,17 +46,25 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
   <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Productos</h1>
-
-  <!-- Buscador -->
-  <form method="get" class="flex justify-center mb-6">
-    <input type="search" name="q" value="{{ q }}" placeholder="Buscar productos..." class="form-control w-1/2 border rounded-lg px-4 py-2">
-    <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
-  </form>
+  
+  <!-- Barra de búsqueda y botón crear -->
+  <div class="flex items-center justify-between mb-6 gap-4">
+    <!-- Buscador -->
+    <form method="get" class="flex w-full max-w-lg">
+      <input 
+        type="search" 
+        name="q" 
+        value="{{ q }}" 
+        placeholder="Buscar productos..." 
+        class="form-control flex-grow border rounded-lg px-4 py-2"
+        >
+        <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
+    </form>
 
   <!-- Botón crear producto -->
-  <div class="flex justify-center mb-8">
     {% if perms.productos.add_producto %}
-      <a href="{% url 'crear_producto' %}" class="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+      <a href="{% url 'crear_producto' %}" 
+         class="ml-4 bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
         + Crear Producto
       </a>
     {% endif %}
