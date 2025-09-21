@@ -1,0 +1,82 @@
+{% extends "todo/layout2.html" %}
+
+{% block content %}
+<header>
+     <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+    </style>
+</header>
+
+
+<div class="max-w-6xl mx-auto mt-10 mb-10">
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h1 class="text-center text-2xl font-bold text-dark mb-6">Asignar Roles a Usuarios</h1>
+
+    <!-- Buscador de Roles -->
+<form method="get" class="flex justify-center mb-6">
+  <input 
+    type="search" 
+    name="q" 
+    value="{{ q }}" 
+    placeholder="Buscar rol ..." 
+    class="form-control w-1/2 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+  >
+  <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+    🔎
+  </button>
+</form>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-800 text-white">
+              <th class="p-4 text-left">Usuario</th>
+              <th class="p-4 text-left">Correo</th>
+              <th class="p-4 text-center">Rol Actual</th>
+              <th class="p-4 text-center">Nuevo Rol</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for user in usuarios %}
+            {% with actual=user.groups.first %}
+            <tr class="hover:bg-gray-50 transition-all duration-300">
+              <td class="p-4 font-medium text-gray-800">{{ user.username }}</td>
+              <td class="p-4 text-gray-600">{{ user.email }}</td>
+              <td class="p-4 text-center text-blue-700 font-semibold">
+                {{ actual.name|default:"(sin rol)" }}
+              </td>
+              <td class="p-4 text-center">
+                <select name="rol_{{ user.id }}" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
+                  {% for g in grupos %}
+                    <option value="{{ g }}" {% if actual and actual.name == g %}selected{% endif %}>{{ g }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+            {% endwith %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-end gap-4 mt-6">
+        <button type="submit" class="bg-gradient-to-r from-slate-800 to-sky-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-md hover:-translate-y-0.5 hover:shadow-xl">
+          Guardar Cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

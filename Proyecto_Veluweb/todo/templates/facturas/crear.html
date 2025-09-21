@@ -1,56 +1,275 @@
 {% extends "todo/layout2.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Crear Factura</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+<header>
+     <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        table select,
+        table input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb; /* gris claro */
+            border-radius: 0.5rem;
+            background-color: #f9fafb; /* gris muy claro */
+            font-size: 0.875rem;
+        }
 
-        <h4>Detalles de la Factura</h4>
-        {{ formset.management_form }}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                </tr>
-            </thead>
-            <tbody id="formset-body">
-                {% for form in formset %}
-                <tr class="formset-row">
-                    <td>{{ form.producto }}</td>
-                    <td>{{ form.cantidad }}</td>
-                    <td>{{ form.precio_unitario }}</td>
-                </tr>
+        table select:focus,
+        table input:focus {
+            outline: none;
+            border-color: #1e40af; /* azul Tailwind 800 */
+            background-color: white;
+        }
+    </style>
+</header>
+<div class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-4 sm:p-8">
+        <!-- Título principal -->
+        <h1 class="text-blue-800 text-4xl font-semibold mb-8 text-center">Crear Comprobante</h1>
+
+         <!-- Mostrar usuario y correo -->
+        <div class="mb-6 text-right">
+            <p class="text-gray-700">
+                Creado por: <span class="font-semibold text-blue-700">{{ request.user.username }}</span><br>
+            </p>
+        </div>
+
+
+        <!-- Formulario principal -->
+        <form method="post" class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            {% csrf_token %}
+
+            {% if error_productos_desactivados %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">¡Productos desactivados!</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                {% for error in error_productos_desactivados %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!--Mensaje de error en Stock-->
+            {% if error_stock %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <ul>
+                {% for error in error_stock %}
+                    <li>{{ error }}</li>
                 {% endfor %}
-            </tbody>
-        </table>
+                </ul>
+            </div>
+            {% endif %}
 
-        <button type="button" class="btn btn-success mb-3" id="agregar-producto">+ Agregar producto</button>
+            <!-- Cliente y Fecha -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Cliente</label>
+                    {{ form.cliente }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Fecha</label>
+                    {{ form.fecha }}
+                </div>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Guardar Factura</button>
-        <a href="{% url 'lista_facturas' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+            <!-- Campo Estado -->
+            <div class="mb-6">
+                <label for="id_estado" class="block text-gray-700 font-medium mb-2">Estado de la Factura</label>
+                {{ form.estado }}
+                <p class="text-sm text-gray-500 mt-1">Por defecto queda en <strong>Pendiente</strong>, pero puedes cambiarlo a Pagada o Vencida.</p>
+            </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const agregarBtn = document.getElementById('agregar-producto');
-        const formsetBody = document.getElementById('formset-body');
-        const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
+            <!-- Título de detalles -->
+            <h4 class="text-xl font-semibold text-gray-800 mb-6">Detalles Comprobante</h4>
 
+            {{ formset.management_form }}
+
+            <!-- Tabla de productos -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-sm mb-6">
+                <table class="w-full">
+                    <thead class="bg-gray-800">
+                        <tr>
+                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Producto</th>
+                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Cantidad</th>
+                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Precio Unitario</th>
+                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="formset-body" class="divide-y divide-gray-200">
+                        {% for form in formset %}
+                        <tr class="formset-row transition-all duration-300 hover:bg-gray-50 hover:translate-x-1">
+                            <td class="py-5 px-4 text-center">
+                                {{ form.producto }}
+                            </td>
+                            <td class="py-5 px-4 text-center">
+                                {{ form.cantidad }}
+                            </td>
+                            <td class="py-5 px-4 text-center">
+                                {{ form.precio_unitario }}
+                            </td>
+                            <td class="py-5 px-4 text-center">
+                                <button type="button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg remove-row">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- Total parcial -->
+                    <div class="flex justify-end mt-4">
+                        <h3 class="text-xl font-semibold text-gray-800">
+                            Total parcial: $<span id="total-parcial">0</span>
+                        </h3>
+                    </div>
+            </div>
+
+            <!-- Botón agregar producto -->
+            <button type="button" class="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-8 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl mb-8 inline-block" id="agregar-producto">
+                + Agregar producto
+            </button>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-wrap gap-4">
+                <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
+                    Guardar Factura
+                </button>
+                <a href="{% url 'lista_facturas' %}" class="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block text-center no-underline">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const agregarBtn = document.getElementById('agregar-producto');
+    const formsetBody = document.getElementById('formset-body');
+    const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
+    const totalParcialElement = document.getElementById('total-parcial');
+
+    // Función para formatear el input de precio_unitario con miles
+function formatearMilesInput(input) {
+    let valor = input.value.replace(/\D/g, '');
+    if (valor) {
+        input.value = parseInt(valor, 10).toLocaleString('es-CO');
+    } else {
+        input.value = '';
+    }
+}
+
+// Modifica calcularTotal para leer el valor sin formato
+function calcularTotal() {
+    let total = 0;
+    document.querySelectorAll('#formset-body tr').forEach(row => {
+        const cantidad = parseFloat(row.querySelector('input[name$="-cantidad"]')?.value) || 0;
+        // Quita puntos de miles antes de parsear
+        const precioRaw = row.querySelector('input[name$="-precio_unitario"]')?.value.replace(/\./g, '').replace(/,/g, '') || '0';
+        const precio = parseFloat(precioRaw) || 0;
+        total += cantidad * precio;
+    });
+    totalParcialElement.textContent = total.toLocaleString('es-CO');
+}
+
+// Evento al cambiar un producto
+function handleProductoChange(event) {
+    const select = event.target;
+    const productoId = select.value;
+
+    if (!productoId) return;
+
+    const fila = select.closest('tr');
+    const inputPrecio = fila.querySelector('input[name$="-precio_unitario"]');
+
+    fetch(`/ajax/obtener-precio/?producto_id=${productoId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.precio) {
+                inputPrecio.value = parseInt(data.precio, 10).toLocaleString('es-CO');
+                calcularTotal();
+            } else {
+                inputPrecio.value = '';
+            }
+        });
+}
+
+// Asignar eventos a todos los selects, cantidades y precios
+function asignarEventosFila(row) {
+    const select = row.querySelector('select[name$="-producto"]');
+    const inputCantidad = row.querySelector('input[name$="-cantidad"]');
+    const inputPrecio = row.querySelector('input[name$="-precio_unitario"]');
+    
+    if (select) {
+        select.removeEventListener('change', handleProductoChange);
+        select.addEventListener('change', handleProductoChange);
+    }
+    if (inputCantidad) {
+        inputCantidad.removeEventListener('input', calcularTotal);
+        inputCantidad.addEventListener('input', calcularTotal);
+    }
+    if (inputPrecio) {
+        inputPrecio.removeEventListener('input', calcularTotal);
+        inputPrecio.addEventListener('input', calcularTotal);
+
+        // Evento para formatear al perder el foco
+        inputPrecio.removeEventListener('blur', () => formatearMilesInput(inputPrecio));
+        inputPrecio.addEventListener('blur', () => formatearMilesInput(inputPrecio));
+    }
+}
+
+    // Asigna eventos al cargar la página
+    document.querySelectorAll('#formset-body tr').forEach(asignarEventosFila);
+
+    // Evento para agregar nuevas filas
     agregarBtn.addEventListener('click', function () {
         const formCount = parseInt(totalForms.value);
         const newRow = document.querySelector('.formset-row').cloneNode(true);
         const regex = new RegExp(`detallefactura_set-(\\d){1,}`, 'g');
 
+        // Reemplazar índices
         newRow.innerHTML = newRow.innerHTML.replace(regex, `detallefactura_set-${formCount}`);
+        newRow.querySelectorAll('input, select').forEach(input => input.value = '');
+
         formsetBody.appendChild(newRow);
         totalForms.value = formCount + 1;
+
+        // Reasignar eventos
+        asignarEventosFila(newRow);
     });
+
+    formsetBody.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-row')) {
+            if (formsetBody.children.length > 1) {
+                e.target.closest('tr').remove();
+                totalForms.value = formsetBody.children.length;
+                calcularTotal();
+            } else {
+                alert('Debe mantener al menos un producto en la factura');
+            }
+        }
+    });
+    calcularTotal();
 });
 </script>
-
-</div>
 {% endblock %}

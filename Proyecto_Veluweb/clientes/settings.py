@@ -10,11 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# ==============================================================================
+# BASE DIRECTORY
+# ==============================================================================
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# ==============================================================================
+# CORE SETTINGS
+# ==============================================================================
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -25,19 +34,25 @@ SECRET_KEY = 'django-insecure-3bt0ngd5=ge=tbid#s=h*s6us7s)j1)ggfe#=2u#4ydej5=uw7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] # En producción, aquí irían los dominios permitidos (ej. ['tudominio.com'])
 
 
-# Application definition
+# ==============================================================================
+# APPLICATION DEFINITION
+# ==============================================================================
 
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'todo',  
+    'django.contrib.humanize',
+    
+    # Custom apps
+    'todo', #Aplicación principal
 ]
 
 MIDDLEWARE = [
@@ -52,8 +67,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'clientes.urls'
 
-LOGIN_URL = 'signIn'
-LOGIN_REDIRECT_URL = 'home'
+
+LOGIN_URL = 'signIn' 
+LOGIN_REDIRECT_URL = 'home' 
+
+
+# ==============================================================================
+# TEMPLATES
+# ==============================================================================
 
 TEMPLATES = [
     {
@@ -62,6 +83,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -73,67 +95,124 @@ TEMPLATES = [
 WSGI_APPLICATION = 'clientes.wsgi.application'
 
 
-# Database
+# ==============================================================================
+# DATABASE
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# ==============================================================================
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bd_veluweb',
+        'USER': 'postgres',
+        'PASSWORD': 'Sebasmv28',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
 
-# Password validation
+# ==============================================================================
+# PASSWORD VALIDATION
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+# ==============================================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,  #  mínimo 8 caracteres
+        }
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+    {
+        "NAME": "todo.validators.CustomPasswordValidator",  # 👈 aquí va tu validador propio
     },
 ]
 
+# Configuración para usar un backend de autenticación personalizado (por ejemplo, con email)
+AUTHENTICATION_BACKENDS = ['todo.backend.EmailBackend']
 
-# Internationalization
+
+# ==============================================================================
+# INTERNATIONALIZATION & TIME
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
+# ==============================================================================
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co' # Cambiado a español de Colombia, si aplica
+TIME_ZONE = 'America/Bogota' # Cambiado a la zona horaria de Ibagué/Bogotá, si aplica
 
-TIME_ZONE = 'UTC'
+USE_I18N = True # Habilita la internacionalización
 
-USE_I18N = True
-
-USE_TZ = True
+USE_TZ = True # Habilita zonas horarias (muy recomendable)
 
 
-# Static files (CSS, JavaScript, Images)
+# ==============================================================================
+# STATIC FILES (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+# ==============================================================================
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static', 
+]
+
+
+#STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+
+# ==============================================================================
+# MEDIA FILES (User-uploaded files)
+# ==============================================================================
+
+MEDIA_URL = '/media/' 
+MEDIA_ROOT = BASE_DIR / 'media' 
+
+
+# ==============================================================================
+# EMAIL SETTINGS (SMTP)
+# ==============================================================================
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'veluweb1@gmail.com'
-EMAIL_HOST_PASSWORD = 'ovci rkne cyqe evqn'
+EMAIL_HOST_PASSWORD = 'ovci rkne cyqe evqn' # Considera usar variables de entorno para esto
 DEFAULT_FROM_EMAIL = 'veluweb1@gmail.com'
 
 
+# ==============================================================================
+# DEFAULT PRIMARY KEY FIELD TYPE
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# ==============================================================================
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTHENTICATION_BACKENDS = ['todo.backend.EmailBackend'] # Usar el backend personalizado para autenticación por correo electrónico
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# ==========================
+# Configuración de Sesiones
+# ==========================
+
+SESSION_COOKIE_AGE = 900
+
+
+
+# Refresca el tiempo de expiración
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
