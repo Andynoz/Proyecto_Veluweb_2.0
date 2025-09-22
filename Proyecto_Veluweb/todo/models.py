@@ -52,6 +52,14 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Unitario")
     estado = models.BooleanField(default=True)
 
+
+    def get_precio_entero(self):
+        """Retorna el precio como entero redondeado"""
+        return int(round(float(self.precio)))
+    
+    def get_precio_formateado(self):
+        """Retorna el precio como entero con formato de miles"""
+        return f"{self.get_precio_entero():,}".replace(",", ".")
     def get_absolute_url(self):
         return reverse('detalle_producto', args=[self.pk])
 
