@@ -130,9 +130,11 @@
     class="fondo-oscuro fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[998] opacity-0 invisible transition-all duration-300 cursor-pointer"
   ></label>
 
-  <!-- Encabezado con menú hamburguesa -->
-  <header class="bg-blue-dark shadow-lg sticky top-0 z-[1000]">
-    <div class="max-w-6xl mx-auto px-5 flex items-center h-[90px] gap-5">
+ <!-- Encabezado con menú hamburguesa -->
+<header class="bg-blue-dark shadow-lg sticky top-0 z-[1000]">
+  <div class="max-w-6xl mx-auto px-5 flex items-center justify-between h-[90px]">
+    <!-- Sección izquierda: menú hamburguesa y logo -->
+    <div class="flex items-center gap-5">
       <!-- Botón hamburguesa -->
       <label 
         for="menu-toggle" 
@@ -142,7 +144,7 @@
         <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
         <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
       </label>
-      
+
       <!-- Logo -->
       <div class="flex items-center gap-4">
         <img 
@@ -152,10 +154,24 @@
         >
       </div>
     </div>
-  </header>
+
+    <!-- Sección derecha: botón cerrar sesión -->
+    <div>
+      <a href="{% url 'logout' %}" 
+   class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">
+   <i class="fas fa-sign-out-alt mr-1"></i> Cerrar Sesión
+</a>
+
+    </div>
+  </div>
+</header>
+
 
   <!-- Menú lateral -->
-  <nav class="fixed top-0 -left-80 w-80 h-screen bg-blue-dark z-[999] transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.8,0.25,1)] overflow-y-auto shadow-2xl">
+<nav class="fixed top-0 -left-80 w-80 h-screen bg-blue-dark z-[999] transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.8,0.25,1)] flex flex-col shadow-2xl">
+
+  <!-- Contenido con scroll -->
+  <div class="flex-1 overflow-y-auto">
     <div class="pt-[120px] pb-6 px-6 border-b border-white border-opacity-10">
       <h3 class="text-white text-xl mb-1 font-semibold">
         ¡Hola {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}!
@@ -177,53 +193,63 @@
         </a>
       </li>
       {% if perms.todo.view_cliente %}
-        <li>
-          <a href="{% url 'tabla' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-            <i class="fas fa-users menu-icon text-white w-5 mr-4 text-center"></i>
-            <span>Clientes</span>
-          </a>
-        </li>
-      {% endif %}
-      {% if perms.todo.view_producto %}
-        <li>
-          <a href="{% url 'productos_index' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-            <i class="fas fa-box menu-icon text-white w-5 mr-4 text-center"></i>
-            <span>Productos</span>
-          </a>
-        </li>
-      {% endif %}
-      {% if perms.todo.view_factura %}
-        <li>
-          <a href="{% url 'lista_facturas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-            <i class="fas fa-shopping-cart menu-icon text-white w-5 mr-4 text-center"></i>
-            <span>Ventas</span>
-          </a>
-        </li>
-      {% endif %}
-      {% if perms.auth.view_group %}
-        <li>
-          <a href="{% url 'estadisticas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-            <i class="fas fa-chart-bar menu-icon text-white w-5 mr-4 text-center"></i>
-            <span>Estadísticas</span>
-          </a>
-        </li>
-      {% endif %}
-      {% if perms.auth.view_group %}
-        <li>
-          <a href="{% url 'roles' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-            <i class="fas fa-user-shield menu-icon text-white w-5 mr-4 text-center"></i>
-            <span>Roles</span>
-          </a>
-        </li>
-      {% endif %}
-      <li class="mt-8 pt-5 border-t border-white/10">
-        <a href="{% url 'logout' %}" class="menu-item flex items-center py-4 px-6 text-red-400 hover:bg-red-600 hover:bg-opacity-10 hover:border-l-red-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-sign-out-alt menu-icon text-red-400 w-5 mr-4 text-center"></i>
-          <span>Cerrar Sesión</span>
+      <li>
+        <a href="{% url 'tabla' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
+          <i class="fas fa-users menu-icon text-white w-5 mr-4 text-center"></i>
+          <span>Clientes</span>
         </a>
       </li>
+      {% endif %}
+      {% if perms.todo.view_producto %}
+      <li>
+        <a href="{% url 'productos_index' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
+          <i class="fas fa-box menu-icon text-white w-5 mr-4 text-center"></i>
+          <span>Productos</span>
+        </a>
+      </li>
+      {% endif %}
+      {% if perms.todo.view_factura %}
+      <li>
+        <a href="{% url 'lista_facturas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
+          <i class="fas fa-shopping-cart menu-icon text-white w-5 mr-4 text-center"></i>
+          <span>Ventas</span>
+        </a>
+      </li>
+      {% endif %}
+      {% if perms.auth.view_group %}
+      <li>
+        <a href="{% url 'estadisticas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
+          <i class="fas fa-chart-bar menu-icon text-white w-5 mr-4 text-center"></i>
+          <span>Estadísticas</span>
+        </a>
+      </li>
+      {% endif %}
+      {% if perms.auth.view_group %}
+      <li>
+        <a href="{% url 'roles' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
+          <i class="fas fa-user-shield menu-icon text-white w-5 mr-4 text-center"></i>
+          <span>Roles</span>
+        </a>
+      </li>
+      {% endif %}
     </ul>
-  </nav>
+  </div>
+
+  <!-- Footer fijo -->
+  <div class="border-t border-white border-opacity-20 pt-3 px-6 text-center text-sm text-gray-300">
+    <p class="font-semibold text-white flex items-center justify-center gap-1 text-base">
+      <i class="fas fa-box"></i> VeluWeb
+    </p>
+    <p class="text-gray-400 text-xs mt-1">
+      Sistema de Gestión de Inventario
+    </p>
+    <p class="text-gray-500 text-xs mt-2">
+      © 2025 VeluWeb
+    </p>
+  </div>
+
+</nav>
+
 
   <!-- Contenido dinámico -->
   <main class="flex-1 py-8 px-5 max-w-6xl mx-auto w-full">
@@ -250,15 +276,20 @@
     {% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-blue-dark text-white text-center py-6 px-5 mt-auto">
-    <p class="mb-4 text-sm">Veluweb &copy; 2025 - Todos los derechos reservados</p>
-    <ul class="list-none flex justify-center gap-6 flex-wrap">
-      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Facebook</a></li>
-      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">TikTok</a></li>
-      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Instagram</a></li>
-    </ul>
-  </footer>
+
+  {% if messages %}
+  <div class="fixed top-4 right-4 z-50">
+    {% for message in messages %}
+      <div class="mb-2 px-4 py-2 rounded shadow-lg
+        {% if message.tags == 'success' %}bg-green-100 text-green-800
+        {% elif message.tags == 'error' %}bg-red-100 text-red-800
+        {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800
+        {% else %}bg-gray-100 text-gray-700{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 
   <script>
     let timer;

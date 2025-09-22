@@ -5,29 +5,36 @@
 
 {% block content %}
 
+<!-- Contenedor principal -->
 <div class="max-w-7xl mx-auto px-4 py-8">
-
-  <!-- Encabezado -->
-  <div class="text-center mb-8">
-    <h2 class="text-3xl font-bold text-dark mb-6">Lista de Clientes</h2>
-    {% if perms.todo.add_cliente %}
-      <a href="{% url 'agregar' %}" class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
-        <span class="text-lg mr-2">+</span>
-        Crear Cliente
-      </a>
-    {% endif %}
-  </div>
-<!-- Buscador -->
-  <form method="get" class="flex justify-center mb-6">
-    <input 
-      type="search" 
-      name="q" 
-      value="{{ q }}" 
-      placeholder="Buscar por ID, nombre, correo o teléfono..." 
-      class="form-control w-1/2 border rounded-lg px-4 py-2"
+  <!-- Título principal -->
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Productos</h1>
+  
+  <!-- Barra de búsqueda y botón crear -->
+  <div class="flex items-center justify-between mb-6 gap-4">
+    <!-- Buscador -->
+    <form method="get" class="flex w-full max-w-lg">
+      <input 
+        type="search" 
+        name="q" 
+        value="{{ q }}" 
+        placeholder="Buscar productos..." 
+        class="form-control flex-grow border rounded-lg px-4 py-2"
       >
       <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
     </form>
+
+    <!-- Botón crear producto -->
+    {% if perms.productos.add_producto %}
+      <a href="{% url 'crear_producto' %}" 
+         class="ml-4 bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
+        + Crear Producto
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+
 
   <!-- Tabla moderna -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">

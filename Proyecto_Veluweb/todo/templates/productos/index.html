@@ -3,6 +3,7 @@
 {% load humanize %}
 {% block content %}
 
+
  <style>
     .stock-badge {
       padding: 4px 8px;
@@ -56,6 +57,8 @@
   <div class="flex justify-center mb-8">
     {% if perms.todo.add_producto %}
       <a href="{% url 'crear_producto' %}" class="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+
+
         + Crear Producto
       </a>
     {% endif %}
@@ -71,6 +74,7 @@
   </div>
 
   
+
   <!-- Contenedor de la tabla -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <!-- Header -->
@@ -110,6 +114,22 @@
         </div>
 
         <!-- Acciones -->
+        
+        <!-- Estado -->
+        <div class="flex items-center">
+          {% if producto.estado %}
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-300">
+            Activo
+          </span>
+          {% else %}
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-300">
+            Inactivo
+          </span>
+          {% endif %}
+        </div>
+
+
+          <!-- Acciones -->
         <div class="flex items-center justify-center space-x-2">
           <!-- Botón Ver/Detalles -->
           <a href="{% url 'detalle_producto' producto.pk %}" class="inline-flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
@@ -135,9 +155,22 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
               </svg>
             </a>
+          <!-- Cambiar estado  -->
+          <a href="{% url 'toggle_estado_producto' producto.pk %}" 
+          class="inline-flex items-center justify-center w-10 h-10 
+          bg-yellow-100 hover:bg-yellow-600 text-white rounded-lg 
+          transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+          {% if producto.estado %}
+          <!-- Icono candado abierto -->
+          🔓
+          {% else %}
+          <!-- Icono candado cerrado -->
+          🔒
           {% endif %}
-        </div>
-      </div>
+        </a>
+      </div> 
+    </div>
+
       {% empty %}
       <div class="px-6 py-8 text-center text-gray-500">
         <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

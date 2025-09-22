@@ -428,14 +428,14 @@ def bienvenida(request):
 def productos_index(request):
     query = request.GET.get("q", "").strip()
     
-    productos_lista = Producto.objects.filter(estado=True).order_by('-id')
+    productos_lista = Producto.objects.all().order_by('-estado', '-id')
 
     if query:
         if query.lower() in ["activo", "inactivo"]:
             if query.lower() == "activo":
-                productos_lista = productos_lista.filter(stock__gt=0)
+                productos_lista = productos_lista.filter(estado=True)
             else:
-                productos_lista = productos_lista.filter(stock=0)
+                productos_lista = productos_lista.filter(estado=False)
         else:
             productos_lista = productos_lista.filter(
                 Q(nombre__icontains=query) |
@@ -443,7 +443,7 @@ def productos_index(request):
                 Q(id__icontains=query) |
                 Q(stock__icontains=query) |
                 Q(precio__icontains=query)
-            ).order_by('-id')
+            ).order_by('-estado', '-id')
 
     paginator = Paginator(productos_lista, 5)
     pagina = request.GET.get('page')
@@ -505,9 +505,9 @@ def productos_inactivos(request):
         'q': query
     })
 
-# ACTIVAR PRODUCTO
 @login_required
 @permission_required("todo.change_producto", raise_exception=True)
+
 def activar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -537,6 +537,25 @@ def deshabilitar_producto(request, pk):
         )
         return redirect('productos_index')
     return render(request, 'productos/deshabilitar.html', {'producto': producto})
+
+def toggle_estado_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    accion = "deshabilitar" if producto.estado else "activar"
+
+    if request.method == "POST":
+        producto.estado = not producto.estado
+        producto.save()
+        if producto.estado:
+            messages.success(request, f"✅ El producto '{producto.nombre}' fue activado correctamente.")
+            return redirect("productos_inactivos")
+        else:
+            messages.warning(request, f"🚫 El producto '{producto.nombre}' fue deshabilitado correctamente.")
+            return redirect("productos_index")
+
+    return render(request, "productos/toggle_estado.html", {
+        "producto": producto,
+        "accion": accion
+    })
 
 
 

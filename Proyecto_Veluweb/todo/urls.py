@@ -35,9 +35,9 @@ urlpatterns = [
     path('productos/crear/', views.crear_producto, name='crear_producto'),   
     path('productos/<int:pk>/', views.detalle_producto, name='detalle_producto'), 
     path('productos/<int:pk>/editar/', views.editar_producto, name='editar_producto'),
+    path('productos/<int:pk>/toggle/', views.toggle_estado_producto, name='toggle_estado_producto'),
     path('productos/inactivos/', views.productos_inactivos, name='productos_inactivos'),
-    path('productos/<int:pk>/deshabilitar/', views.deshabilitar_producto, name='deshabilitar_producto'),
-    path('productos/<int:pk>/activar/', views.activar_producto, name='activar_producto'),
+
 
 
     # CRUD Facturas
