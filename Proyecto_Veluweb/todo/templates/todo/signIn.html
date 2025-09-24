@@ -56,7 +56,6 @@
   </a>
 </div>
 
-
     <!-- Sección inferior con fondo blanco -->
     <div class="bg-white p-8">
         {% if error %}
@@ -80,14 +79,36 @@
             
             <div class="mb-5 text-left">
                 <label for="password" class="block mb-2 font-medium text-gray-800 text-sm">Contraseña</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    placeholder="Ingresa tu contraseña" 
-                    required
-                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
-                >
+                
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Ingresa tu contraseña" 
+                        required
+                        class="w-full py-3 px-4 pr-10 border-2 border-gray-300 rounded-lg text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                    >
+                    
+                    <!-- Botón ojito -->
+                    <button 
+                        type="button" 
+                        id="togglePassword" 
+                        class="absolute right-4 top-[31px] -translate-y-[20px] text-gray-500 hover:text-blue-600 focus:outline-none transition-colors duration-200"
+                    >
+                        <!-- Ícono de ojo abierto (visible por defecto) -->
+                        <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        
+                        <!-- Ícono de ojo cerrado (oculto por defecto) -->
+                        <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.965 9.965 0 011.193-2.13M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.94 17.94A10.07 10.07 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.965 9.965 0 012.258-3.745l12.284 12.284zM3 3l18 18" />
+                        </svg>
+                    </button>
+                </div>
             </div>
             
             <a 
@@ -98,21 +119,41 @@
             </a>
             
             <div class="flex gap-4 justify-center mt-6">
-            <!-- Botón Aceptar -->
-            <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
-                Aceptar
-            </button>
+                <!-- Botón Aceptar -->
+                <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
+                    Aceptar
+                </button>
 
-            <!-- Botón Registro (como link pero con estilo de botón) -->
-            <a href="{% url 'registro' %}" 
-                class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline text-center">
-                Registro
-            </a>
-        </div>
-
+                <!-- Botón Registro (como link pero con estilo de botón) -->
+                <a href="{% url 'registro' %}" 
+                    class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline text-center">
+                    Registro
+                </a>
+            </div>
         </form>
     </div>
 </div>
+
+<script>
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    const eyeOpen = document.getElementById("eyeOpen");
+    const eyeClosed = document.getElementById("eyeClosed");
+
+    togglePassword.addEventListener("click", () => {
+        if (passwordInput.type === "password") {
+            // Mostrar contraseña
+            passwordInput.type = "text";
+            eyeOpen.classList.add("hidden");
+            eyeClosed.classList.remove("hidden");
+        } else {
+            // Ocultar contraseña
+            passwordInput.type = "password";
+            eyeClosed.classList.add("hidden");
+            eyeOpen.classList.remove("hidden");
+        }
+    });
+</script>
 
 </body>
 </html>

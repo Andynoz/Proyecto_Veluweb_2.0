@@ -181,29 +181,30 @@ def estadisticas_view(request):
 def home(request):
     return render(request, 'todo/home.html')  
 
+
 @login_required
 @permission_required("todo.view_cliente", raise_exception=True)
 def tabla(request):
-    query = request.GET.get("q", "").strip()  
+    query = request.GET.get("q", "").strip()
 
     if query:
         lista_clientes = Cliente.objects.filter(
             Q(nombre__icontains=query) |
             Q(apellido__icontains=query) |
             Q(correo__icontains=query) |
-            Q(telefono__icontains=query)
+            Q(telefono__icontains=query),
         ).order_by('id')
     else:
         lista_clientes = Cliente.objects.all().order_by('id')
 
     paginator = Paginator(lista_clientes, 5)
-    pagina = request.GET.get('page')
-    page_obj = paginator.get_page(pagina)
+    page_obj = paginator.get_page(request.GET.get('page'))
 
     return render(request, 'todo/tabla.html', {
         'page_obj': page_obj,
-        'q': query  # para que el input de búsqueda se mantenga con el valor
+        'q': query
     })
+
 
 @login_required
 @permission_required("todo.add_cliente", raise_exception=True)
@@ -211,6 +212,10 @@ def agregar(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
         if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente registrado correctamente.')
+            return redirect('tabla')
+
             cliente = form.save()
             messages.success(
                 request, 
@@ -218,10 +223,12 @@ def agregar(request):
                 extra_tags='cliente_creado'
             )
             return redirect('tabla')        
+
     else:
         form = ClienteForm()
-    
+
     return render(request, 'todo/agregar.html', {'form': form})
+
 
 @login_required
 @permission_required("todo.view_cliente", raise_exception=True)
@@ -229,11 +236,12 @@ def detalle_cliente(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
     return render(request, 'todo/detalle_cliente.html', {'cliente': cliente})
 
+
 @login_required
 @permission_required("todo.change_cliente", raise_exception=True)
 def editar(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
-    
+
     if request.method == 'POST':
         form = ClienteForm(request.POST, instance=cliente)
         if form.is_valid():
@@ -245,17 +253,40 @@ def editar(request, cliente_id):
                     extra_tags='cliente_actualizado'
                 )
             else:
+                messages.info(request, 'No se realizaron cambios en el cliente.')
+
                 messages.info(
                     request, 
                     'No se realizaron cambios en el cliente.',
                     extra_tags='sin_cambios'
                 )      
         return redirect('tabla')
-    
     else:
         form = ClienteForm(instance=cliente)
-    
+
     return render(request, 'todo/editar.html', {'form': form})
+
+
+@login_required
+@permission_required("todo.change_cliente", raise_exception=True)
+def toggle_estado_cliente(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+
+    if request.method == "POST":
+        prev_activo = cliente.activo
+        cliente.activo = not cliente.activo
+        cliente.save()
+        messages.success(request, f"Cliente {'activado' if cliente.activo else 'desactivado'} correctamente.")
+
+        # Redirige según de dónde venía
+        if prev_activo:
+            return redirect('tabla')
+        else:
+            return redirect('clientes_inactivos')
+
+    accion = "desactivar" if cliente.activo else "activar"
+    return render(request, 'todo/toggle_cliente.html', {'cliente': cliente, 'accion': accion})
+
 
 
 @login_required
@@ -271,6 +302,33 @@ def eliminar(request, cliente_id):
     )
     return redirect('tabla')
 
+
+@login_required
+@permission_required("todo.view_cliente", raise_exception=True)
+def clientes_inactivos(request):
+    query = request.GET.get("q", "").strip()
+
+    if query:
+        clientes = Cliente.objects.filter(
+            (Q(nombre__icontains=query) |
+             Q(apellido__icontains=query) |
+             Q(correo__icontains=query)),
+            activo=False
+        ).order_by('-id')
+    else:
+        clientes = Cliente.objects.filter(activo=False).order_by('-id')
+
+    paginator = Paginator(clientes, 5)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'todo/inactivos.html', {
+        'page_obj': page_obj,
+        'q': query
+    })
+
+
+
+    
 @login_required
 def index(request):
     user = request.user
@@ -645,7 +703,7 @@ def crear_factura(request):
         "formset": formset,
     })
     
-    
+
 @login_required
 def obtener_precio_producto(request):
     producto_id = request.GET.get('producto_id')
@@ -743,15 +801,43 @@ def eliminar_factura(request, pk):
     return render(request, 'facturas/eliminar.html', {'factura': factura})
 
 
-# ROLES
+@login_required
+@permission_required("todo.change_factura", raise_exception=True)
+def toggle_estado_venta(request, pk):
+    factura = get_object_or_404(Factura, pk=pk)
+    accion = "desactivar" if factura.activo else "activar"
+
+    if request.method == "POST":
+        factura.activo = not factura.activo
+        factura.save()
+        messages.success(request, f"Factura {'activada' if factura.activo else 'desactivada'} correctamente.")
+
+        referer = request.META.get("HTTP_REFERER", "")
+        if "ventas/inactivas" in referer or "ventas_inactivas" in referer:
+            return redirect("ventas_inactivas")
+        return redirect("lista_facturas")
+
+    return render(request, "facturas/toggle_venta.html", {"factura": factura, "accion": accion})
+
+@login_required
+@permission_required("todo.view_factura", raise_exception=True)
+def ventas_inactivas(request):
+    ventas_list = Factura.objects.filter(activo=False).order_by('-fecha')
+    paginator = Paginator(ventas_list, 5)
+    pagina = request.GET.get('page')
+    page_obj = paginator.get_page(pagina)
+
+    return render(request, "facturas/inactivos.html", {
+        "page_obj": page_obj
+    })
+
+
+#ROLES 
 @permission_required("auth.change_user", raise_exception=True)
 def roles(request):
     grupos_validos = ["Invitado", "Empleado", "Admin"]
     grupos = {g.name: g for g in Group.objects.filter(name__in=grupos_validos)}
-
-    # Búsqueda
-    query = request.GET.get("q", "").strip()
-
+    
     if request.method == "POST":
         cambios = 0
         for user in User.objects.all().select_related():
@@ -778,6 +864,30 @@ def roles(request):
             messages.info(request, "No hubo cambios")
         return redirect("roles")
 
+    # Obtener query de búsqueda
+    query = request.GET.get("q", "").strip()
+    
+    # Filtrar usuarios según la búsqueda
+    if query:
+        usuarios = User.objects.filter(
+            Q(username__icontains=query) | 
+            Q(first_name__icontains=query) | 
+            Q(last_name__icontains=query)
+        ).order_by("username")
+    else:
+        usuarios = User.objects.all().order_by("username")
+
+    # Configurar paginación
+    paginator = Paginator(usuarios, 5)  # 5 usuarios por página
+    pagina = request.GET.get('page')
+    page_obj = paginator.get_page(pagina)
+
+    return render(request, "todo/roles.html", {
+        "page_obj": page_obj,
+        "grupos": grupos_validos,
+        "q": query
+    })
+
     # Filtrar usuarios
     if query:
         usuarios = User.objects.filter(
@@ -795,6 +905,7 @@ def roles(request):
         "grupos": grupos_validos,
         "q": query
     })
+
 
 
 #EXPORTAR A EXCEL

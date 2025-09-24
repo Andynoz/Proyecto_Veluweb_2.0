@@ -49,7 +49,7 @@
             </tr>
           </thead>
           <tbody>
-          {% for user in usuarios %}
+          {% for user in page_obj %}
             {% with actual=user.groups.first %}
             <tr class="hover:bg-gray-50 transition-all duration-300">
               <td class="p-4 font-medium text-gray-800">{{ user.username }}</td>
@@ -78,5 +78,14 @@
       </div>
     </form>
   </div>
+</div>
+
+  <!-- Información adicional -->
+  {% if page_obj %}
+    <div class="mt-6 text-center text-gray-500 text-sm">
+      Mostrando {{ page_obj|length }} usuario{{ page_obj|length|pluralize:"s" }}
+    </div>
+  {% endif %}
+  {% include "todo/paginacion.html" %}
 </div>
 {% endblock %}

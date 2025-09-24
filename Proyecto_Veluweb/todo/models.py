@@ -14,6 +14,7 @@ class Cliente(models.Model):
     telefono = models.CharField(max_length=10)
     ciudad = models.CharField(max_length=100, verbose_name="Ciudad", default='Sin especificar')
     direccion = models.CharField(max_length=255, verbose_name="Dirección", default='Sin especificar')
+    activo = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
@@ -51,6 +52,7 @@ class Producto(models.Model):
     stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
     precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Unitario")
     estado = models.BooleanField(default=True)
+    activo = models.BooleanField(default=True)
 
 
     def get_precio_entero(self):
@@ -95,6 +97,7 @@ class Factura(models.Model):
     )
     monto_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    activo = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Factura #{self.id} - {self.cliente}"
