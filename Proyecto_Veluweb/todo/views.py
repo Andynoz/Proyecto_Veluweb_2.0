@@ -215,6 +215,15 @@ def agregar(request):
             form.save()
             messages.success(request, 'Cliente registrado correctamente.')
             return redirect('tabla')
+
+            cliente = form.save()
+            messages.success(
+                request, 
+                f'Cliente "{cliente.nombre} {cliente.apellido}" registrado correctamente.',
+                extra_tags='cliente_creado'
+            )
+            return redirect('tabla')        
+
     else:
         form = ClienteForm()
 
@@ -237,10 +246,20 @@ def editar(request, cliente_id):
         form = ClienteForm(request.POST, instance=cliente)
         if form.is_valid():
             if form.has_changed():
-                form.save()
-                messages.success(request, 'Cliente actualizado correctamente.')
+                cliente_actualizado = form.save()
+                messages.success(
+                    request, 
+                    f'Cliente "{cliente_actualizado.nombre} {cliente_actualizado.apellido}" actualizado correctamente.',
+                    extra_tags='cliente_actualizado'
+                )
             else:
                 messages.info(request, 'No se realizaron cambios en el cliente.')
+
+                messages.info(
+                    request, 
+                    'No se realizaron cambios en el cliente.',
+                    extra_tags='sin_cambios'
+                )      
         return redirect('tabla')
     else:
         form = ClienteForm(instance=cliente)
@@ -269,11 +288,18 @@ def toggle_estado_cliente(request, pk):
     return render(request, 'todo/toggle_cliente.html', {'cliente': cliente, 'accion': accion})
 
 
+
 @login_required
 @permission_required("todo.delete_cliente", raise_exception=True)
 def eliminar(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
+    nombre_cliente = f"{cliente.nombre} {cliente.apellido}"
     cliente.delete()
+    messages.success(
+        request, 
+        f'Cliente "{nombre_cliente}" eliminado correctamente.',
+        extra_tags='cliente_eliminado'
+    )
     return redirect('tabla')
 
 
@@ -502,8 +528,12 @@ def crear_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Producto creado')
+            producto = form.save()
+            messages.success(
+                request, 
+                f'Producto "{producto.nombre}" creado correctamente.',
+                extra_tags='producto_creado'
+            )
             return redirect('productos_index')
     else:
         form = ProductoForm()
@@ -535,6 +565,37 @@ def productos_inactivos(request):
 
 @login_required
 @permission_required("todo.change_producto", raise_exception=True)
+
+def activar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    if request.method == 'POST':
+        producto.estado = True
+        producto.save()
+        messages.success(
+            request, 
+            f'Producto "{producto.nombre}" reactivado correctamente.',
+            extra_tags='producto_reactivado'
+        )
+        return redirect('productos_inactivos')
+    return render(request, 'productos/activar_producto.html', {'producto': producto})
+
+# DESHABILITAR PRODUCTO
+@login_required
+@permission_required("todo.change_producto", raise_exception=True)
+def deshabilitar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    if request.method == 'POST':
+        nombre_producto = producto.nombre
+        producto.estado = False
+        producto.save()
+        messages.warning(
+            request, 
+            f'Producto "{nombre_producto}" deshabilitado correctamente.',
+            extra_tags='producto_deshabilitado'
+        )
+        return redirect('productos_index')
+    return render(request, 'productos/deshabilitar.html', {'producto': producto})
+
 def toggle_estado_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     accion = "deshabilitar" if producto.estado else "activar"
@@ -557,7 +618,6 @@ def toggle_estado_producto(request, pk):
 
 
 
-
 # EDITAR PRODUCTO
 @login_required
 @permission_required("todo.change_producto", raise_exception=True)
@@ -566,8 +626,12 @@ def editar_producto(request, pk):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES, instance=producto)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Producto actualizado')
+            producto_actualizado = form.save()
+            messages.success(
+                request, 
+                f'Producto "{producto_actualizado.nombre}" actualizado correctamente.',
+                extra_tags='producto_actualizado'
+            )
             return redirect('productos_index')
     else:
         form = ProductoForm(instance=producto)
@@ -622,6 +686,11 @@ def crear_factura(request):
             formset = DetalleFormSet(request.POST, instance=factura)
             if formset.is_valid():
                 formset.save()
+                messages.success(
+                    request, 
+                    f'Factura #{factura.id} para "{factura.cliente}" creada correctamente.',
+                    extra_tags='factura_creada'
+                )
                 return redirect("lista_facturas")
         else:
             formset = DetalleFormSet(request.POST)
@@ -640,8 +709,9 @@ def obtener_precio_producto(request):
     producto_id = request.GET.get('producto_id')
     try:
         producto = Producto.objects.get(id=producto_id)
-        precio = float(producto.precio)
-        return JsonResponse({'precio': f"{precio:.2f}"})
+        # Devolver el precio como entero redondeado
+        precio_entero = int(round(float(producto.precio)))
+        return JsonResponse({'precio': precio_entero})
     except Producto.DoesNotExist:
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
@@ -665,6 +735,7 @@ def editar_factura(request, pk):
     factura = get_object_or_404(Factura, pk=pk)
 
     if request.method == 'POST':
+        estado_anterior = factura.estado
         nuevo_estado = request.POST.get("estado")
         
         form = FacturaForm(request.POST, instance=factura)
@@ -677,13 +748,27 @@ def editar_factura(request, pk):
                 factura.estado = nuevo_estado
             
             factura.save()
-            
             formset.save()
             
-            if nuevo_estado and nuevo_estado in ['PENDIENTE', 'PAGADA', 'VENCIDA']:
-                Factura.objects.filter(pk=factura.pk).update(estado=nuevo_estado)
+            # Mensaje personalizado según el cambio de estado
+            if estado_anterior != nuevo_estado:
+                estado_display = {
+                    'PENDIENTE': 'Pendiente',
+                    'PAGADA': 'Pagada', 
+                    'VENCIDA': 'Vencida'
+                }
+                messages.success(
+                    request, 
+                    f'Factura #{factura.id} actualizada. Estado cambiado a "{estado_display.get(nuevo_estado, nuevo_estado)}".',
+                    extra_tags='factura_actualizada'
+                )
+            else:
+                messages.success(
+                    request, 
+                    f'Factura #{factura.id} actualizada correctamente.',
+                    extra_tags='factura_actualizada'
+                )
             
-            messages.success(request, f'Factura actualizada correctamente. Estado: {nuevo_estado}')
             return redirect('lista_facturas')
         else:
             messages.error(request, 'Error al actualizar la factura')
@@ -698,12 +783,20 @@ def editar_factura(request, pk):
     })
 
 
+
 @login_required
 @permission_required("todo.delete_factura", raise_exception=True)
 def eliminar_factura(request, pk):
-    factura = Factura.objects.get(pk=pk)
+    factura = get_object_or_404(Factura, pk=pk)
     if request.method == 'POST':
+        numero_factura = factura.id
+        cliente_nombre = factura.cliente
         factura.delete()
+        messages.success(
+            request, 
+            f'Factura #{numero_factura} de "{cliente_nombre}" eliminada correctamente.',
+            extra_tags='factura_eliminada'
+        )
         return redirect('lista_facturas')
     return render(request, 'facturas/eliminar.html', {'factura': factura})
 
