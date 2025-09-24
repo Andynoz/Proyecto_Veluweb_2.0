@@ -1,0 +1,71 @@
+{% extends "todo/layout2.html" %}
+{% load humanize %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Título -->
+  <h1 class="text-gray-900 text-4xl mb-8 text-center font-semibold">Facturas Inactivas</h1>
+
+  <!-- Botón volver -->
+  <div class="flex justify-center mb-8">
+    <a href="{% url 'lista_facturas' %}"
+       class="bg-slate-600 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
+      ↩️ Volver a activas
+    </a>
+  </div>
+
+  <!-- Contenedor -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-700 to-slate-600">
+      <div class="grid grid-cols-5 gap-4 px-6 py-4 font-semibold text-white">
+        <div class="text-left">ID</div>
+        <div class="text-left">Cliente</div>
+        <div class="text-left">Fecha</div>
+        <div class="text-left">Total</div>
+        <div class="text-center">Acciones</div>
+      </div>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="divide-y divide-gray-200">
+      {% for factura in page_obj %}
+      <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
+        <!-- ID -->
+        <div class="flex items-center font-semibold text-gray-900">{{ factura.id }}</div>
+        <!-- Cliente -->
+        <div class="flex items-center font-medium text-gray-900">{{ factura.cliente }}</div>
+        <!-- Fecha -->
+        <div class="flex items-center text-gray-900">{{ factura.fecha|date:"M d, Y, g:i a" }}</div>
+        <!-- Total -->
+        <div class="flex items-center font-bold text-gray-900">${{ factura.monto_total|floatformat:0|intcomma }}</div>
+        <!-- Reactivar -->
+        <div class="flex items-center justify-center">
+          <a href="{% url 'toggle_estado_venta' factura.pk %}"
+             class="inline-flex items-center justify-center w-10 h-10 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+             title="Reactivar"
+             aria-label="Reactivar">
+            🔓
+          </a>
+        </div>
+      </div>
+
+      {% empty %}
+      <!-- No inactivos -->
+      <div class="px-6 py-12 text-center text-gray-500">
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay facturas inactivas</h3>
+        <p class="text-gray-500">Todas las facturas están activas actualmente.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  {% if page_obj %}
+    <div class="mt-6 text-center text-gray-500 text-sm">
+      Mostrando {{ page_obj|length }} factura{{ page_obj|length|pluralize:"s" }}
+    </div>
+  {% endif %}
+
+  {% include "todo/paginacion.html" %}
+</div>
+{% endblock %}

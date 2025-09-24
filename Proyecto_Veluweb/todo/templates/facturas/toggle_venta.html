@@ -1,0 +1,82 @@
+{% extends "todo/layout2.html" %}
+{% load humanize %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 
+              {% if factura.activo %} border-red-500 {% else %} border-emerald-500 {% endif %}">
+    <div class="p-8">
+      <!-- Icono -->
+      <div class="flex justify-center mb-6">
+        <div class="{% if factura.activo %} bg-red-100 {% else %} bg-emerald-100 {% endif %} rounded-full p-4">
+          {% if factura.activo %}
+          <!-- Ícono de deshabilitar -->
+          <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 
+                     01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 
+                     00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          {% else %}
+          <!-- Ícono de activar -->
+          <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Título -->
+      <h1 class="text-3xl mb-6 text-center font-bold 
+                 {% if factura.activo %} text-red-600 {% else %} text-emerald-600 {% endif %}">
+        ¿Deseas {{ accion }} esta factura?
+      </h1>
+
+      <!-- Info de la factura -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-8">
+        <h4 class="text-gray-800 font-semibold mb-3">🧾 Información de la Factura:</h4>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Cliente:</span>
+            <span class="font-medium text-gray-900">{{ factura.cliente }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Fecha:</span>
+            <span class="font-medium text-gray-900">{{ factura.fecha|date:"M d, Y, g:i a" }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Total:</span>
+            <span class="font-bold text-green-600 text-lg">${{ factura.monto_total|floatformat:0|intcomma }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Estado:</span>
+            <span class="font-semibold 
+              {% if factura.estado == 'PAGADA' %} text-green-600
+              {% elif factura.estado == 'PENDIENTE' %} text-yellow-600
+              {% elif factura.estado == 'VENCIDA' %} text-red-600
+              {% else %} text-gray-600 {% endif %}">
+              {{ factura.get_estado_display }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form method="post">{% csrf_token %}
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button type="submit" 
+                  class="{% if factura.activo %} bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700 
+                         {% else %} bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700 
+                         {% endif %} text-white font-bold px-8 py-3 rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
+            {% if factura.activo %} 🚫 Sí, deshabilitar {% else %} ✅ Sí, activar {% endif %}
+          </button>
+          <a href="{% if factura.activo %}{% url 'lista_facturas' %}{% else %}{% url 'ventas_inactivas' %}{% endif %}" 
+          class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 text-center">
+          ↩️ Cancelar
+        </a>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

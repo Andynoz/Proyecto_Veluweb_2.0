@@ -8,7 +8,7 @@
 <!-- Contenedor principal -->
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
-  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Productos</h1>
+  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Clientes</h1>
   
   <!-- Barra de búsqueda y botón crear -->
   <div class="flex items-center justify-between mb-6 gap-4">
@@ -18,22 +18,21 @@
         type="search" 
         name="q" 
         value="{{ q }}" 
-        placeholder="Buscar productos..." 
+        placeholder="Buscar cliente..." 
         class="form-control flex-grow border rounded-lg px-4 py-2"
       >
       <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
     </form>
 
-    <!-- Botón crear producto -->
-    {% if perms.productos.add_producto %}
-      <a href="{% url 'crear_producto' %}" 
+    <!-- Botón crear cliente -->
+    {% if perms.todo.add_cliente %}
+      <a href="{% url 'agregar' %}" 
          class="ml-4 bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-        + Crear Producto
+        + Crear Cliente
       </a>
     {% endif %}
   </div>
 </div>
-
 
 
   <!-- Tabla moderna -->
@@ -96,18 +95,23 @@
             </a>
           {% endif %}
 
-          {% if perms.todo.delete_cliente %}
-            <a href="{% url 'eliminar' cliente.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente?')" class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
-            </a>
+          <!-- Botón Activar/Desactivar con Modal -->
+          <a href="{% url 'toggle_estado_cliente' cliente.id %}" 
+          class="inline-flex items-center justify-center w-10 h-10 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+          title="{% if cliente.activo %}Desactivar{% else %}Activar{% endif %}">
+          {% if cliente.activo %}
+          🔓
+          {% else %}
+          🔒
           {% endif %}
-        </div>
-        {% endif %}
+        </a>
+
+
+
       </div>
-      
-      {% empty %}
+    </div>
+    {%endif%}
+    {% empty %}
       <div class="px-6 py-12 text-center text-gray-500">
         <div class="text-6xl mb-4">📋</div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No hay clientes registrados</h3>
@@ -122,6 +126,7 @@
       {% endfor %}
     </div>
   </div>
+
 
   <!-- Información adicional -->
   {% if page_obj %}

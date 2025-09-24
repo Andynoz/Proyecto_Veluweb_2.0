@@ -12,6 +12,9 @@ urlpatterns = [
     path('detalle/<int:pk>/', views.detalle_cliente, name='detalle_cliente'),
     path('editar/<int:cliente_id>/', views.editar, name='editar'),
     path('eliminar/<int:cliente_id>/', views.eliminar, name='eliminar'),
+    path('clientes/<int:pk>/toggle/', views.toggle_estado_cliente, name='toggle_estado_cliente'),
+    path('clientes/inactivos/', views.clientes_inactivos, name='clientes_inactivos'),
+    
 
     # Autentificacion
     path('index/', views.index, name='index'),
@@ -49,6 +52,8 @@ urlpatterns = [
     path('facturas/<int:pk>/eliminar/', views.eliminar_factura, name='eliminar_factura'),
     path('estadisticas/', views.estadisticas_view, name='estadisticas'),
     path('productos/<int:pk>/editar/', views.editar_producto, name='editar_producto'),
+    path("ventas/inactivas/", views.ventas_inactivas, name="ventas_inactivas"),
+    path("ventas/<int:pk>/toggle/", views.toggle_estado_venta, name="toggle_estado_venta"),
 
 
     # Exportar a Excel

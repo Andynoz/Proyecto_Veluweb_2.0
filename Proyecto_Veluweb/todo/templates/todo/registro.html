@@ -100,32 +100,48 @@
                 >
             </div>
             
-            <div class="mb-5 text-left">
-                <label for="password1" class="block mb-2 font-medium text-gray-800 text-sm">Contraseña</label>
-                <input 
-                    type="password" 
-                    id="password1" 
-                    name="password1" 
-                    placeholder="Ingresa una contraseña" 
-                    required
-                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
-                >
-                <p class="text-xs text-gray-500 mt-2">
-                    La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un carácter especial.
-                </p>
-            </div>
-            
-            <div class="mb-5 text-left">
-                <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">Comprobar contraseña</label>
-                <input 
-                    type="password" 
-                    id="password2" 
-                    name="password2" 
-                    placeholder="Confirmar contraseña" 
-                    required
-                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
-                >
-            </div>
+<div class="relative">
+    <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">Crear contraseña</label>
+  <input 
+    type="password" 
+    id="password1" 
+    placeholder="Ingresa tu contraseña"
+    class="w-full border rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+  <button 
+    type="button" 
+    onclick="togglePassword('password1', this)" 
+    class="absolute right-3 top-[51px] -translate-y-1/2 text-gray-500 hover:text-blue-600 focus:outline-none"
+  >
+    <!-- Ícono de ojito -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    </svg>
+  </button>
+</div>
+
+
+<div class="mb-5 text-left relative">
+    <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">Comprobar contraseña</label>
+    <input 
+        type="password" 
+        id="password2" 
+        name="password2" 
+        placeholder="Confirmar contraseña" 
+        required
+        class="w-full py-3 px-4 pr-12 border-2 border-gray-300 rounded-lg text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+    >
+    <!-- Botón ojo -->
+    <button type="button" onclick="togglePassword('password2', this)" 
+        class="absolute right-3 top-[49px] transform -translate-y-1/2 text-gray-500 hover:text-blue-custom focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+    </button>
+</div>
+
             
             <div class="flex justify-center mt-6">
                 <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline inline-block text-center">
@@ -144,6 +160,24 @@
         </form>
     </div>
 </div>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const icon = btn.querySelector("svg");
+
+    if (input.type === "password") {
+        input.type = "text";
+        btn.setAttribute("aria-label", "Ocultar contraseña");
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 013.276-4.419M6.219 6.219A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.05 10.05 0 01-4.257 5.285M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><line x1="3" y1="3" x2="21" y2="21" stroke-width="2" stroke-linecap="round" />';
+    } else {
+        input.type = "password";
+        btn.setAttribute("aria-label", "Mostrar contraseña");
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+    }
+}
+</script>
+
 
 </body>
 </html>
