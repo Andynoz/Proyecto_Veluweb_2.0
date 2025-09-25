@@ -129,11 +129,11 @@
         </div>
     </div>
 
-    <!-- Cards de estadísticas por estado de facturas con iconos minimalistas -->
+    <!-- Cards de estadísticas por estado de ventas con iconos minimalistas -->
     <div class="mb-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Estado de Comprobantes</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Facturas Pagadas -->
+            <!-- Ventas Pagadas -->
             <div class="card-estado bg-green-gradient text-white p-6">
                 <div class="flex items-center justify-between">
                     <div>
@@ -147,7 +147,7 @@
                 </div>
             </div>
 
-            <!-- Facturas Pendientes -->
+            <!-- Ventas Pendientes -->
             <div class="card-estado bg-yellow-gradient text-white p-6">
                 <div class="flex items-center justify-between">
                     <div>
@@ -161,7 +161,7 @@
                 </div>
             </div>
 
-            <!-- Facturas Vencidas -->
+            <!-- Ventass Vencidas -->
             <div class="card-estado bg-red-gradient text-white p-6">
                 <div class="flex items-center justify-between">
                     <div>
@@ -181,7 +181,7 @@
     <div class="bg-white shadow rounded-lg mb-6">
         <div class="bg-gray-800 text-white px-4 py-3 rounded-t-lg">
             <h5 class="font-semibold flex items-center gap-2">
-                <i class="fas fa-chart-pie"></i> Distribución de Estados de Facturas
+                <i class="fas fa-chart-pie"></i> Distribución de Estados de Ventas
             </h5>
         </div>
         <div class="p-4 h-80">
@@ -214,7 +214,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Gráfico de estados de facturas
+        // Gráfico de estados de Ventas
         const ctxEstados = document.getElementById('estadosChart').getContext('2d');
         new Chart(ctxEstados, {
             type: 'doughnut',

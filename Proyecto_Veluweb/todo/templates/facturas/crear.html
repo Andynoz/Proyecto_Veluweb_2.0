@@ -1,166 +1,229 @@
 {% extends "todo/layout2.html" %}
 
 {% block content %}
-<header>
-     <style>
-        /* Gradiente personalizado para el header */
-        .bg-custom-gradient {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        
-        /* Colores personalizados para los botones */
-        .btn-custom {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        table select,
-        table input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 2px solid #e5e7eb; /* gris claro */
-            border-radius: 0.5rem;
-            background-color: #f9fafb; /* gris muy claro */
-            font-size: 0.875rem;
-        }
 
-        table select:focus,
-        table input:focus {
-            outline: none;
-            border-color: #1e40af; /* azul Tailwind 800 */
-            background-color: white;
-        }
-    </style>
-</header>
-<div class="bg-gray-50 min-h-screen">
-    <div class="max-w-6xl mx-auto p-4 sm:p-8">
-        <!-- Título principal -->
-        <h1 class="text-blue-800 text-4xl font-semibold mb-8 text-center">Crear Comprobante</h1>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Título principal -->
+  <h1 class="text-blue-dark text-4xl mb-8 text-center font-semibold">Crear Comprobante</h1>
+  
+  <!-- Mostrar usuario y correo -->
+  <div class="mb-6 text-right">
+    <p class="text-gray-700">
+      Creado por: <span class="font-semibold text-blue-700">{{ request.user.username }}</span><br>
+    </p>
+  </div>
 
-         <!-- Mostrar usuario y correo -->
-        <div class="mb-6 text-right">
-            <p class="text-gray-700">
-                Creado por: <span class="font-semibold text-blue-700">{{ request.user.username }}</span><br>
-            </p>
-        </div>
-
-
-        <!-- Formulario principal -->
-        <form method="post" class="bg-white rounded-xl shadow-lg p-8 mb-8">
-            {% csrf_token %}
-
-            {% if error_productos_desactivados %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">¡Productos desactivados!</h3>
-                        <div class="mt-2 text-sm text-red-700">
-                            <ul class="list-disc list-inside space-y-1">
-                                {% for error in error_productos_desactivados %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <!--Mensaje de error en Stock-->
-            {% if error_stock %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
-                <ul>
-                {% for error in error_stock %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-
-            <!-- Cliente y Fecha -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Cliente</label>
-                    {{ form.cliente }}
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Fecha</label>
-                    {{ form.fecha }}
-                </div>
-            </div>
-
-            <!-- Campo Estado -->
-            <div class="mb-6">
-                <label for="id_estado" class="block text-gray-700 font-medium mb-2">Estado de la Factura</label>
-                {{ form.estado }}
-                <p class="text-sm text-gray-500 mt-1">Por defecto queda en <strong>Pendiente</strong>, pero puedes cambiarlo a Pagada o Vencida.</p>
-            </div>
-
-            <!-- Título de detalles -->
-            <h4 class="text-xl font-semibold text-gray-800 mb-6">Detalles Comprobante</h4>
-
-            {{ formset.management_form }}
-
-            <!-- Tabla de productos -->
-            <div class="bg-white rounded-lg overflow-hidden shadow-sm mb-6">
-                <table class="w-full">
-                    <thead class="bg-gray-800">
-                        <tr>
-                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Producto</th>
-                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Cantidad</th>
-                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Precio Unitario</th>
-                            <th class="text-white font-semibold py-5 px-4 text-center text-base tracking-wide">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="formset-body" class="divide-y divide-gray-200">
-                        {% for form in formset %}
-                        <tr class="formset-row transition-all duration-300 hover:bg-gray-50 hover:translate-x-1">
-                            <td class="py-5 px-4 text-center">
-                                {{ form.producto }}
-                            </td>
-                            <td class="py-5 px-4 text-center">
-                                {{ form.cantidad }}
-                            </td>
-                            <td class="py-5 px-4 text-center">
-                                {{ form.precio_unitario }}
-                            </td>
-                            <td class="py-5 px-4 text-center">
-                                <button type="button" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg remove-row">
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <!-- Total parcial -->
-                    <div class="flex justify-end mt-4">
-                        <h3 class="text-xl font-semibold text-gray-800">
-                            Total parcial: $<span id="total-parcial">0</span>
-                        </h3>
-                    </div>
-            </div>
-
-            <!-- Botón agregar producto -->
-            <button type="button" class="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-8 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl mb-8 inline-block" id="agregar-producto">
-                + Agregar producto
-            </button>
-
-            <!-- Botones de acción -->
-            <div class="flex flex-wrap gap-4">
-                <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer">
-                    Guardar Factura
-                </button>
-                <a href="{% url 'lista_facturas' %}" class="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block text-center no-underline">
-                    Cancelar
-                </a>
-            </div>
-        </form>
+  <!-- Mensajes de error -->
+  {% if error_productos_desactivados %}
+  <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+    <div class="flex items-start gap-3">
+      <i class="fas fa-exclamation-triangle text-red-500 mt-1"></i>
+      <div>
+        <h3 class="font-semibold text-red-800 mb-2">¡Productos desactivados!</h3>
+        <ul class="text-sm text-red-700 space-y-1">
+          {% for error in error_productos_desactivados %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
+  </div>
+  {% endif %}
+
+  {% if error_stock %}
+  <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+    <div class="flex items-start gap-3">
+      <i class="fas fa-exclamation-triangle text-red-500 mt-1"></i>
+      <div>
+        <h3 class="font-semibold text-red-800 mb-2">Error en Stock</h3>
+        <ul class="text-sm text-red-700 space-y-1">
+          {% for error in error_stock %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Formulario -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Header del formulario -->
+      <div class="bg-blue-dark px-6 py-4">
+        <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+          <i class="fas fa-file-invoice"></i>
+          Información del Comprobante
+        </h2>
+      </div>
+
+      <!-- Campos del formulario -->
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Cliente -->
+          <div class="form-field">
+            <label class="block font-semibold text-gray-700 mb-2">
+              <i class="fas fa-user mr-2"></i>
+              Cliente <span class="text-red-500">*</span>
+            </label>
+            {{ form.cliente }}
+          </div>
+
+          <!-- Fecha -->
+          <div class="form-field">
+            <label class="block font-semibold text-gray-700 mb-2">
+              <i class="fas fa-calendar mr-2"></i>
+              Fecha <span class="text-red-500">*</span>
+            </label>
+            {{ form.fecha }}
+          </div>
+
+          <!-- Estado -->
+          <div class="form-field">
+            <label for="id_estado" class="block font-semibold text-gray-700 mb-2">
+              <i class="fas fa-flag mr-2"></i>
+              Estado de la Venta <span class="text-red-500">*</span>
+            </label>
+            {{ form.estado }}
+            <p class="text-sm text-gray-500 mt-1">Por defecto queda en <strong>Pendiente</strong></p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sección de detalles -->
+      <div class="border-t border-gray-200">
+        <div class="bg-blue-dark px-6 py-4">
+          <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+            <i class="fas fa-list"></i>
+            Detalles de la Venta
+          </h2>
+        </div>
+        
+        <div class="p-6">
+          {{ formset.management_form }}
+
+          <!-- Tabla de productos -->
+          <div class="bg-white rounded-lg overflow-hidden shadow-sm mb-6">
+            <table class="w-full">
+              <thead class="bg-blue-dark">
+                <tr>
+                  <th class="text-white font-semibold py-4 px-4 text-center">Producto</th>
+                  <th class="text-white font-semibold py-4 px-4 text-center">Cantidad</th>
+                  <th class="text-white font-semibold py-4 px-4 text-center">Precio Unitario</th>
+                  <th class="text-white font-semibold py-4 px-4 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="formset-body" class="divide-y divide-gray-200">
+                {% for form in formset %}
+                <tr class="formset-row transition-all duration-300 hover:bg-gray-50">
+                  <td class="py-4 px-4">
+                    {{ form.producto }}
+                  </td>
+                  <td class="py-4 px-4">
+                    {{ form.cantidad }}
+                  </td>
+                  <td class="py-4 px-4">
+                    {{ form.precio_unitario }}
+                  </td>
+                  <td class="py-4 px-4 text-center">
+                    <button type="button" 
+                            class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg remove-row">
+                      <i class="fas fa-trash mr-1"></i>Eliminar
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Total parcial -->
+          <div class="flex justify-end mb-6">
+            <div class="bg-gray-50 px-6 py-4 rounded-lg border">
+              <h3 class="text-xl font-semibold text-gray-800">
+                Total parcial: $<span id="total-parcial" class="text-black">0</span>
+              </h3>
+            </div>
+          </div>
+
+          <!-- Botón agregar producto -->
+          <div class="mb-6">
+            <button type="button" 
+                    class="px-6 py-3 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg" 
+                    id="agregar-producto">
+              <i class="fas fa-plus mr-2"></i>Agregar producto
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div class="flex justify-center gap-4">
+          <button type="submit" 
+                  class="px-6 py-2 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-save mr-2"></i>Guardar Venta
+          </button>
+          <a href="{% url 'lista_facturas' %}" 
+             class="px-6 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-times mr-2"></i>Cancelar
+          </a>
+        </div>
+      </div>
+
+    </form>
+  </div>
 </div>
+
+<style>
+/* Estilos para campos del formulario */
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #fefefe;
+}
+
+/* Estilos específicos para la tabla */
+table select,
+table input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+table select:focus,
+table input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #fefefe;
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -177,8 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
             total += cantidad * precio;
         });
-        totalParcialElement.textContent = total.toFixed(2)
-    
+        totalParcialElement.textContent = total.toFixed(2);
     }
 
     // Evento al cambiar un producto
@@ -243,18 +305,22 @@ document.addEventListener('DOMContentLoaded', function () {
         asignarEventosFila(newRow);
     });
 
+    // Evento para eliminar filas
     formsetBody.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-row')) {
+        if (e.target.classList.contains('remove-row') || e.target.closest('.remove-row')) {
             if (formsetBody.children.length > 1) {
                 e.target.closest('tr').remove();
                 totalForms.value = formsetBody.children.length;
                 calcularTotal();
             } else {
-                alert('Debe mantener al menos un producto en la factura');
+                alert('Debe mantener al menos un producto en la venta');
             }
         }
     });
+    
+    // Calcular total inicial
     calcularTotal();
 });
 </script>
+
 {% endblock %}

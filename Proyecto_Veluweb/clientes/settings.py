@@ -105,7 +105,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bd_veluweb',
         'USER': 'postgres',
-        'PASSWORD': 'dilanalan1984',
+        'PASSWORD': '141006',
         'HOST': 'localhost',
         'PORT': '5432',
     }
