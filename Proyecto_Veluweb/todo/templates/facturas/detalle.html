@@ -1,118 +1,302 @@
 {% extends 'todo/layout2.html' %}
 {% load humanize %}
+
 {% block content %}
-<head>
-    <style>
-        /* Gradiente personalizado para el header */
-        .bg-custom-gradient {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        
-        /* Colores personalizados para los botones */
-        .btn-custom {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-    </style>
-</head>
 
-<div class="max-w-6xl mx-auto mt-10 mb-10">
-    <div class="bg-white rounded-xl shadow-lg p-6">
-        
-        <!-- Título -->
-        <h2 class="text-center mb-6 font-bold text-2xl text-blue-800">Venta #{{ factura.id }}</h2>
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <!-- Encabezado con botón de volver -->
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-blue-dark text-4xl font-semibold">Detalle de Venta #{{ factura.id }}</h1>
+  </div>
 
-        <!-- Mostrar usuario y correo -->
-        <div class="mb-6 text-right">
-         <p class="text-gray-700">
-            Creado por: 
-        <span class="font-semibold text-blue-700">
-            {{ factura.creado_por.username }}
-        </span>
-        </p>
-        </div>
-
-
-        <!-- Tabla -->
-        <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
-                <tbody>
-                    <!-- Encabezado datos factura -->
-                    <tr class="bg-gray-100 font-semibold text-gray-700">
-                        <td class="p-4 text-center">Cliente</td>
-                        <td class="p-4 text-center">Fecha</td>
-                        <td class="p-4 text-center">Estado</td>
-                        <td class="p-4 text-center">ID Venta</td>
-                    </tr>
-                    <tr>
-                        <td class="p-4 text-center">{{ factura.cliente.nombre }}</td>
-                        <td class="p-4 text-center">{{ factura.fecha|date:"F d, Y, g:i a" }}</td>
-                        <td class="p-4 text-center">
-                            {% with raw=factura.estado display=factura.get_estado_display %}
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full
-                                {% if raw == 'PAGADA' %}bg-green-100 text-green-800
-                                {% elif raw == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
-                                {% elif raw == 'VENCIDA' %}bg-red-100 text-red-800
-                                {% else %}bg-gray-100 text-gray-700{% endif %}">
-                                {{ display|default:raw|default:"Pendiente" }}
-                                </span>
-                            {% endwith %}
-                        </td>
-                        <td class="p-4 text-center">{{ factura.id }}</td>
-                    </tr>
-
-                    <!-- Encabezado productos -->
-                    <tr class="bg-gray-800 text-white font-semibold">
-                        <th class="p-4 text-center">Producto</th>
-                        <th class="p-4 text-center">Imagen</th>
-                        <th class="p-4 text-center">Cantidad</th>
-                        <th class="p-4 text-center">Precio Unitario</th>
-                    </tr>
-
-                    <!-- Detalles -->
-                    {% for detalle in detalles %}
-                    <tr class="hover:bg-gray-50 transition-all duration-300">
-                        <td class="p-4 text-center">{{ detalle.producto.nombre }}</td>
-                        <td class="p-4 text-center">
-                            {% if detalle.producto.imagen %}
-                                <img src="{{ detalle.producto.imagen.url }}" alt="Imagen de {{ detalle.producto.nombre }}"
-                                     class="rounded-md shadow-sm mx-auto" style="max-width: 100px; max-height: 100px;">
-                            {% else %}
-                                <span class="text-gray-500 italic">Sin imagen</span>
-                            {% endif %}
-                        </td>
-                        <td class="p-4 text-center">{{ detalle.cantidad }}</td>
-                        <td class="p-4 text-green-600 font-semibold text-center">${{ detalle.precio_unitario|floatformat:0|intcomma }}</td>
-                    </tr>
-                    {% endfor %}
-
-                    <!-- Total -->
-                    <tr class="bg-gray-100 font-semibold">
-                        <td colspan="3" class="p-4 text-right">Total de Venta:</td>
-                        <td class="p-4 text-center">${{ total_factura|floatformat:0|intcomma }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Botones -->
-        <div class="flex justify-end gap-4 mt-6">
-            <a href="{% url 'lista_facturas' %}" 
-               class="btn-custom text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
-                <i class="bi bi-arrow-left-circle">Volver</i> 
-            </a>
-            <a href="{% url 'editar_factura' factura.id %}" 
-               class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
-                <i class="bi bi-pencil-square">Editar</i> 
-            </a>
-        </div>
+  <!-- Contenido principal -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    
+    <!-- Header de la venta -->
+    <div class="bg-blue-dark px-6 py-4">
+      <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+        <i class="fas fa-receipt"></i>
+        Información de la Venta
+      </h2>
     </div>
+
+    <!-- Información general de la venta -->
+    <div class="p-6">
+      <!-- Creado por -->
+      <div class="mb-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-user text-blue-600"></i>
+          <p class="text-blue-800">
+            <span class="font-medium">Creado por:</span> 
+            <span class="font-semibold">{{ factura.creado_por.username }}</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Datos principales de la factura -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        
+        <!-- Cliente -->
+        <div class="detail-field">
+          <label class="detail-label">
+            <i class="fas fa-user mr-2"></i>
+            Cliente
+          </label>
+          <div class="detail-value">{{ factura.cliente.nombre }} {{ factura.cliente.apellido }}</div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="detail-field">
+          <label class="detail-label">
+            <i class="fas fa-calendar mr-2"></i>
+            Fecha
+          </label>
+          <div class="detail-value">{{ factura.fecha|date:"d/m/Y, H:i" }}</div>
+        </div>
+
+        <!-- Estado -->
+        <div class="detail-field">
+          <label class="detail-label">
+            <i class="fas fa-flag mr-2"></i>
+            Estado
+          </label>
+          <div class="detail-value">
+            {% with raw=factura.estado display=factura.get_estado_display %}
+              <span class="px-3 py-1 text-xs font-semibold rounded-full
+              {% if raw == 'PAGADA' %}bg-green-100 text-green-800
+              {% elif raw == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
+              {% elif raw == 'VENCIDA' %}bg-red-100 text-red-800
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ display|default:raw|default:"Pendiente" }}
+              </span>
+            {% endwith %}
+          </div>
+        </div>
+
+        <!-- ID Venta -->
+        <div class="detail-field">
+          <label class="detail-label">
+            <i class="fas fa-hashtag mr-2"></i>
+            ID Venta
+          </label>
+          <div class="detail-value">#{{ factura.id }}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Detalles de los productos -->
+    <div class="border-t border-gray-200">
+      <div class="bg-blue-dark px-6 py-4">
+        <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+          <i class="fas fa-list"></i>
+          Productos de la Venta
+        </h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+          <!-- Header de la tabla -->
+          <div class="bg-blue-dark">
+            <div class="grid grid-cols-5 gap-4 px-6 py-4 font-semibold text-white">
+              <div class="text-left flex items-center gap-2">
+                <i class="fas fa-box"></i>
+                Producto
+              </div>
+              <div class="text-center flex items-center justify-center gap-2">
+                <i class="fas fa-image"></i>
+                Imagen
+              </div>
+              <div class="text-center flex items-center justify-center gap-2">
+                <i class="fas fa-sort-numeric-up"></i>
+                Cantidad
+              </div>
+              <div class="text-center flex items-center justify-center gap-2">
+                <i class="fas fa-dollar-sign"></i>
+                Precio Unitario
+              </div>
+              <div class="text-center flex items-center justify-center gap-2">
+                <i class="fas fa-calculator"></i>
+                Subtotal
+              </div>
+            </div>
+          </div>
+
+          <!-- Filas de productos -->
+          <div class="divide-y divide-gray-200">
+            {% for detalle in detalles %}
+            <div class="grid grid-cols-5 gap-4 px-6 py-4 hover:bg-blue-50 transition-all duration-300">
+              
+              <!-- Producto -->
+              <div class="flex items-center">
+                <span class="font-medium">{{ detalle.producto.nombre }}</span>
+              </div>
+
+              <!-- Imagen -->
+              <div class="flex items-center justify-center">
+                {% if detalle.producto.imagen %}
+                  <img src="{{ detalle.producto.imagen.url }}" 
+                       alt="{{ detalle.producto.nombre }}"
+                       class="w-16 h-16 object-cover rounded-lg shadow-sm border">
+                {% else %}
+                  <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-image text-gray-400"></i>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Cantidad -->
+              <div class="flex items-center justify-center">
+                <span class="font-semibold text-lg">{{ detalle.cantidad }}</span>
+              </div>
+
+              <!-- Precio Unitario -->
+              <div class="flex items-center justify-center">
+                <span class="font-semibold text-green-600">
+                  ${{ detalle.precio_unitario|floatformat:0|intcomma }}
+                </span>
+              </div>
+
+              <!-- Subtotal -->
+              <div class="flex items-center justify-center">
+                <span class="font-bold text-blue-600 text-lg">
+                  ${{ detalle.subtotal|floatformat:0|intcomma }}
+                </span>
+              </div>
+
+            </div>
+            {% empty %}
+            <div class="px-6 py-8 text-center text-gray-500">
+              <i class="fas fa-inbox text-4xl mb-4"></i>
+              <p>No hay productos en esta venta</p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Total final -->
+          <div class="bg-gray-50 border-t-2 border-blue-500">
+            <div class="px-6 py-4">
+              <div class="flex justify-end">
+                <div class="text-right">
+                  <p class="text-gray-600 text-sm mb-1">Total de la Venta:</p>
+                  <h3 class="text-3xl font-bold text-blue-dark flex items-center gap-2">
+                    <i class="fas fa-dollar-sign"></i>
+                    {{ total_factura|floatformat:0|intcomma }}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+      <div class="flex justify-center gap-4">
+        <a href="{% url 'editar_factura' factura.id %}" 
+           class="px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <i class="fas fa-edit mr-2"></i>Editar Venta
+        </a>
+<a href="{% url 'lista_facturas' %}" 
+    class="px-6 py-2 border border-blue-dark text-blue-dark rounded-lg hover:bg-blue-dark hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2">
+    <i class="fas fa-list"></i>
+    Ver Todas las Ventas
+</a>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<style>
+/* Estilos para campos de detalle */
+.detail-field {
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 4px solid #3b82f6;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.detail-field:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: translateX(4px);
+}
+
+.detail-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.detail-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+  word-wrap: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-5 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .detail-value {
+    font-size: 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Animación para filas de productos */
+.divide-y > div {
+  transition: all 0.3s ease;
+}
+
+.divide-y > div:hover {
+  transform: scale(1.01);
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Formato de números mejorado
     document.querySelectorAll('.js-format-number').forEach(function(el) {
         const numero = parseInt(el.textContent);
         el.textContent = numero.toLocaleString('es-CO');
+    });
+
+    // Animación de entrada para los campos
+    const detailFields = document.querySelectorAll('.detail-field');
+    detailFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'all 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Animación para las filas de productos
+    const productRows = document.querySelectorAll('.divide-y > div');
+    productRows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.5s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateX(0)';
+        }, (index + detailFields.length) * 100);
     });
 });
 </script>

@@ -1,84 +1,101 @@
 {% extends "todo/layout2.html" %}
 
 {% block content %}
-<header>
-     <style>
-        /* Gradiente personalizado para el header */
-        .bg-custom-gradient {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        
-        /* Colores personalizados para los botones */
-        .btn-custom {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        
-    </style>
-</header>
 
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Título principal -->
+  <h1 class="text-blue-dark text-4xl mb-8 text-center font-semibold">Asignar Roles a Usuarios</h1>
 
-<div class="max-w-6xl mx-auto mt-10 mb-10">
-  <div class="bg-white rounded-xl shadow-lg p-6">
-    <h1 class="text-center text-2xl font-bold text-dark mb-6">Asignar Roles a Usuarios</h1>
+  <!-- Buscador de Roles -->
+  <div class="flex justify-center mb-6">
+    <form method="get" class="flex w-full max-w-lg">
+      <input 
+        type="search" 
+        name="q" 
+        value="{{ q }}" 
+        placeholder="Buscar rol..." 
+        class="form-control flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+      >
+      <button class="ml-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition-all duration-300">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+  </div>
 
-    <!-- Buscador de Roles -->
-<form method="get" class="flex justify-center mb-6">
-  <input 
-    type="search" 
-    name="q" 
-    value="{{ q }}" 
-    placeholder="Buscar rol ..." 
-    class="form-control w-1/2 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-  >
-  <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-    🔎
-  </button>
-</form>
-
+  <!-- Tabla -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <form method="post">
       {% csrf_token %}
 
-      <div class="overflow-x-auto">
-        <table class="w-full border-collapse">
-          <thead>
-            <tr class="bg-gray-800 text-white">
-              <th class="p-4 text-left">Usuario</th>
-              <th class="p-4 text-left">Correo</th>
-              <th class="p-4 text-center">Rol Actual</th>
-              <th class="p-4 text-center">Nuevo Rol</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for user in page_obj %}
-            {% with actual=user.groups.first %}
-            <tr class="hover:bg-gray-50 transition-all duration-300">
-              <td class="p-4 font-medium text-gray-800">{{ user.username }}</td>
-              <td class="p-4 text-gray-600">{{ user.email }}</td>
-              <td class="p-4 text-center text-blue-700 font-semibold">
-                {{ actual.name|default:"(sin rol)" }}
-              </td>
-              <td class="p-4 text-center">
-                <select name="rol_{{ user.id }}" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
-                  {% for g in grupos %}
-                    <option value="{{ g }}" {% if actual and actual.name == g %}selected{% endif %}>{{ g }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            </tr>
-            {% endwith %}
-          {% endfor %}
-          </tbody>
-        </table>
+      <!-- Header -->
+      <div class="bg-blue-dark">
+        <div class="grid grid-cols-4 gap-4 px-6 py-4 font-semibold text-white">
+          <div class="text-left">Usuario</div>
+          <div class="text-left">Correo</div>
+          <div class="text-center">Rol Actual</div>
+          <div class="text-center">Nuevo Rol</div>
+        </div>
       </div>
 
-      <div class="flex justify-end gap-4 mt-6">
-        <button type="submit" class="bg-gradient-to-r from-slate-800 to-sky-700 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-md hover:-translate-y-0.5 hover:shadow-xl">
-          Guardar Cambios
-        </button>
+      <!-- Cuerpo -->
+      <div class="divide-y divide-gray-200">
+        {% for user in page_obj %}
+          {% with actual=user.groups.first %}
+          <div class="grid grid-cols-4 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
+            
+            <!-- Usuario -->
+            <div class="flex items-center">
+              <span class="font-semibold text-gray-900">{{ user.username }}</span>
+            </div>
+
+            <!-- Correo -->
+            <div class="flex items-center">
+              <span class="text-gray-700">{{ user.email }}</span>
+            </div>
+
+            <!-- Rol Actual -->
+            <div class="flex items-center justify-center">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 inline-flex items-center">
+                <i class="fas fa-user-tag mr-1"></i>
+                {{ actual.name|default:"Sin rol" }}
+              </span>
+            </div>
+
+            <!-- Nuevo Rol -->
+            <div class="flex items-center justify-center">
+              <select name="rol_{{ user.id }}" 
+                      class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all">
+                {% for g in grupos %}
+                  <option value="{{ g }}" {% if actual and actual.name == g %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+          </div>
+          {% endwith %}
+        {% empty %}
+          <div class="px-6 py-12 text-center text-gray-500">
+            <div class="text-6xl mb-4 text-blue-dark">
+              <i class="fas fa-users-cog"></i>
+            </div>
+            <h3 class="text-lg font-medium text-blue-dark mb-2">No hay usuarios para asignar roles</h3>
+            <p class="text-gray-500 mb-4">No se encontraron usuarios que coincidan con tu búsqueda.</p>
+          </div>
+        {% endfor %}
       </div>
+
+      <!-- Botón Guardar -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="flex justify-end">
+          <button type="submit" 
+                  class="px-6 py-2 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-save mr-2"></i>Guardar Cambios
+          </button>
+        </div>
+      </div>
+
     </form>
   </div>
-</div>
 
   <!-- Información adicional -->
   {% if page_obj %}
@@ -88,4 +105,5 @@
   {% endif %}
   {% include "todo/paginacion.html" %}
 </div>
+
 {% endblock %}

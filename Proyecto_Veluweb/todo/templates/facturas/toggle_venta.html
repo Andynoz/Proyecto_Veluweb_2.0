@@ -1,82 +1,247 @@
 {% extends "todo/layout2.html" %}
 {% load humanize %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 py-8">
-  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 
-              {% if factura.activo %} border-red-500 {% else %} border-emerald-500 {% endif %}">
-    <div class="p-8">
-      <!-- Icono -->
-      <div class="flex justify-center mb-6">
-        <div class="{% if factura.activo %} bg-red-100 {% else %} bg-emerald-100 {% endif %} rounded-full p-4">
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Encabezado con navegación -->
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-blue-dark text-3xl font-semibold">{{ accion|title }} Factura #{{ factura.id }}</h1>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    
+    <!-- Header con icono y estado -->
+    <div class="{% if factura.activo %}bg-red-600{% else %}bg-emerald-600{% endif %} px-6 py-8">
+      <div class="flex flex-col items-center text-center">
+        <!-- Icono dinámico -->
+        <div class="mb-4 p-4 bg-white rounded-full">
           {% if factura.activo %}
-          <!-- Ícono de deshabilitar -->
-          <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 
-                     01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 
-                     00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
+            <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
           {% else %}
-          <!-- Ícono de activar -->
-          <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-          </svg>
+            <i class="fas fa-check-circle text-4xl text-emerald-600"></i>
           {% endif %}
         </div>
+        
+        <!-- Título principal -->
+        <h2 class="text-white font-bold text-2xl mb-2">
+          ¿Confirmar {{ accion }}?
+        </h2>
+        <p class="text-white opacity-90">
+          {% if factura.activo %}
+            Esta acción deshabilitará la factura y no podrá ser editada
+          {% else %}
+            Esta acción reactivará la factura y estará disponible nuevamente
+          {% endif %}
+        </p>
       </div>
+    </div>
 
-      <!-- Título -->
-      <h1 class="text-3xl mb-6 text-center font-bold 
-                 {% if factura.activo %} text-red-600 {% else %} text-emerald-600 {% endif %}">
-        ¿Deseas {{ accion }} esta factura?
-      </h1>
+    <!-- Información de la factura -->
+    <div class="p-8">
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+          <i class="fas fa-info-circle text-blue-600"></i>
+          Información de la Factura
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Cliente -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-user mr-2 text-blue-600"></i>
+              Cliente
+            </div>
+            <div class="info-value">{{ factura.cliente.nombre }} {{ factura.cliente.apellido }}</div>
+          </div>
 
-      <!-- Info de la factura -->
-      <div class="bg-gray-50 rounded-lg p-4 mb-8">
-        <h4 class="text-gray-800 font-semibold mb-3">🧾 Información de la Factura:</h4>
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Cliente:</span>
-            <span class="font-medium text-gray-900">{{ factura.cliente }}</span>
+          <!-- Fecha -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-calendar mr-2 text-blue-600"></i>
+              Fecha
+            </div>
+            <div class="info-value">{{ factura.fecha|date:"d/m/Y, H:i" }}</div>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Fecha:</span>
-            <span class="font-medium text-gray-900">{{ factura.fecha|date:"M d, Y, g:i a" }}</span>
+
+          <!-- Total -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-dollar-sign mr-2 text-blue-600"></i>
+              Total
+            </div>
+            <div class="info-value text-green-600 font-bold text-xl">
+              ${{ factura.monto_total|floatformat:0|intcomma }}
+            </div>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Total:</span>
-            <span class="font-bold text-green-600 text-lg">${{ factura.monto_total|floatformat:0|intcomma }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Estado:</span>
-            <span class="font-semibold 
-              {% if factura.estado == 'PAGADA' %} text-green-600
-              {% elif factura.estado == 'PENDIENTE' %} text-yellow-600
-              {% elif factura.estado == 'VENCIDA' %} text-red-600
-              {% else %} text-gray-600 {% endif %}">
-              {{ factura.get_estado_display }}
-            </span>
+
+          <!-- Estado -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-flag mr-2 text-blue-600"></i>
+              Estado Actual
+            </div>
+            <div class="info-value">
+              <span class="px-3 py-1 text-sm font-semibold rounded-full
+                {% if factura.estado == 'PAGADA' %}bg-green-100 text-green-800
+                {% elif factura.estado == 'PENDIENTE' %}bg-yellow-100 text-yellow-800
+                {% elif factura.estado == 'VENCIDA' %}bg-red-100 text-red-800
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ factura.get_estado_display }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Form -->
-      <form method="post">{% csrf_token %}
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <button type="submit" 
-                  class="{% if factura.activo %} bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700 
-                         {% else %} bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700 
-                         {% endif %} text-white font-bold px-8 py-3 rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-            {% if factura.activo %} 🚫 Sí, deshabilitar {% else %} ✅ Sí, activar {% endif %}
-          </button>
-          <a href="{% if factura.activo %}{% url 'lista_facturas' %}{% else %}{% url 'ventas_inactivas' %}{% endif %}" 
-          class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 text-center">
-          ↩️ Cancelar
-        </a>
+      <!-- Mensaje de advertencia -->
+      <div class="mb-8 p-4 {% if factura.activo %}bg-red-50 border-l-4 border-red-400{% else %}bg-emerald-50 border-l-4 border-emerald-400{% endif %} rounded-r-lg">
+        <div class="flex items-start">
+          <i class="{% if factura.activo %}fas fa-exclamation-triangle text-red-600{% else %}fas fa-info-circle text-emerald-600{% endif %} mt-1 mr-3"></i>
+          <div>
+            <h4 class="font-semibold {% if factura.activo %}text-red-800{% else %}text-emerald-800{% endif %} mb-1">
+              {% if factura.activo %}¡Atención!{% else %}Información{% endif %}
+            </h4>
+            <p class="{% if factura.activo %}text-red-700{% else %}text-emerald-700{% endif %} text-sm">
+              {% if factura.activo %}
+                Al deshabilitar esta factura, no aparecerá en la lista principal y no podrá ser editada hasta que sea reactivada.
+              {% else %}
+                Al activar esta factura, volverá a estar disponible en la lista principal y podrá ser editada normalmente.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
 
+      <!-- Formulario de confirmación -->
+      <form method="post">
+        {% csrf_token %}
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <!-- Botón de confirmación -->
+          <button type="submit" 
+                  class="px-8 py-3 {% if factura.activo %}bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700{% else %}bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700{% endif %} text-white font-bold rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl flex items-center justify-center gap-2">
+            {% if factura.activo %}
+              <i class="fas fa-ban"></i>
+              Sí, Deshabilitar
+            {% else %}
+              <i class="fas fa-check"></i>
+              Sí, Activar
+            {% endif %}
+          </button>
+
+          <!-- Botón de cancelar -->
+          <a href="{% if factura.activo %}{% url 'lista_facturas' %}{% else %}{% url 'ventas_inactivas' %}{% endif %}" 
+             class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-center flex items-center justify-center gap-2">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </a>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<style>
+/* Estilos para campos de información */
+.info-field {
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.03);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.info-field:hover {
+  background: rgba(59, 130, 246, 0.06);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.info-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.info-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+  word-wrap: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-row {
+    flex-direction: column;
+  }
+  
+  h1 {
+    font-size: 1.875rem;
+    text-align: center;
+  }
+  
+  .mb-8.flex.items-center.justify-between {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+/* Animaciones de entrada */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bg-white {
+  animation: slideInUp 0.6s ease-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para los campos de información
+    const infoFields = document.querySelectorAll('.info-field');
+    infoFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'all 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Confirmación adicional en el botón submit
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        const action = submitBtn.textContent.includes('Deshabilitar') ? 'deshabilitar' : 'activar';
+        const confirmMessage = `¿Estás seguro de que deseas ${action} esta factura?`;
+        
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+
 {% endblock %}

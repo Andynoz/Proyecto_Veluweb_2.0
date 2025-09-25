@@ -1,69 +1,322 @@
 {% extends "todo/layout2.html" %}
+{% load humanize %}
+
 {% block content %}
+
 <div class="max-w-7xl mx-auto px-4 py-8">
-  <!-- Título -->
-  <h1 class="text-gray-900 text-4xl mb-8 text-center font-semibold">Productos Inactivos</h1>
-
-  <!-- Botón volver -->
-  <div class="flex justify-center mb-8">
-    <a href="{% url 'productos_index' %}"
-       class="bg-slate-600 hover:bg-slate-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
-      ↩️ Volver a activos
+  <!-- Encabezado con navegación y título -->
+  <div class="mb-8 flex items-center justify-between">
+    <a href="{% url 'productos_index' %}" 
+       class="px-6 py-2 border border-blue-dark text-blue-dark rounded-lg hover:bg-blue-dark hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2">
+      <i class="fas fa-arrow-left"></i>
+      Volver a Activos
     </a>
+    <h1 class="text-blue-dark text-4xl font-semibold">Productos Inactivos</h1>
+    <div class="w-32"></div> <!-- Spacer para centrar el título -->
   </div>
 
-  <!-- Contenedor -->
+  <!-- Tabla principal -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-slate-700 to-slate-600">
-      <div class="grid grid-cols-4 gap-4 px-6 py-4 font-semibold text-white">
-        <div class="text-left">ID</div>
-        <div class="text-left">Nombre</div>
-        <div class="text-left">Precio</div>
-        <div class="text-center">Acciones</div>
-      </div>
+    
+    <!-- Header de la tabla -->
+    <div class="bg-blue-dark px-6 py-4">
+      <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+        <i class="fas fa-archive"></i>
+        Listado de Productos Inactivos
+      </h2>
     </div>
 
-    <!-- Cuerpo -->
-    <div class="divide-y divide-gray-200">
-      {% for producto in page_obj %}
-      <div class="grid grid-cols-4 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
-        <!-- ID -->
-        <div class="flex items-center font-semibold text-gray-900">{{ producto.id }}</div>
-        <!-- Nombre -->
-        <div class="flex items-center font-semibold text-gray-900">{{ producto.nombre }}</div>
-        <!-- Precio -->
-        <div class="flex items-center font-bold text-gray-900">${{ producto.precio|floatformat:2 }}</div>
-        <!-- Reactivar -->
-        <div class="flex items-center justify-center">
-          <a href="{% url 'toggle_estado_producto' producto.pk %}"
-             class="inline-flex items-center justify-center w-10 h-10 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-             title="Reactivar"
-             aria-label="Reactivar">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-          </a>
+    <!-- Contenido de la tabla -->
+    <div class="overflow-x-auto">
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        
+        <!-- Header de columnas -->
+        <div class="bg-blue-dark">
+          <div class="grid grid-cols-6 gap-4 px-6 py-4 font-semibold text-white">
+            <div class="text-left flex items-center gap-2">
+              <i class="fas fa-hashtag"></i>
+              ID
+            </div>
+            <div class="text-left flex items-center gap-2">
+              <i class="fas fa-tag"></i>
+              Nombre
+            </div>
+            <div class="text-left flex items-center gap-2">
+              <i class="fas fa-dollar-sign"></i>
+              Precio
+            </div>
+            <div class="text-left flex items-center gap-2">
+              <i class="fas fa-cubes"></i>
+              Stock
+            </div>
+            <div class="text-left flex items-center gap-2">
+              <i class="fas fa-flag"></i>
+              Estado
+            </div>
+            <div class="text-center flex items-center justify-center gap-2">
+              <i class="fas fa-cogs"></i>
+              Acciones
+            </div>
+          </div>
         </div>
-      </div>
 
-      {% empty %}
-      <!-- No inactivos -->
-      <div class="px-6 py-12 text-center text-gray-500">
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay productos inactivos</h3>
-        <p class="text-gray-500">Todo está activo como debe ser.</p>
+        <!-- Filas de datos -->
+        <div class="divide-y divide-gray-200">
+          {% for producto in page_obj %}
+          <div class="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-red-50 transition-all duration-300 border-l-4 border-transparent hover:border-red-400">
+            
+            <!-- ID -->
+            <div class="flex items-center">
+              <span class="font-bold text-blue-600 text-lg">#{{ producto.id }}</span>
+            </div>
+
+            <!-- Nombre -->
+            <div class="flex items-center">
+              <div>
+                <span class="font-semibold text-gray-900">{{ producto.nombre|truncatechars:25 }}</span>
+                {% if producto.descripcion %}
+                  <br>
+                  <span class="text-sm text-gray-500">{{ producto.descripcion|truncatechars:30 }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Precio -->
+            <div class="flex items-center">
+              <span class="font-bold text-green-600 text-lg">
+                ${{ producto.precio|floatformat:0|intcomma }}
+              </span>
+            </div>
+
+            <!-- Stock -->
+            <div class="flex items-center">
+              <span class="{% if producto.stock <= 5 %}text-red-600 font-bold{% elif producto.stock <= 20 %}text-yellow-600 font-semibold{% else %}text-green-600{% endif %}">
+                {{ producto.stock }} unidades
+              </span>
+            </div>
+
+            <!-- Estado -->
+            <div class="flex items-center">
+              <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                <i class="fas fa-ban mr-1"></i>
+                Inactivo
+              </span>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex items-center justify-center gap-2">
+              <!-- Botón Reactivar -->
+              <a href="{% url 'toggle_estado_producto' producto.pk %}"
+                 class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2 text-sm font-medium"
+                 title="Reactivar producto">
+                <i class="fas fa-unlock"></i>
+                Reactivar
+              </a>
+            </div>
+
+          </div>
+          {% empty %}
+          <!-- Estado vacío -->
+          <div class="px-6 py-16 text-center">
+            <div class="flex flex-col items-center">
+              <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-check-circle text-3xl text-emerald-600"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">¡Excelente!</h3>
+              <p class="text-gray-500 mb-4">No hay productos inactivos en el sistema.</p>
+              <p class="text-sm text-gray-400">Todos los productos están activos y disponibles para la venta.</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Footer con información -->
+        {% if page_obj %}
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div class="flex justify-between items-center text-sm text-gray-600">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-info-circle text-blue-500"></i>
+              <span>Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }} inactivo{{ page_obj|length|pluralize:"s" }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fas fa-database text-gray-400"></i>
+              <span>Total: {{ page_obj.paginator.count }}</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
       </div>
-      {% endfor %}
     </div>
   </div>
 
-  <!-- Información adicional -->
-  {% if page_obj %}
-    <div class="mt-6 text-center text-gray-500 text-sm">
-      Mostrando {{ page_obj|length }} producto{{ page_obj|length|pluralize:"s" }}
-    </div>
+  <!-- Paginación -->
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="mt-8">
+    {% include "todo/paginacion.html" %}
+  </div>
   {% endif %}
 
-  {% include "todo/paginacion.html" %}
+  <!-- Información adicional sobre productos inactivos -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Información general -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+      <div class="flex items-start">
+        <i class="fas fa-lightbulb text-yellow-600 mt-1 mr-3"></i>
+        <div>
+          <h4 class="font-medium text-yellow-800 mb-1">Información</h4>
+          <p class="text-yellow-700 text-sm">
+            Los productos inactivos no aparecen en el catálogo principal y no están disponibles para nuevas ventas. 
+            Para reactivar un producto, haz clic en el botón "Reactivar".
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consejo sobre stock -->
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+      <div class="flex items-start">
+        <i class="fas fa-chart-line text-blue-600 mt-1 mr-3"></i>
+        <div>
+          <h4 class="font-medium text-blue-800 mb-1">Consejo</h4>
+          <p class="text-blue-700 text-sm">
+            Revisa regularmente los productos inactivos. Algunos podrían tener stock disponible y estar listos para ser reactivados y generar más ventas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+/* Hover effects mejorados */
+.divide-y > div:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+}
+
+/* Animaciones de entrada */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.divide-y > div {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Indicadores de stock */
+.text-red-600 {
+  position: relative;
+}
+
+.text-red-600::after {
+  content: "¡Crítico!";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  font-size: 0.7rem;
+  font-weight: normal;
+  color: #dc2626;
+  margin-top: 0.125rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .grid-cols-6 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  
+  .grid-cols-6 > div:nth-child(4),
+  .grid-cols-6 > div:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-cols-6 {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .grid-cols-6 > div {
+    display: block !important;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .grid-cols-6 > div:last-child {
+    border-bottom: none;
+  }
+  
+  .mb-8.flex.items-center.justify-between {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .mb-8.flex.items-center.justify-between h1 {
+    order: -1;
+  }
+  
+  .w-32 {
+    display: none;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para las filas
+    const rows = document.querySelectorAll('.divide-y > div');
+    rows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.3s ease'; // De 0.5s → 0.3s
+            row.style.opacity = '1';
+            row.style.transform = 'translateX(0)';
+        }, index * 25); // De 50ms → 25ms
+    });
+
+    // Confirmación para reactivar
+    const reactivateButtons = document.querySelectorAll('a[href*="toggle_estado_producto"]');
+    reactivateButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const productName = this.closest('.grid').querySelector('span.font-semibold').textContent.trim();
+            if (!confirm(`¿Estás seguro de que deseas reactivar el producto "${productName}"?`)) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Animación para las estadísticas (Tarjetas de información/consejo)
+    const statCards = document.querySelectorAll('.grid > div');
+    statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.3s ease'; // De 0.6s → 0.3s
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100); // De 200ms → 100ms
+    });
+
+    // Tooltip para productos con stock crítico
+    const criticalStockElements = document.querySelectorAll('.text-red-600');
+    criticalStockElements.forEach(element => {
+        element.title = 'Stock crítico - Considera reabastecer';
+    });
+});
+</script>
+
 {% endblock %}

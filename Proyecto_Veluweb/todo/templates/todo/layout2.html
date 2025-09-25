@@ -24,246 +24,104 @@
     }
   </script>
   <style>
-    /* Checkbox oculto */
-    .control-menu-lateral {
-      display: none;
-    }
-    
-    /* Animaciones del menú hamburguesa */
-    .control-menu-lateral:checked ~ header .barra-menu:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-    .control-menu-lateral:checked ~ header .barra-menu:nth-child(2) {
-      opacity: 0;
-    }
-    .control-menu-lateral:checked ~ header .barra-menu:nth-child(3) {
-      transform: rotate(-45deg) translate(7px, -6px);
-    }
-    
-    /* Mostrar overlay cuando menú está activo */
-    .control-menu-lateral:checked ~ .fondo-oscuro {
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    /* Mostrar menú lateral cuando está activo */
-    .control-menu-lateral:checked ~ nav {
-      left: 0;
-    }
-
-    /* Animación suave para iconos */
-    .menu-icon {
-      transition: transform 0.2s ease;
-    }
-    
-    .menu-item:hover .menu-icon {
-      transform: scale(1.1);
-    }
-
-    /* Estilos para mensajes contextuales */
+    .control-menu-lateral { display: none; }
+    .control-menu-lateral:checked ~ header .barra-menu:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .control-menu-lateral:checked ~ header .barra-menu:nth-child(2) { opacity: 0; }
+    .control-menu-lateral:checked ~ header .barra-menu:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+    .control-menu-lateral:checked ~ .fondo-oscuro { opacity: 1; visibility: visible; }
+    .control-menu-lateral:checked ~ nav { left: 0; }
+    .menu-icon { transition: transform 0.2s ease; }
+    .menu-item:hover .menu-icon { transform: scale(1.1); }
     .contextual-message {
-      margin-bottom: 1rem;
-      padding: 1rem 1.5rem;
-      border-radius: 0.5rem;
-      border-left: 4px solid;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      animation: slideInDown 0.5s ease-out;
+      margin-bottom: 1rem; padding: 1rem 1.5rem; border-radius: 0.5rem; border-left: 4px solid;
+      font-weight: 500; display: flex; align-items: center; gap: 0.75rem; animation: slideInDown 0.5s ease-out;
     }
-
-    .contextual-message.success {
-      background-color: #f0fdf4;
-      color: #166534;
-      border-left-color: #22c55e;
-    }
-
-    .contextual-message.error {
-      background-color: #fef2f2;
-      color: #dc2626;
-      border-left-color: #ef4444;
-    }
-
-    .contextual-message.warning {
-      background-color: #fffbeb;
-      color: #92400e;
-      border-left-color: #f59e0b;
-    }
-
-    .contextual-message.info {
-      background-color: #eff6ff;
-      color: #1e40af;
-      border-left-color: #3b82f6;
-    }
-
-    @keyframes slideInDown {
-      from {
-        transform: translateY(-20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    /* Auto-hide mensajes después de 5 segundos */
-    .auto-hide {
-      transition: opacity 0.5s ease-out;
-    }
-
-    .message-icon {
-      flex-shrink: 0;
-      font-size: 1.25rem;
-    }
+    .contextual-message.success { background-color: #f0fdf4; color: #166534; border-left-color: #22c55e; }
+    .contextual-message.error { background-color: #fef2f2; color: #dc2626; border-left-color: #ef4444; }
+    .contextual-message.warning { background-color: #fffbeb; color: #92400e; border-left-color: #f59e0b; }
+    .contextual-message.info { background-color: #eff6ff; color: #1e40af; border-left-color: #3b82f6; }
+    @keyframes slideInDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .auto-hide { transition: opacity 0.5s ease-out; }
+    .message-icon { flex-shrink: 0; font-size: 1.25rem; }
   </style>
 </head>
 <body class="font-sans bg-gray-100 min-h-screen flex flex-col">
 
-  <!-- Checkbox oculto para controlar el menú -->
+  <!-- Checkbox oculto -->
   <input type="checkbox" id="menu-toggle" class="control-menu-lateral">
 
-  <!-- Overlay para cerrar el menú -->
-  <label 
-    for="menu-toggle" 
-    class="fondo-oscuro fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[998] opacity-0 invisible transition-all duration-300 cursor-pointer"
-  ></label>
+  <!-- Overlay -->
+  <label for="menu-toggle" class="fondo-oscuro fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[998] opacity-0 invisible transition-all duration-300 cursor-pointer"></label>
 
- <!-- Encabezado con menú hamburguesa -->
-<header class="bg-blue-dark shadow-lg sticky top-0 z-[1000]">
-  <div class="max-w-6xl mx-auto px-5 flex items-center justify-between h-[90px]">
-    <!-- Sección izquierda: menú hamburguesa y logo -->
-    <div class="flex items-center gap-5">
-      <!-- Botón hamburguesa -->
-      <label 
-        for="menu-toggle" 
-        class="flex flex-col cursor-pointer p-2 rounded-md transition-colors duration-300 hover:bg-white hover:bg-opacity-10"
-      >
-        <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
-        <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
-        <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
-      </label>
-
-      <!-- Logo -->
-      <div class="flex items-center gap-4">
-        <img 
-          src="{% static 'todo/images/logo.png' %}" 
-          alt="Logo de Veluros" 
-          class="h-14 w-auto rounded-lg"
-        >
+  <!-- Encabezado -->
+  <header class="bg-blue-dark shadow-lg sticky top-0 z-[1000]">
+    <div class="max-w-6xl mx-auto px-5 flex items-center justify-between h-[90px]">
+      <!-- Izquierda -->
+      <div class="flex items-center gap-5">
+        <label for="menu-toggle" class="flex flex-col cursor-pointer p-2 rounded-md transition-colors duration-300 hover:bg-white hover:bg-opacity-10">
+          <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
+          <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
+          <span class="barra-menu w-6 h-[3px] bg-white my-[3px] transition-all duration-300 rounded-sm"></span>
+        </label>
+        <img src="{% static 'todo/images/logo.png' %}" alt="Logo VeluWeb" class="h-14 w-auto rounded-lg">
+      </div>
+      <!-- Derecha -->
+      <div>
+        <a href="{% url 'logout' %}" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">
+          <i class="fas fa-sign-out-alt mr-1"></i> Cerrar Sesión
+        </a>
       </div>
     </div>
-
-    <!-- Sección derecha: botón cerrar sesión -->
-    <div>
-      <a href="{% url 'logout' %}" 
-   class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">
-   <i class="fas fa-sign-out-alt mr-1"></i> Cerrar Sesión
-</a>
-
-    </div>
-  </div>
-</header>
-
+  </header>
 
   <!-- Menú lateral -->
-<nav class="fixed top-0 -left-80 w-80 h-screen bg-blue-dark z-[999] transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.8,0.25,1)] flex flex-col shadow-2xl">
+  <nav class="fixed top-0 -left-80 w-80 h-screen bg-blue-dark z-[999] transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.8,0.25,1)] flex flex-col shadow-2xl">
+    <div class="flex-1 overflow-y-auto">
+      <div class="pt-[120px] pb-6 px-6 border-b border-white border-opacity-10">
+        <h3 class="text-white text-xl mb-1 font-semibold">
+          ¡Hola {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}!
+        </h3>
+        <p class="text-white text-opacity-80 text-sm">Bienvenido a VeluWeb</p>
+        {% if request.user.groups.exists %}
+          <p class="text-white text-opacity-60 text-xs mt-1">
+            <i class="fas fa-user-tag mr-1"></i> {{ request.user.groups.first.name }}
+          </p>
+        {% endif %}
+      </div>
 
-  <!-- Contenido con scroll -->
-  <div class="flex-1 overflow-y-auto">
-    <div class="pt-[120px] pb-6 px-6 border-b border-white border-opacity-10">
-      <h3 class="text-white text-xl mb-1 font-semibold">
-        ¡Hola {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}!
-      </h3>
-      <p class="text-white text-opacity-80 text-sm">Bienvenido a VeluWeb</p>
-      {% if request.user.groups.exists %}
-        <p class="text-white text-opacity-60 text-xs mt-1">
-          <i class="fas fa-user-tag mr-1"></i>
-          {{ request.user.groups.first.name }}
-        </p>
-      {% endif %}
+      <ul class="py-5">
+        <li><a href="{% url 'index' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 border-l-4 border-transparent hover:border-l-blue-400 hover:pl-8 transition-all duration-200"><i class="fas fa-home menu-icon text-white w-5 mr-4 text-center"></i>Inicio</a></li>
+        {% if perms.todo.view_cliente %}
+        <li><a href="{% url 'tabla' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 border-l-4 border-transparent hover:border-l-blue-400 hover:pl-8 transition-all duration-200"><i class="fas fa-users menu-icon text-white w-5 mr-4 text-center"></i>Clientes</a></li>
+        {% endif %}
+        {% if perms.todo.view_producto %}
+        <li><a href="{% url 'productos_index' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 border-l-4 border-transparent hover:border-l-blue-400 hover:pl-8 transition-all duration-200"><i class="fas fa-box menu-icon text-white w-5 mr-4 text-center"></i>Productos</a></li>
+        {% endif %}
+        {% if perms.todo.view_factura %}
+        <li><a href="{% url 'lista_facturas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 border-l-4 border-transparent hover:border-l-blue-400 hover:pl-8 transition-all duration-200"><i class="fas fa-shopping-cart menu-icon text-white w-5 mr-4 text-center"></i>Ventas</a></li>
+        {% endif %}
+        {% if perms.auth.view_group %}
+        <li><a href="{% url 'estadisticas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 border-l-4 border-transparent hover:border-l-blue-400 hover:pl-8 transition-all duration-200"><i class="fas fa-chart-bar menu-icon text-white w-5 mr-4 text-center"></i>Estadísticas</a></li>
+        <li><a href="{% url 'roles' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 border-l-4 border-transparent hover:border-l-blue-400 hover:pl-8 transition-all duration-200"><i class="fas fa-user-shield menu-icon text-white w-5 mr-4 text-center"></i>Roles</a></li>
+        {% endif %}
+      </ul>
     </div>
-    
-    <ul class="py-5">
-      <li>
-        <a href="{% url 'index' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-home menu-icon text-white w-5 mr-4 text-center"></i>
-          <span>Inicio</span>
-        </a>
-      </li>
-      {% if perms.todo.view_cliente %}
-      <li>
-        <a href="{% url 'tabla' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-users menu-icon text-white w-5 mr-4 text-center"></i>
-          <span>Clientes</span>
-        </a>
-      </li>
-      {% endif %}
-      {% if perms.todo.view_producto %}
-      <li>
-        <a href="{% url 'productos_index' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-box menu-icon text-white w-5 mr-4 text-center"></i>
-          <span>Productos</span>
-        </a>
-      </li>
-      {% endif %}
-      {% if perms.todo.view_factura %}
-      <li>
-        <a href="{% url 'lista_facturas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-shopping-cart menu-icon text-white w-5 mr-4 text-center"></i>
-          <span>Ventas</span>
-        </a>
-      </li>
-      {% endif %}
-      {% if perms.auth.view_group %}
-      <li>
-        <a href="{% url 'estadisticas' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-chart-bar menu-icon text-white w-5 mr-4 text-center"></i>
-          <span>Estadísticas</span>
-        </a>
-      </li>
-      {% endif %}
-      {% if perms.auth.view_group %}
-      <li>
-        <a href="{% url 'roles' %}" class="menu-item flex items-center py-4 px-6 text-gray-100 hover:bg-white hover:bg-opacity-10 hover:border-l-blue-400 border-l-4 border-transparent hover:pl-8 transition-all duration-200">
-          <i class="fas fa-user-shield menu-icon text-white w-5 mr-4 text-center"></i>
-          <span>Roles</span>
-        </a>
-      </li>
-      {% endif %}
-    </ul>
-  </div>
 
-  <!-- Footer fijo -->
-  <div class="border-t border-white border-opacity-20 pt-3 px-6 text-center text-sm text-gray-300">
-    <p class="font-semibold text-white flex items-center justify-center gap-1 text-base">
-      <i class="fas fa-box"></i> VeluWeb
-    </p>
-    <p class="text-gray-400 text-xs mt-1">
-      Sistema de Gestión de Inventario
-    </p>
-    <p class="text-gray-500 text-xs mt-2">
-      © 2025 VeluWeb
-    </p>
-  </div>
+    <!-- Footer fijo dentro del menú -->
+    <div class="border-t border-white border-opacity-20 pt-3 px-6 text-center text-sm text-gray-300">
+      <p class="font-semibold text-white flex items-center justify-center gap-1 text-base"><i class="fas fa-box"></i> VeluWeb</p>
+      <p class="text-gray-400 text-xs mt-1">Sistema de Gestión de Inventario</p>
+      <p class="text-gray-500 text-xs mt-2">© 2025 VeluWeb</p>
+    </div>
+  </nav>
 
-</nav>
-
-
-  <!-- Contenido dinámico -->
+  <!-- Contenido -->
   <main class="flex-1 py-8 px-5 max-w-6xl mx-auto w-full">
-    <!-- Mensajes contextuales -->
     {% if messages %}
       <div class="mb-6">
         {% for message in messages %}
-          <div class="contextual-message {% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %} auto-hide" 
-               data-message-tags="{{ message.tags }}">
-            <i class="message-icon 
-              {% if message.tags == 'success' %}fas fa-check-circle
-              {% elif message.tags == 'error' %}fas fa-exclamation-triangle
-              {% elif message.tags == 'warning' %}fas fa-exclamation-circle
-              {% else %}fas fa-info-circle{% endif %}"></i>
+          <div class="contextual-message {% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %} auto-hide">
+            <i class="message-icon {% if message.tags == 'success' %}fas fa-check-circle{% elif message.tags == 'error' %}fas fa-exclamation-triangle{% elif message.tags == 'warning' %}fas fa-exclamation-circle{% else %}fas fa-info-circle{% endif %}"></i>
             <span>{{ message }}</span>
           </div>
         {% endfor %}
@@ -271,12 +129,11 @@
     {% endif %}
 
     {% block content %}
-    <div class="bg-white p-8 rounded-xl shadow-lg">
-    </div>
+    <div class="bg-white p-8 rounded-xl shadow-lg"></div>
     {% endblock %}
   </main>
 
-
+  <!-- Mensajes flotantes -->
   {% if messages %}
   <div class="fixed top-4 right-4 z-50">
     {% for message in messages %}
@@ -289,36 +146,39 @@
       </div>
     {% endfor %}
   </div>
-{% endif %}
+  {% endif %}
+
+  <!-- Footer principal -->
+  <footer class="bg-blue-dark text-white text-center py-6 px-5 mt-auto">
+    <p class="mb-4 text-sm">Veluweb &copy; 2025 - Todos los derechos reservados</p>
+    <ul class="flex justify-center gap-6 flex-wrap">
+      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Facebook</a></li>
+      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">TikTok</a></li>
+      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Instagram</a></li>
+    </ul>
+  </footer>
 
   <script>
     let timer;
     const logoutUrl = "{% url 'logout' %}";
-
     function resetTimer() {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            window.location.href = logoutUrl;
-        }, 15 * 60 * 1000);
+      clearTimeout(timer);
+      timer = setTimeout(() => { window.location.href = logoutUrl; }, 15 * 60 * 1000);
     }
-
     window.onload = resetTimer;
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
     document.onclick = resetTimer;
     document.onscroll = resetTimer;
 
-    // Auto-ocultar mensajes después de 5 segundos
     document.addEventListener('DOMContentLoaded', function() {
-        const messages = document.querySelectorAll('.auto-hide');
-        messages.forEach(function(message) {
-            setTimeout(function() {
-                message.style.opacity = '0';
-                setTimeout(function() {
-                    message.remove();
-                }, 500);
-            }, 5000);
-        });
+      const messages = document.querySelectorAll('.auto-hide');
+      messages.forEach(function(message) {
+        setTimeout(function() {
+          message.style.opacity = '0';
+          setTimeout(() => { message.remove(); }, 500);
+        }, 5000);
+      });
     });
   </script>
 
