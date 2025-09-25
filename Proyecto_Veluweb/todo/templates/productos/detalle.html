@@ -4,59 +4,243 @@
 {% load humanize %}
 
 {% block content %}
-<header>
-  <style>
-    /* Gradiente personalizado para el header */
-    .bg-custom-gradient {
-      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-    }
-    /* Colores personalizados para los botones */
-    .btn-custom {
-      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-    }
-  </style>
-</header>
-<div class="max-w-4xl mx-auto mt-10 mb-10">
-  <!-- Botón de volver -->
-  <div class="flex justify-start gap-4 mt-6">
-    <a href="{% url 'productos_index' %}" 
-       class="btn-custom text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        Volver
-    </a>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Encabezado con botón de volver -->
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-blue-dark text-4xl font-semibold">Detalle del Producto</h1>
   </div>
 
   <!-- Contenido principal -->
-  <div class="flex flex-col md:flex-row gap-8 bg-white rounded-xl shadow-lg p-8">
-    <!-- Imagen del producto -->
-    <div class="md:w-1/2 flex items-start justify-center">
-      {% if producto.imagen %}
-      <img src="{{ producto.imagen.url }}" alt="Imagen del producto"
-      class="rounded shadow-sm w-full max-w-xs object-cover">
-      {% else %}
-      <img src="{% static 'img/no-image.png' %}" alt="Sin imagen disponible"
-      class="rounded shadow-sm w-full max-w-xs object-cover">
-      {% endif %}
-    </div>
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     
-    <!-- Info del producto -->
-    <div class="md:w-1/2 flex flex-col justify-between">
-      <div>
-        <h2 class="mb-3 text-3xl font-bold text-blue-800">{{ producto.nombre }}</h2>
-        <p class="mb-2 text-lg"><span class="font-semibold text-gray-700">Precio:</span> <span class="text-green-600 font-bold">${{ producto.precio|floatformat:0|intcomma }}</span></p>
-        <p class="mb-4 text-base"><span class="font-semibold text-gray-700">Descripción:</span> {{ producto.descripcion }}</p>
+    <!-- Header del detalle -->
+    <div class="bg-blue-dark px-6 py-4">
+      <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+        <i class="fas fa-box"></i>
+        Información del Producto
+      </h2>
+    </div>
+
+    <!-- Contenido del producto -->
+    <div class="p-6">
+      <div class="flex flex-col lg:flex-row gap-8">
+        
+        <!-- Imagen del producto -->
+        <div class="lg:w-1/2">
+          <div class="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300">
+            {% if producto.imagen %}
+              <img src="{{ producto.imagen.url }}" 
+                   alt="{{ producto.nombre }}"
+                   class="w-full h-auto max-h-96 object-contain rounded-lg shadow-md mx-auto">
+            {% else %}
+              <div class="flex flex-col items-center justify-center h-64 text-gray-400">
+                <i class="fas fa-image text-6xl mb-4"></i>
+                <p class="text-lg">Sin imagen disponible</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Información del producto -->
+        <div class="lg:w-1/2 space-y-6">
+          
+          <!-- Nombre -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-tag mr-2"></i>
+              Nombre del Producto
+            </label>
+            <div class="detail-value">{{ producto.nombre }}</div>
+          </div>
+
+          <!-- Código -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-barcode mr-2"></i>
+              Código del Producto
+            </label>
+            <div class="detail-value">{{ producto.codigo }}</div>
+          </div>
+
+          <!-- Precio -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-dollar-sign mr-2"></i>
+              Precio Unitario
+            </label>
+            <div class="detail-value price-highlight">
+              ${{ producto.precio|floatformat:0|intcomma }}
+            </div>
+          </div>
+
+          <!-- Stock -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-boxes mr-2"></i>
+              Stock Disponible
+            </label>
+            <div class="detail-value">
+              <span class="stock-badge {% if producto.stock > 10 %}stock-high{% elif producto.stock > 0 %}stock-medium{% else %}stock-low{% endif %}">
+                {{ producto.stock }} unidades
+              </span>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          {% if producto.descripcion %}
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-align-left mr-2"></i>
+              Descripción
+            </label>
+            <div class="detail-value description-text">
+              {{ producto.descripcion }}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Información adicional -->
+          <div class="border-t border-gray-200 pt-4 mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-calendar-plus text-blue-500"></i>
+                <span>Creado: {{ producto.fecha_creacion|date:"d/m/Y" }}</span>
+              </div>
+              {% if producto.fecha_actualizacion %}
+              <div class="flex items-center gap-2">
+                <i class="fas fa-calendar-edit text-blue-500"></i>
+                <span>Actualizado: {{ producto.fecha_actualizacion|date:"d/m/Y" }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
+
+    <!-- Botones de acción -->
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+      <div class="flex justify-center gap-4">
+        <a href="{% url 'editar_producto' producto.id %}" 
+           class="px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <i class="fas fa-edit mr-2"></i>Editar Producto
+        </a>
+<a href="{% url 'productos_index' %}" 
+    class="px-6 py-2 border border-blue-dark text-blue-dark rounded-lg hover:bg-blue-dark hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2">
+    <i class="fas fa-list"></i>
+    Ver Todos los Productos
+</a>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<style>
+/* Estilos para campos de detalle */
+.detail-field {
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 4px solid #3b82f6;
+  border-radius: 0.5rem;
+}
+
+.detail-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.detail-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+  word-wrap: break-word;
+}
+
+.price-highlight {
+  color: #059669;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.description-text {
+  line-height: 1.6;
+  color: #4b5563;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Badges para stock */
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.stock-high {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.stock-medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.stock-low {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Animaciones suaves */
+.detail-field {
+  transition: all 0.3s ease;
+}
+
+.detail-field:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: translateX(4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .detail-value {
+    font-size: 1rem;
+  }
+  
+  .price-highlight {
+    font-size: 1.25rem;
+  }
+}
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Formato de números mejorado
     document.querySelectorAll('.js-format-number').forEach(function(el) {
         const numero = parseInt(el.textContent);
         el.textContent = numero.toLocaleString('es-CO');
+    });
+
+    // Animación de entrada para los campos
+    const detailFields = document.querySelectorAll('.detail-field');
+    detailFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'all 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, index * 100);
     });
 });
 </script>

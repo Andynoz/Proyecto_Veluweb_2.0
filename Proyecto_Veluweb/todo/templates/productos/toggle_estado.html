@@ -1,78 +1,341 @@
 {% extends "todo/layout2.html" %}
+{% load humanize %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 py-8">
-  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 
-              {% if producto.estado %} border-red-500 {% else %} border-emerald-500 {% endif %}">
-    <div class="p-8">
-      <!-- Icono -->
-      <div class="flex justify-center mb-6">
-        <div class="{% if producto.estado %} bg-red-100 {% else %} bg-emerald-100 {% endif %} rounded-full p-4">
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Encabezado con navegación -->
+  <div class="mb-8 flex items-center justify-between">
+    <a href="{% if producto.estado %}{% url 'productos_index' %}{% else %}{% url 'productos_inactivos' %}{% endif %}" 
+       class="px-6 py-2 border border-blue-dark text-blue-dark rounded-lg hover:bg-blue-dark hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </a>
+    <h1 class="text-blue-dark text-3xl font-semibold">{{ accion|title }} Producto</h1>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    
+    <!-- Header con icono y estado -->
+    <div class="{% if producto.estado %}bg-red-600{% else %}bg-emerald-600{% endif %} px-6 py-8">
+      <div class="flex flex-col items-center text-center">
+        <!-- Icono dinámico -->
+        <div class="mb-4 p-4 bg-white rounded-full">
           {% if producto.estado %}
-          <!-- Ícono de deshabilitar -->
-          <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 
-                     01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 
-                     00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
+            <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
           {% else %}
-          <!-- Ícono de activar -->
-          <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-          </svg>
+            <i class="fas fa-check-circle text-4xl text-emerald-600"></i>
           {% endif %}
         </div>
-      </div>
-
-      <!-- Título -->
-      <h1 class="text-3xl mb-6 text-center font-bold 
-                 {% if producto.estado %} text-red-600 {% else %} text-emerald-600 {% endif %}">
-        ¿Deseas {{ accion }} este producto?
-      </h1>
-
-      <!-- Info del producto -->
-      <div class="bg-gray-50 rounded-lg p-4 mb-8">
-        <h4 class="text-gray-800 font-semibold mb-3">📦 Información del Producto:</h4>
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Nombre:</span>
-            <span class="font-medium text-gray-900">{{ producto.nombre }}</span>
-          </div>
-          {% if producto.descripcion %}
-          <div class="flex justify-between">
-            <span class="text-gray-600">Descripción:</span>
-            <span class="font-medium text-gray-900 text-right max-w-xs">{{ producto.descripcion|truncatewords:15 }}</span>
-          </div>
+        
+        <!-- Título principal -->
+        <h2 class="text-white font-bold text-2xl mb-2">
+          ¿Confirmar {{ accion }}?
+        </h2>
+        <p class="text-white opacity-90">
+          {% if producto.estado %}
+            Esta acción deshabilitará el producto y no estará disponible para ventas
+          {% else %}
+            Esta acción reactivará el producto y estará disponible nuevamente
           {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Información del producto -->
+    <div class="p-8">
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+          <i class="fas fa-box-open text-blue-600"></i>
+          Información del Producto
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Nombre -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-tag mr-2 text-blue-600"></i>
+              Nombre
+            </div>
+            <div class="info-value">{{ producto.nombre }}</div>
+          </div>
+
+          <!-- Stock -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-cubes mr-2 text-blue-600"></i>
+              Stock Disponible
+            </div>
+            <div class="info-value">
+              <span class="{% if producto.stock <= 5 %}text-red-600{% elif producto.stock <= 20 %}text-yellow-600{% else %}text-green-600{% endif %} font-bold">
+                {{ producto.stock }} unidades
+              </span>
+            </div>
+          </div>
+
+          <!-- Precio -->
           {% if producto.precio %}
-          <div class="flex justify-between">
-            <span class="text-gray-600">Precio:</span>
-            <span class="font-bold text-green-600 text-lg">${{ producto.precio|floatformat:2 }}</span>
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-dollar-sign mr-2 text-blue-600"></i>
+              Precio
+            </div>
+            <div class="info-value text-green-600 font-bold text-xl">
+              ${{ producto.precio|floatformat:0|intcomma }}
+            </div>
           </div>
           {% endif %}
-          <div class="flex justify-between">
-            <span class="text-gray-600">Stock:</span>
-            <span class="font-medium text-gray-900">{{ producto.stock }} unidades</span>
+
+          <!-- Estado -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-flag mr-2 text-blue-600"></i>
+              Estado Actual
+            </div>
+            <div class="info-value">
+              <span class="px-3 py-1 text-sm font-semibold rounded-full
+                {% if producto.estado %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                {% if producto.estado %}
+                  <i class="fas fa-check mr-1"></i>
+                  Activo
+                {% else %}
+                  <i class="fas fa-ban mr-1"></i>
+                  Inactivo
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descripción (si existe) -->
+        {% if producto.descripcion %}
+        <div class="mt-6">
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-align-left mr-2 text-blue-600"></i>
+              Descripción
+            </div>
+            <div class="info-value text-gray-700">
+              {{ producto.descripcion|truncatewords:30 }}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Imagen del producto (si existe) -->
+        {% if producto.imagen %}
+        <div class="mt-6">
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-image mr-2 text-blue-600"></i>
+              Imagen del Producto
+            </div>
+            <div class="mt-3">
+              <img src="{{ producto.imagen.url }}" 
+                   alt="{{ producto.nombre }}"
+                   class="w-32 h-32 object-cover rounded-lg shadow-md border-2 border-gray-200">
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Mensaje de advertencia -->
+      <div class="mb-8 p-4 {% if producto.estado %}bg-red-50 border-l-4 border-red-400{% else %}bg-emerald-50 border-l-4 border-emerald-400{% endif %} rounded-r-lg">
+        <div class="flex items-start">
+          <i class="{% if producto.estado %}fas fa-exclamation-triangle text-red-600{% else %}fas fa-info-circle text-emerald-600{% endif %} mt-1 mr-3"></i>
+          <div>
+            <h4 class="font-semibold {% if producto.estado %}text-red-800{% else %}text-emerald-800{% endif %} mb-1">
+              {% if producto.estado %}¡Atención!{% else %}Información{% endif %}
+            </h4>
+            <p class="{% if producto.estado %}text-red-700{% else %}text-emerald-700{% endif %} text-sm">
+              {% if producto.estado %}
+                Al deshabilitar este producto, no estará disponible para nuevas ventas y no aparecerá en el catálogo principal hasta que sea reactivado.
+              {% else %}
+                Al activar este producto, volverá a estar disponible para ventas y aparecerá en el catálogo principal.
+              {% endif %}
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Form -->
-      <form method="post">{% csrf_token %}
+      <!-- Formulario de confirmación -->
+      <form method="post">
+        {% csrf_token %}
         <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <!-- Botón de confirmación -->
           <button type="submit" 
-                  class="{% if producto.estado %} bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700 
-                         {% else %} bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700 
-                         {% endif %} text-white font-bold px-8 py-3 rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-            {% if producto.estado %} 🚫 Sí, deshabilitar {% else %} ✅ Sí, activar {% endif %}
+                  class="px-8 py-3 {% if producto.estado %}bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700{% else %}bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700{% endif %} text-white font-bold rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl flex items-center justify-center gap-2">
+            {% if producto.estado %}
+              <i class="fas fa-ban"></i>
+              Sí, Deshabilitar
+            {% else %}
+              <i class="fas fa-check"></i>
+              Sí, Activar
+            {% endif %}
           </button>
+
+          <!-- Botón de cancelar -->
           <a href="{% if producto.estado %}{% url 'productos_index' %}{% else %}{% url 'productos_inactivos' %}{% endif %}" 
-             class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 text-center">
-            ↩️ Cancelar
+             class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-center flex items-center justify-center gap-2">
+            <i class="fas fa-times"></i>
+            Cancelar
           </a>
         </div>
       </form>
     </div>
   </div>
+
+  <!-- Información adicional sobre stock -->
+  {% if producto.stock <= 5 and producto.estado %}
+  <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+    <div class="flex items-start">
+      <i class="fas fa-exclamation-circle text-yellow-600 mt-1 mr-3"></i>
+      <div>
+        <h4 class="font-medium text-yellow-800 mb-1">Stock Bajo</h4>
+        <p class="text-yellow-700 text-sm">
+          Este producto tiene stock bajo ({{ producto.stock }} unidades). 
+          Considera reabastecer antes de deshabilitarlo para evitar pérdidas de ventas.
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
+
+<style>
+/* Estilos para campos de información */
+.info-field {
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.03);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.info-field:hover {
+  background: rgba(59, 130, 246, 0.06);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.info-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.info-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+  word-wrap: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-row {
+    flex-direction: column;
+  }
+  
+  h1 {
+    font-size: 1.875rem;
+    text-align: center;
+  }
+  
+  .mb-8.flex.items-center.justify-between {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+/* Indicador de stock */
+.info-value span {
+  position: relative;
+}
+
+.info-value span.text-red-600::after {
+  content: "¡Stock crítico!";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #dc2626;
+  margin-top: 0.25rem;
+}
+
+/* Animaciones de entrada */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bg-white {
+  animation: slideInUp 0.6s ease-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para los campos de información
+    const infoFields = document.querySelectorAll('.info-field');
+    infoFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'all 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Confirmación adicional en el botón submit
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        const productName = '{{ producto.nombre }}';
+        const action = submitBtn.textContent.includes('Deshabilitar') ? 'deshabilitar' : 'activar';
+        const confirmMessage = `¿Estás seguro de que deseas ${action} el producto "${productName}"?`;
+        
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+        }
+    });
+
+    // Advertencia especial para productos con stock bajo
+    const stock = {{ producto.stock }};
+    const isActive = {{ producto.estado|yesno:"true,false" }};
+    
+    if (stock <= 5 && isActive && submitBtn.textContent.includes('Deshabilitar')) {
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('⚠️ Este producto tiene stock bajo. ¿Estás seguro de deshabilitarlo?')) {
+                if (confirm('Última confirmación: ¿Realmente deseas deshabilitar este producto con stock bajo?')) {
+                    form.submit();
+                }
+            }
+        });
+    }
+});
+</script>
+
 {% endblock %}

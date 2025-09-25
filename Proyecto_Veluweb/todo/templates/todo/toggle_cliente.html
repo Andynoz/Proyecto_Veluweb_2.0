@@ -1,76 +1,326 @@
 {% extends "todo/layout2.html" %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 py-8">
-  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 
-              {% if cliente.activo %} border-red-500 {% else %} border-emerald-500 {% endif %}">
-    <div class="p-8">
-      <!-- Icono -->
-      <div class="flex justify-center mb-6">
-        <div class="{% if cliente.activo %} bg-red-100 {% else %} bg-emerald-100 {% endif %} rounded-full p-4">
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Encabezado con navegación -->
+  <div class="mb-8 flex items-center justify-between">
+    <a href="{% url 'tabla' %}" 
+       class="px-6 py-2 border border-blue-dark text-blue-dark rounded-lg hover:bg-blue-dark hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </a>
+    <h1 class="text-blue-dark text-3xl font-semibold">
+      {% if cliente.activo %}Deshabilitar{% else %}Activar{% endif %} Cliente
+    </h1>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    
+    <!-- Header con icono y estado -->
+    <div class="{% if cliente.activo %}bg-red-600{% else %}bg-emerald-600{% endif %} px-6 py-8">
+      <div class="flex flex-col items-center text-center">
+        <!-- Icono dinámico -->
+        <div class="mb-4 p-4 bg-white rounded-full">
           {% if cliente.activo %}
-            <!-- Ícono de deshabilitar -->
-            <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 
-                       01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 
-                       00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-            </svg>
+            <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
           {% else %}
-            <!-- Ícono de activar -->
-            <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+            <i class="fas fa-check-circle text-4xl text-emerald-600"></i>
           {% endif %}
         </div>
+        
+        <!-- Título principal -->
+        <h2 class="text-white font-bold text-2xl mb-2">
+          ¿Confirmar {% if cliente.activo %}deshabilitación{% else %}activación{% endif %}?
+        </h2>
+        <p class="text-white opacity-90">
+          {% if cliente.activo %}
+            Esta acción deshabilitará el cliente y no podrá realizar nuevas compras
+          {% else %}
+            Esta acción reactivará el cliente y podrá realizar compras nuevamente
+          {% endif %}
+        </p>
       </div>
+    </div>
 
-      <!-- Título -->
-      <h1 class="text-3xl mb-6 text-center font-bold 
-                 {% if cliente.activo %} text-red-600 {% else %} text-emerald-600 {% endif %}">
-        ¿Deseas {% if cliente.activo %}deshabilitar{% else %}activar{% endif %} este cliente?
-      </h1>
-
-      <!-- Info del cliente -->
-      <div class="bg-gray-50 rounded-lg p-4 mb-8">
-        <h4 class="text-gray-800 font-semibold mb-3">👤 Información del Cliente:</h4>
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Nombre:</span>
-            <span class="font-medium text-gray-900">{{ cliente.nombre }} {{ cliente.apellido }}</span>
+    <!-- Información del cliente -->
+    <div class="p-8">
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+          <i class="fas fa-user text-blue-600"></i>
+          Información del Cliente
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Nombre completo -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-user-circle mr-2 text-blue-600"></i>
+              Nombre Completo
+            </div>
+            <div class="info-value">{{ cliente.nombre }} {{ cliente.apellido }}</div>
           </div>
+
+          <!-- Estado actual -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-flag mr-2 text-blue-600"></i>
+              Estado Actual
+            </div>
+            <div class="info-value">
+              <span class="px-3 py-1 text-sm font-semibold rounded-full
+                {% if cliente.activo %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                {% if cliente.activo %}
+                  <i class="fas fa-check mr-1"></i>
+                  Activo
+                {% else %}
+                  <i class="fas fa-ban mr-1"></i>
+                  Inactivo
+                {% endif %}
+              </span>
+            </div>
+          </div>
+
+          <!-- Correo (si existe) -->
           {% if cliente.correo %}
-          <div class="flex justify-between">
-            <span class="text-gray-600">Correo:</span>
-            <span class="font-medium text-gray-900 text-right max-w-xs">{{ cliente.correo }}</span>
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-envelope mr-2 text-blue-600"></i>
+              Correo Electrónico
+            </div>
+            <div class="info-value break-all">{{ cliente.correo }}</div>
           </div>
           {% endif %}
+
+          <!-- Teléfono (si existe) -->
           {% if cliente.telefono %}
-          <div class="flex justify-between">
-            <span class="text-gray-600">Teléfono:</span>
-            <span class="font-medium text-gray-900">{{ cliente.telefono }}</span>
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-phone mr-2 text-blue-600"></i>
+              Teléfono
+            </div>
+            <div class="info-value">{{ cliente.telefono }}</div>
+          </div>
+          {% endif %}
+
+          <!-- ID del cliente -->
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-hashtag mr-2 text-blue-600"></i>
+              ID Cliente
+            </div>
+            <div class="info-value font-bold text-blue-600">#{{ cliente.id }}</div>
+          </div>
+
+          <!-- Fecha de registro (si existe) -->
+          {% if cliente.fecha_registro %}
+          <div class="info-field">
+            <div class="info-label">
+              <i class="fas fa-calendar-plus mr-2 text-blue-600"></i>
+              Fecha de Registro
+            </div>
+            <div class="info-value">{{ cliente.fecha_registro|date:"d/m/Y" }}</div>
           </div>
           {% endif %}
         </div>
       </div>
 
-      <!-- Form -->
-      <form method="post">{% csrf_token %}
+      <!-- Mensaje de advertencia -->
+      <div class="mb-8 p-4 {% if cliente.activo %}bg-red-50 border-l-4 border-red-400{% else %}bg-emerald-50 border-l-4 border-emerald-400{% endif %} rounded-r-lg">
+        <div class="flex items-start">
+          <i class="{% if cliente.activo %}fas fa-exclamation-triangle text-red-600{% else %}fas fa-info-circle text-emerald-600{% endif %} mt-1 mr-3"></i>
+          <div>
+            <h4 class="font-semibold {% if cliente.activo %}text-red-800{% else %}text-emerald-800{% endif %} mb-1">
+              {% if cliente.activo %}¡Atención!{% else %}Información{% endif %}
+            </h4>
+            <p class="{% if cliente.activo %}text-red-700{% else %}text-emerald-700{% endif %} text-sm">
+              {% if cliente.activo %}
+                Al deshabilitar este cliente, no podrá realizar nuevas compras ni aparecerá en las listas de clientes activos. 
+                Sus datos se conservarán pero no podrá acceder al sistema hasta ser reactivado.
+              {% else %}
+                Al activar este cliente, volverá a tener acceso completo al sistema y podrá realizar compras normalmente.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario de confirmación -->
+      <form method="post">
+        {% csrf_token %}
         <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <!-- Botón de confirmación -->
           <button type="submit" 
-                  class="{% if cliente.activo %} bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700 
-                         {% else %} bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700 
-                         {% endif %} text-white font-bold px-8 py-3 rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-            {% if cliente.activo %} 🚫 Sí, deshabilitar {% else %} ✅ Sí, activar {% endif %}
+                  class="px-8 py-3 {% if cliente.activo %}bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700{% else %}bg-emerald-600 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-700{% endif %} text-white font-bold rounded-lg border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl flex items-center justify-center gap-2">
+            {% if cliente.activo %}
+              <i class="fas fa-ban"></i>
+              Sí, Deshabilitar
+            {% else %}
+              <i class="fas fa-check"></i>
+              Sí, Activar
+            {% endif %}
           </button>
 
+          <!-- Botón de cancelar -->
           <a href="{% url 'tabla' %}" 
-             class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 text-center">
-            ↩️ Cancelar
+             class="px-8 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-center flex items-center justify-center gap-2">
+            <i class="fas fa-times"></i>
+            Cancelar
           </a>
         </div>
       </form>
+    </div>
+  </div>
 
+  <!-- Información adicional sobre el impacto -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Información sobre facturas -->
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+      <div class="flex items-start">
+        <i class="fas fa-file-invoice text-blue-600 mt-1 mr-3"></i>
+        <div>
+          <h4 class="font-medium text-blue-800 mb-1">Facturas Existentes</h4>
+          <p class="text-blue-700 text-sm">
+            {% if cliente.activo %}
+              Las facturas existentes de este cliente se mantendrán, pero no podrá generar nuevas mientras esté deshabilitado.
+            {% else %}
+              Al reactivar el cliente, podrá generar nuevas facturas y acceder a su historial completo.
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información sobre datos -->
+    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+      <div class="flex items-start">
+        <i class="fas fa-database text-purple-600 mt-1 mr-3"></i>
+        <div>
+          <h4 class="font-medium text-purple-800 mb-1">Conservación de Datos</h4>
+          <p class="text-purple-700 text-sm">
+            Todos los datos del cliente (información personal, historial de compras, etc.) se conservan de forma segura independientemente del estado.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+/* Estilos para campos de información */
+.info-field {
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.03);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.info-field:hover {
+  background: rgba(59, 130, 246, 0.06);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.info-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.info-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+  word-wrap: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-row {
+    flex-direction: column;
+  }
+  
+  h1 {
+    font-size: 1.875rem;
+    text-align: center;
+  }
+  
+  .mb-8.flex.items-center.justify-between {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+/* Animaciones de entrada */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bg-white {
+  animation: slideInUp 0.6s ease-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para los campos de información
+    const infoFields = document.querySelectorAll('.info-field');
+    infoFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'all 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Confirmación adicional en el botón submit
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        const clientName = '{{ cliente.nombre }} {{ cliente.apellido }}';
+        const action = submitBtn.textContent.includes('Deshabilitar') ? 'deshabilitar' : 'activar';
+        const confirmMessage = `¿Estás seguro de que deseas ${action} al cliente "${clientName}"?`;
+        
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+        }
+    });
+
+    // Animación para las cards de información adicional
+    const infoCards = document.querySelectorAll('.mt-8 .grid > div');
+    infoCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateX(0)';
+        }, (index + infoFields.length + 2) * 100);
+    });
+});
+</script>
+
 {% endblock %}

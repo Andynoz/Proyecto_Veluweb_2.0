@@ -8,7 +8,7 @@
 <!-- Contenedor principal -->
 <div class="max-w-7xl mx-auto px-4 py-8">
   <!-- Título principal -->
-  <h1 class="text-dark text-4xl mb-8 text-center font-semibold">Lista de Clientes</h1>
+  <h1 class="text-black text-4xl mb-8 text-center font-semibold">Lista de Clientes</h1>
   
   <!-- Barra de búsqueda y botón crear -->
   <div class="flex items-center justify-between mb-6 gap-4">
@@ -19,27 +19,27 @@
         name="q" 
         value="{{ q }}" 
         placeholder="Buscar cliente..." 
-        class="form-control flex-grow border rounded-lg px-4 py-2"
+        class="form-control flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
       >
-      <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">🔎</button>
+      <button class="ml-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition-all duration-300">
+        <i class="fas fa-search"></i>
+      </button>
     </form>
 
     <!-- Botón crear cliente -->
     {% if perms.todo.add_cliente %}
       <a href="{% url 'agregar' %}" 
-         class="ml-4 bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-        + Crear Cliente
+         class="ml-4 px-6 py-2 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white font-medium text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+        <i class="fas fa-plus mr-2"></i>Crear Cliente
       </a>
     {% endif %}
   </div>
-</div>
-
 
   <!-- Tabla moderna -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
     <!-- Encabezado de la tabla -->
-    <div class="bg-gray-700 text-white">
-      <div class="grid grid-cols-{% if perms.todo.change_cliente or perms.todo.delete_cliente %}5{% else %}4{% endif %} gap-[75px] px-6 py-4 font-semibold">
+    <div class="bg-blue-dark">
+      <div class="grid grid-cols-{% if perms.todo.change_cliente or perms.todo.delete_cliente %}5{% else %}4{% endif %} gap-4 px-6 py-4 font-semibold text-white">
         <div class="text-left">ID</div>
         <div class="text-left">Cliente</div>
         <div class="text-left">Correo</div>
@@ -53,24 +53,24 @@
     <!-- Cuerpo de la tabla -->
     <div class="divide-y divide-gray-200">
       {% for cliente in page_obj %}
-      <div class="grid grid-cols-{% if perms.todo.change_cliente or perms.todo.delete_cliente %}5{% else %}4{% endif %} gap-[75px] px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
+      <div class="grid grid-cols-{% if perms.todo.change_cliente or perms.todo.delete_cliente %}5{% else %}4{% endif %} gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-300 hover:translate-x-1">
         <!-- ID -->
-        <div class="flex items-center text-gray-900 font-medium">
+        <div class="flex items-center text-gray-900 font-semibold">
           {{ cliente.id }}
         </div>
 
         <!-- Cliente -->
         <div class="flex items-center">
-          <span class="text-dark font-medium">{{ cliente.nombre }} {{ cliente.apellido }}</span>
+          <span class="text-gray-900 font-medium">{{ cliente.nombre }} {{ cliente.apellido }}</span>
         </div>
 
         <!-- Correo -->
-        <div class="flex items-center text-dark">
+        <div class="flex items-center text-gray-700">
           {{ cliente.correo }}
         </div>
 
         <!-- Teléfono -->
-        <div class="flex items-center text-dark">
+        <div class="flex items-center text-gray-700">
           {{ cliente.telefono }}
         </div>
 
@@ -79,54 +79,53 @@
         <div class="flex items-center justify-center space-x-2">
 
           {% if perms.todo.delete_cliente %}
-          <a href="{% url 'detalle_cliente' cliente.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg" title="Ver detalle">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+          <a href="{% url 'detalle_cliente' cliente.id %}" 
+             class="inline-flex items-center justify-center w-10 h-10 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg" 
+             title="Ver detalle">
+            <i class="fas fa-eye"></i>
           </a>
           {% endif %}
           
           {% if perms.todo.change_cliente %}
-            <a href="{% url 'editar' cliente.id %}" class="inline-flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
+            <a href="{% url 'editar' cliente.id %}" 
+               class="inline-flex items-center justify-center w-10 h-10 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+               title="Editar cliente">
+              <i class="fas fa-edit"></i>
             </a>
           {% endif %}
 
-          <!-- Botón Activar/Desactivar con Modal -->
+          <!-- Botón Activar/Desactivar -->
           <a href="{% url 'toggle_estado_cliente' cliente.id %}" 
-          class="inline-flex items-center justify-center w-10 h-10 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-          title="{% if cliente.activo %}Desactivar{% else %}Activar{% endif %}">
-          {% if cliente.activo %}
-          🔓
-          {% else %}
-          🔒
-          {% endif %}
-        </a>
-
-
-
-      </div>
-    </div>
-    {%endif%}
-    {% empty %}
-      <div class="px-6 py-12 text-center text-gray-500">
-        <div class="text-6xl mb-4">📋</div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay clientes registrados</h3>
-        <p class="text-gray-500 mb-4">Comienza agregando tu primer cliente</p>
-        {% if perms.todo.add_cliente %}
-          <a href="{% url 'agregar' %}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
-            <span class="text-lg mr-2">+</span>
-            Agregar Cliente
+             class="inline-flex items-center justify-center w-10 h-10 border border-yellow-500 text-yellow-500 rounded-lg hover:bg-yellow-500 hover:text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+             title="{% if cliente.activo %}Desactivar{% else %}Activar{% endif %} cliente">
+            {% if cliente.activo %}
+              <i class="fas fa-lock-open"></i>
+            {% else %}
+              <i class="fas fa-lock"></i>
+            {% endif %}
           </a>
+
+        </div>
         {% endif %}
       </div>
+      {% empty %}
+        <div class="px-6 py-12 text-center text-gray-500">
+          <div class="text-6xl mb-4 text-gray-600">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No hay clientes registrados</h3>
+          <p class="text-gray-500 mb-4">Comienza agregando tu primer cliente</p>
+          {% if perms.todo.add_cliente %}
+            <a href="{% url 'agregar' %}" 
+               class="inline-flex items-center px-6 py-2 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white font-medium transition-all duration-300 hover:shadow-lg">
+              <i class="fas fa-plus mr-2"></i>
+              Agregar Cliente
+            </a>
+          {% endif %}
+        </div>
       {% endfor %}
     </div>
   </div>
-
 
   <!-- Información adicional -->
   {% if page_obj %}
@@ -137,6 +136,5 @@
   {% include "todo/paginacion.html" %}
   
 </div>
-
 
 {% endblock %}

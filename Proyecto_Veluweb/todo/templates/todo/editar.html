@@ -1,106 +1,261 @@
 {% extends 'todo/layout2.html' %}
-{% load static %}
 
 {% block content %}
-<header>
-     <style>
-        /* Gradiente personalizado para el header */
-        .bg-custom-gradient {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        
-        /* Colores personalizados para los botones */
-        .btn-custom {
-            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-        }
-        
-    </style>
-</header>
-<!-- Contenedor principal -->
+
 <div class="max-w-4xl mx-auto px-4 py-8">
   <!-- Título principal -->
-  <h2 class="text-dark text-4xl mb-8 text-center font-semibold">Editar Cliente</h2>
+  <h1 class="text-blue-dark text-4xl mb-8 text-center font-semibold">Editar Cliente</h1>
   
-  <!-- Contenedor del formulario con fondo blanco y sombra -->
-  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
-    <div class="p-8">
-      <form method="POST">
-        {% csrf_token %}
-        
-        <!-- Fieldset con información del cliente -->
-        <fieldset class="border-0">
-          <!-- Información del cliente -->
-          <div class="mb-8">
-            {% for field in form %}
-            <div class="mb-6">
-              <label for="{{ field.id_for_label }}" class="block text-slate-700 font-semibold mb-2 text-base">
-                {{ field.label }}
-              </label>
-              {% if field.field.widget.input_type == 'select' %}
-                <select name="{{ field.name }}" id="{{ field.id_for_label }}" 
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
-                  {% for choice in field.field.choices %}
-                    <option value="{{ choice.0 }}" {% if choice.0 == field.value %}selected{% endif %}>{{ choice.1 }}</option>
-                  {% endfor %}
-                </select>
-              {% elif field.field.widget.input_type == 'textarea' %}
-                <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" 
-                          class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg resize-vertical"
-                          rows="4">{{ field.value|default:"" }}</textarea>
-              {% elif field.field.widget.input_type == 'email' %}
-                <input type="email" 
-                       name="{{ field.name }}" 
-                       id="{{ field.id_for_label }}" 
-                       value="{{ field.value|default:"" }}"
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
-              {% elif field.field.widget.input_type == 'tel' %}
-                <input type="tel" 
-                       name="{{ field.name }}" 
-                       id="{{ field.id_for_label }}" 
-                       value="{{ field.value|default:"" }}"
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
-              {% elif field.field.widget.input_type == 'date' %}
-                <input type="date" 
-                       name="{{ field.name }}" 
-                       id="{{ field.id_for_label }}" 
-                       value="{{ field.value|default:"" }}"
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
-              {% else %}
-                <input type="{{ field.field.widget.input_type|default:'text' }}" 
-                       name="{{ field.name }}" 
-                       id="{{ field.id_for_label }}" 
-                       value="{{ field.value|default:"" }}"
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base transition-all duration-300 bg-gray-50 focus:outline-none focus:border-blue-700 focus:bg-white focus:shadow-lg">
-              {% endif %}
-              {% if field.help_text %}
-                <div class="mt-1 text-gray-500 text-sm">
-                  {{ field.help_text }}
-                </div>
-              {% endif %}
-              {% if field.errors %}
-                <div class="mt-2 text-red-600 text-sm">
-                  {% for error in field.errors %}
-                    <p>{{ error }}</p>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            </div>
+  <!-- Errores del formulario -->
+  {% if form.errors %}
+  <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+    <div class="flex items-start gap-3">
+      <i class="fas fa-exclamation-triangle text-red-500 mt-1"></i>
+      <div>
+        <h3 class="font-semibold text-red-800 mb-2">Se encontraron errores en el formulario</h3>
+        <ul class="text-sm text-red-700 space-y-1">
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li>{{ field.label }}: {{ error }}</li>
             {% endfor %}
-          </div>
-
-          <!-- Botones de acción -->
-          <div class="flex justify-center space-x-4 pt-6">
-            <button type="submit" class="btn-custom text-white px-8 py-3 rounded-lg font-medium text-base transition-all duration-300 hover:-translate-y-1 border-none cursor-pointer hover:shadow-xl">
-              Actualizar
-            </button>
-            <a href="{% url 'tabla' %}" class="bg-red-500 hover:bg-red-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block">
-              Cancelar
-            </a>
-          </div>
-        </fieldset>
-      </form>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
+  {% endif %}
+
+  <!-- Formulario -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Información Personal -->
+      <div class="bg-blue-dark px-6 py-4">
+        <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+          <i class="fas fa-user"></i>
+          Información Personal
+        </h2>
+      </div>
+
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Nombre -->
+          <div class="form-field">
+            <label for="id_nombre" class="block font-semibold text-gray-700 mb-2">
+              <i class="fas fa-user mr-2"></i>
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <input type="text" 
+                   name="nombre" 
+                   id="id_nombre" 
+                   value="{{ form.nombre.value|default:"" }}"
+                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white font-inherit text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:shadow-blue focus:bg-gray-50">
+            <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+              <i class="fas fa-info-circle"></i>
+              Ingrese el primer nombre del cliente
+            </div>
+          </div>
+
+          <!-- Apellido -->
+          <div class="form-field">
+            <label for="id_apellido" class="block font-semibold text-gray-700 mb-2">
+              <i class="fas fa-user-tag mr-2"></i>
+              Apellido <span class="text-red-500">*</span>
+            </label>
+            <input type="text" 
+                   name="apellido" 
+                   id="id_apellido" 
+                   value="{{ form.apellido.value|default:"" }}"
+                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white font-inherit text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:shadow-blue focus:bg-gray-50">
+            <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+              <i class="fas fa-info-circle"></i>
+              Ingrese el apellido del cliente
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Información de Contacto -->
+      <div class="border-t border-gray-200">
+        <div class="bg-blue-dark px-6 py-4">
+          <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+            <i class="fas fa-envelope"></i>
+            Información de Contacto
+          </h2>
+        </div>
+        
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Correo -->
+            <div class="form-field">
+              <label for="id_correo" class="block font-semibold text-gray-700 mb-2">
+                <i class="fas fa-at mr-2"></i>
+                Correo Electrónico <span class="text-red-500">*</span>
+              </label>
+              <input type="email" 
+                     name="correo" 
+                     id="id_correo" 
+                     value="{{ form.correo.value|default:"" }}"
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white font-inherit text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:shadow-blue focus:bg-gray-50">
+              <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <i class="fas fa-info-circle"></i>
+                Debe ser un email válido y único
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-field">
+              <label for="id_telefono" class="block font-semibold text-gray-700 mb-2">
+                <i class="fas fa-phone mr-2"></i>
+                Teléfono <span class="text-red-500">*</span>
+              </label>
+              <input type="tel" 
+                     name="telefono" 
+                     id="id_telefono" 
+                     value="{{ form.telefono.value|default:"" }}"
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white font-inherit text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:shadow-blue focus:bg-gray-50">
+              <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <i class="fas fa-info-circle"></i>
+                Debe tener exactamente 10 dígitos
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Información de Ubicación -->
+      <div class="border-t border-gray-200">
+        <div class="bg-blue-dark px-6 py-4">
+          <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+            <i class="fas fa-map-marker-alt"></i>
+            Información de Ubicación
+          </h2>
+        </div>
+        
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Ciudad -->
+            <div class="form-field">
+              <label for="id_ciudad" class="block font-semibold text-gray-700 mb-2">
+                <i class="fas fa-city mr-2"></i>
+                Ciudad <span class="text-red-500">*</span>
+              </label>
+              <input type="text" 
+                     name="ciudad" 
+                     id="id_ciudad" 
+                     value="{{ form.ciudad.value|default:"" }}"
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white font-inherit text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:shadow-blue focus:bg-gray-50">
+              <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <i class="fas fa-info-circle"></i>
+                Ciudad donde reside el cliente
+              </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="form-field">
+              <label for="id_direccion" class="block font-semibold text-gray-700 mb-2">
+                <i class="fas fa-home mr-2"></i>
+                Dirección <span class="text-red-500">*</span>
+              </label>
+              <input type="text" 
+                     name="direccion" 
+                     id="id_direccion" 
+                     value="{{ form.direccion.value|default:"" }}"
+                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white font-inherit text-sm transition-all duration-300 focus:outline-none focus:border-blue-500 focus:shadow-blue focus:bg-gray-50">
+              <div class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <i class="fas fa-info-circle"></i>
+                Dirección completa del cliente
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div class="flex justify-center gap-4">
+          <button type="submit" 
+                  class="px-6 py-2 border border-green-500 text-green-500 rounded-lg hover:bg-green-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-save mr-2"></i>Actualizar Cliente
+          </button>
+          <a href="{% url 'tabla' %}" 
+             class="px-6 py-2 border border-gray-500 text-gray-500 rounded-lg hover:bg-gray-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+            <i class="fas fa-times mr-2"></i>Cancelar
+          </a>
+        </div>
+      </div>
+
+    </form>
+  </div>
 </div>
+
+<style>
+/* Estilos para campos del formulario */
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #fefefe;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Sombra personalizada para el foco */
+.focus\:shadow-blue:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+</style>
+
+<script>
+// Auto-focus en el primer campo
+document.addEventListener('DOMContentLoaded', function() {
+    const firstInput = document.querySelector('input[name="nombre"]');
+    if (firstInput) {
+        firstInput.focus();
+    }
+    
+    // Validación en tiempo real para el teléfono
+    const telefonoInput = document.querySelector('input[name="telefono"]');
+    if (telefonoInput) {
+        telefonoInput.addEventListener('input', function(e) {
+            // Solo permitir números
+            e.target.value = e.target.value.replace(/\D/g, '');
+            
+            // Limitar a 10 dígitos
+            if (e.target.value.length > 10) {
+                e.target.value = e.target.value.slice(0, 10);
+            }
+        });
+    }
+});
+</script>
 
 {% endblock %}

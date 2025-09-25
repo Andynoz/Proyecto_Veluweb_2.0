@@ -50,7 +50,7 @@ class Producto(models.Model):
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
     stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
-    precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Unitario")
+    precio = models.DecimalField(max_digits=14, decimal_places=2, verbose_name="Precio Unitario")
     estado = models.BooleanField(default=True)
     activo = models.BooleanField(default=True)
 
@@ -95,7 +95,7 @@ class Factura(models.Model):
         choices=ESTADO_CHOICES,
         default="PENDIENTE"
     )
-    monto_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    monto_total = models.DecimalField(max_digits=14, decimal_places=2, default=0.00)
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     activo = models.BooleanField(default=True)
 
@@ -105,22 +105,13 @@ class Factura(models.Model):
     def calculate_total(self):
         return sum(item.subtotal() for item in self.detallefactura_set.all())
 
-    def save(self, *args, **kwargs):
-        # Si aún no tiene pk, guardamos primero para obtenerlo
-        if not self.pk:
-            super().save(*args, **kwargs)
-
-        # Una vez tiene pk, podemos calcular el total
-        self.monto_total = self.calculate_total()
-        super().save(update_fields=['monto_total'])
-
 
 
 class DetalleFactura(models.Model):
     factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    precio_unitario = models.DecimalField(max_digits=14, decimal_places=2)
 
     def subtotal(self):
         return self.cantidad * self.precio_unitario

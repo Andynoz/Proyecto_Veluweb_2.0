@@ -1,48 +1,248 @@
 {% extends "todo/layout2.html" %}
+
 {% block content %}
 
-<header>
-    <style>
-    /* Gradiente personalizado para el header */
-    .bg-custom-gradient {
-      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-    }
-    /* Colores personalizados para los botones */
-    .btn-custom {
-      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
-    }
-  </style>
-</header>
-<div class="max-w-2xl mx-auto mt-10 mb-10">
-  <div class="flex justify-start gap-4 mt-6">
-    <a href="{% url 'tabla' %}" 
-       class="btn-custom text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        Volver
-    </a>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Encabezado con botón de volver -->
+  <div class="mb-8 flex items-center justify-between">
+    <h1 class="text-blue-dark text-4xl font-semibold">Detalle del Cliente</h1>
   </div>
-  <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
-    <h2 class="mb-6 text-3xl font-bold text-blue-800 text-center">{{ cliente.nombre }} {{ cliente.apellido }}</h2>
-    <div class="grid grid-cols-1 gap-4">
-      <div class="flex justify-between items-center py-2 border-b">
-        <span class="font-semibold text-gray-700">Correo:</span>
-        <span class="text-dark font-bold">{{ cliente.correo }}</span>
+
+  <!-- Contenido principal -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    
+    <!-- Header del detalle -->
+    <div class="bg-blue-dark px-6 py-4">
+      <h2 class="text-white font-semibold text-lg flex items-center gap-2">
+        <i class="fas fa-user"></i>
+        Información del Cliente
+      </h2>
+    </div>
+
+    <!-- Contenido del cliente -->
+    <div class="p-6">
+      <!-- Nombre completo destacado -->
+      <div class="mb-8 text-center">
+        <h3 class="text-3xl font-bold text-blue-dark mb-2">
+          {{ cliente.nombre }} {{ cliente.apellido }}
+        </h3>
+        <div class="w-24 h-1 bg-blue-500 mx-auto rounded"></div>
       </div>
-      <div class="flex justify-between items-center py-2 border-b">
-        <span class="font-semibold text-gray-700">Teléfono:</span>
-        <span class="text-dark font-bold">{{ cliente.telefono }}</span>
+
+      <!-- Información Personal -->
+      <div class="mb-8">
+        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-user text-blue-500"></i>
+          Información Personal
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Nombre -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-user mr-2"></i>
+              Nombre
+            </label>
+            <div class="detail-value">{{ cliente.nombre }}</div>
+          </div>
+
+          <!-- Apellido -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-user-tag mr-2"></i>
+              Apellido
+            </label>
+            <div class="detail-value">{{ cliente.apellido }}</div>
+          </div>
+
+        </div>
       </div>
-      <div class="flex justify-between items-center py-2 border-b">
-        <span class="font-semibold text-gray-700">Ciudad:</span>
-        <span class="text-dark font-bold">{{ cliente.ciudad }}</span>
+
+      <!-- Información de Contacto -->
+      <div class="mb-8">
+        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-envelope text-blue-500"></i>
+          Información de Contacto
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Correo -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-at mr-2"></i>
+              Correo Electrónico
+            </label>
+            <div class="detail-value">
+              <a href="mailto:{{ cliente.correo }}" class="text-blue-600 hover:text-blue-800 underline">
+                {{ cliente.correo }}
+              </a>
+            </div>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-phone mr-2"></i>
+              Teléfono
+            </label>
+            <div class="detail-value">
+              <a href="tel:{{ cliente.telefono }}" class="text-blue-600 hover:text-blue-800 underline">
+                {{ cliente.telefono }}
+              </a>
+            </div>
+          </div>
+
+        </div>
       </div>
-      <div class="flex justify-between items-center py-2">
-        <span class="font-semibold text-gray-700">Dirección:</span>
-        <span class="text-dark font-bold">{{ cliente.direccion }}</span>
+
+      <!-- Información de Ubicación -->
+      <div class="mb-6">
+        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-map-marker-alt text-blue-500"></i>
+          Información de Ubicación
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Ciudad -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-city mr-2"></i>
+              Ciudad
+            </label>
+            <div class="detail-value">{{ cliente.ciudad }}</div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="detail-field">
+            <label class="detail-label">
+              <i class="fas fa-home mr-2"></i>
+              Dirección
+            </label>
+            <div class="detail-value">{{ cliente.direccion }}</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Información adicional -->
+      <div class="border-t border-gray-200 pt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+          {% if cliente.fecha_registro %}
+          <div class="flex items-center gap-2">
+            <i class="fas fa-calendar-plus text-blue-500"></i>
+            <span>Registrado: {{ cliente.fecha_registro|date:"d/m/Y" }}</span>
+          </div>
+          {% endif %}
+          {% if cliente.ultima_actualizacion %}
+          <div class="flex items-center gap-2">
+            <i class="fas fa-calendar-edit text-blue-500"></i>
+            <span>Actualizado: {{ cliente.ultima_actualizacion|date:"d/m/Y" }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+      <div class="flex justify-center gap-4">
+        <a href="{% url 'editar' cliente.id %}" 
+           class="px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+          <i class="fas fa-edit mr-2"></i>Editar Cliente
+        </a>
+<a href="{% url 'tabla' %}" 
+    class="px-6 py-2 border border-blue-dark text-blue-dark rounded-lg hover:bg-blue-dark hover:text-white font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2">
+    <i class="fas fa-list"></i>
+    Ver Todos los Clientes
+</a>
       </div>
     </div>
+
   </div>
 </div>
+
+<style>
+/* Estilos para campos de detalle */
+.detail-field {
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 4px solid #3b82f6;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.detail-field:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: translateX(4px);
+}
+
+.detail-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.detail-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+  word-wrap: break-word;
+}
+
+/* Estilos específicos para enlaces */
+.detail-value a {
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.detail-value a:hover {
+  border-bottom: 1px solid currentColor;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .detail-value {
+    font-size: 1rem;
+  }
+  
+  h3 {
+    font-size: 2rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para los campos
+    const detailFields = document.querySelectorAll('.detail-field');
+    detailFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'all 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Validación de teléfono y correo para enlaces
+    const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+    const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+    
+    // Agregar iconos visuales a los enlaces
+    phoneLinks.forEach(link => {
+        link.innerHTML = `<i class="fas fa-phone-alt mr-1"></i>${link.textContent}`;
+    });
+    
+    emailLinks.forEach(link => {
+        link.innerHTML = `<i class="fas fa-envelope mr-1"></i>${link.textContent}`;
+    });
+});
+</script>
+
 {% endblock %}
