@@ -48,6 +48,8 @@
 
   <!-- Formulario -->
   <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+    <!-- Contenedor para errores de stock mostrado-->
+    <div id="stock-error-container"></div>
     <form method="post">
       {% csrf_token %}
 
@@ -150,6 +152,7 @@
             </div>
           </div>
 
+
           <!-- Botón agregar producto -->
           <div class="mb-6">
             <button type="button" 
@@ -231,25 +234,56 @@ document.addEventListener('DOMContentLoaded', function () {
     const formsetBody = document.getElementById('formset-body');
     const totalForms = document.querySelector('#id_detallefactura_set-TOTAL_FORMS');
     const totalParcialElement = document.getElementById('total-parcial');
+    const submitBtn = document.querySelector('button[type="submit"]');
 
-    //Función para calcular el total parcial
     function calcularTotal() {
         let total = 0;
+        let hayErrorStock = false;
+
         document.querySelectorAll('#formset-body tr').forEach(row => {
-            const cantidad = parseFloat(row.querySelector('input[name$="-cantidad"]')?.value) || 0;
-            const precio = parseFloat(row.querySelector('input[name$="-precio_unitario"]')?.value) || 0;
+            const cantidadInput = row.querySelector('input[name$="-cantidad"]');
+            const precioInput = row.querySelector('input[name$="-precio_unitario"]');
+            const cantidad = parseFloat(cantidadInput?.value) || 0;
+            const precio = parseFloat(precioInput?.value) || 0;
+            const stock = parseInt(row.dataset.stock || row.querySelector('select[name$="-producto"] option:checked')?.dataset.stock || 0);
+
             total += cantidad * precio;
+
+            if (cantidad > stock) {
+                hayErrorStock = true;
+                cantidadInput.classList.add('border-red-500');
+            } else {
+                cantidadInput.classList.remove('border-red-500');
+            }
         });
-        totalParcialElement.textContent = total.toFixed(2);
+
+        const stockErrorContainer = document.getElementById('stock-error-container');
+
+if (hayErrorStock) {
+    totalParcialElement.textContent = total.toFixed(2); // dejamos el total calculado
+    stockErrorContainer.innerHTML = `
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-exclamation-triangle text-red-500 mt-1"></i>
+            <div>
+              <h3 class="font-semibold text-red-800 mb-2">Error en Stock</h3>
+              <p class="text-sm text-red-700">No hay suficiente stock disponible para uno o varios productos</p>
+            </div>
+          </div>
+        </div>
+    `;
+} else {
+    totalParcialElement.textContent = total.toFixed(2);
+    stockErrorContainer.innerHTML = ''; // limpiar errores
+}
+
+        if (submitBtn) submitBtn.disabled = hayErrorStock;
     }
 
-    // Evento al cambiar un producto
     function handleProductoChange(event) {
         const select = event.target;
         const productoId = select.value;
-
         if (!productoId) return;
-
         const fila = select.closest('tr');
         const inputPrecio = fila.querySelector('input[name$="-precio_unitario"]');
 
@@ -258,6 +292,8 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.precio) {
                     inputPrecio.value = data.precio;
+                    // guardamos stock en el data-attribute de la fila
+                    fila.dataset.stock = data.stock || 0;
                     calcularTotal();
                 } else {
                     inputPrecio.value = '';
@@ -265,15 +301,16 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Asignar eventos a todos los selects, cantidades y precios
     function asignarEventosFila(row) {
         const select = row.querySelector('select[name$="-producto"]');
         const inputCantidad = row.querySelector('input[name$="-cantidad"]');
         const inputPrecio = row.querySelector('input[name$="-precio_unitario"]');
-        
+
         if (select) {
             select.removeEventListener('change', handleProductoChange);
             select.addEventListener('change', handleProductoChange);
+            // Si ya tiene producto seleccionado, disparar fetch para stock/price inicial
+            if (select.value) select.dispatchEvent(new Event('change'));
         }
         if (inputCantidad) {
             inputCantidad.removeEventListener('input', calcularTotal);
@@ -285,27 +322,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Asigna eventos al cargar la página
     document.querySelectorAll('#formset-body tr').forEach(asignarEventosFila);
 
-    // Evento para agregar nuevas filas
     agregarBtn.addEventListener('click', function () {
         const formCount = parseInt(totalForms.value);
         const newRow = document.querySelector('.formset-row').cloneNode(true);
         const regex = new RegExp(`detallefactura_set-(\\d){1,}`, 'g');
 
-        // Reemplazar índices
         newRow.innerHTML = newRow.innerHTML.replace(regex, `detallefactura_set-${formCount}`);
         newRow.querySelectorAll('input, select').forEach(input => input.value = '');
 
         formsetBody.appendChild(newRow);
         totalForms.value = formCount + 1;
 
-        // Reasignar eventos
         asignarEventosFila(newRow);
     });
 
-    // Evento para eliminar filas
     formsetBody.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-row') || e.target.closest('.remove-row')) {
             if (formsetBody.children.length > 1) {
@@ -317,10 +349,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-    
-    // Calcular total inicial
+
     calcularTotal();
 });
 </script>
+
 
 {% endblock %}

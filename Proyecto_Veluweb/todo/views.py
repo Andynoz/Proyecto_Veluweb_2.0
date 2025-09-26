@@ -47,7 +47,9 @@ from .forms import FacturaForm, DetalleFacturaFormSet
 from .forms import CustomUserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-
+from django.db import transaction
+from django.http import JsonResponse
+from .forms import DetalleFacturaForm, DetalleFacturaFormSet
 
 
 
@@ -670,38 +672,107 @@ def lista_facturas(request):
 @login_required
 @permission_required("todo.add_factura", raise_exception=True)
 def crear_factura(request):
-    DetalleFormSet = inlineformset_factory(
-        Factura, DetalleFactura,
-        form=DetalleFacturaForm,
-        extra=1, can_delete=True
-    )
-
+    # Usamos el formset definido en forms.py: DetalleFacturaFormSet
     if request.method == "POST":
         factura_form = FacturaForm(request.POST, request.FILES)
-        if factura_form.is_valid():
-            factura = factura_form.save(commit=False)
-            factura.creado_por = request.user
-            factura.save()
+        # Creamos una instancia "temporal" para pasar al formset (no guardamos aún)
+        factura_temp = factura_form.save(commit=False) if factura_form.is_valid() else Factura()
+        formset = DetalleFacturaFormSet(request.POST, instance=factura_temp)
 
-            formset = DetalleFormSet(request.POST, instance=factura)
-            if formset.is_valid():
-                formset.save()
-                messages.success(
-                    request, 
-                    f'Factura #{factura.id} para "{factura.cliente}" creada correctamente.',
-                    extra_tags='factura_creada'
-                )
-                return redirect("lista_facturas")
+        # Validaciones form + formset (validan por fila)
+        if factura_form.is_valid() and formset.is_valid():
+            # 1) Agregar cantidades por producto (para detectar suma de filas mismas)
+            aggregated = {}
+            for f in formset:
+                data = f.cleaned_data
+                if not data or data.get('DELETE', False):
+                    continue
+                prod = data['producto']
+                cant = data['cantidad']
+                aggregated[prod.id] = aggregated.get(prod.id, 0) + cant
+
+            # 2) Validar stock de forma atómica con bloqueo de filas (select_for_update)
+            try:
+                with transaction.atomic():
+                    productos = list(Producto.objects.select_for_update().filter(id__in=aggregated.keys()))
+                    prod_map = {p.id: p for p in productos}
+
+                    errores_stock = []
+                    for pid, total_cant in aggregated.items():
+                        p = prod_map.get(pid)
+                        if p is None:
+                            errores_stock.append(f"Producto (id={pid}) no existe.")
+                        elif not p.estado:
+                            errores_stock.append(f"El producto {p.nombre} está desactivado.")
+                        elif p.stock < total_cant:
+                            errores_stock.append(
+                                f"No hay suficiente stock de {p.nombre}. Disponible: {p.stock} - Solicitado: {total_cant}"
+                            )
+
+                    if errores_stock:
+                        # No guardamos nada, mostramos mensajes y renderizamos el formulario otra vez
+                        for err in errores_stock:
+                            messages.error(request, err)
+                        return render(request, "facturas/crear.html", {
+                            "form": factura_form,
+                            "formset": formset,
+                            "error_stock": errores_stock,
+                        })
+
+                    # 3) Todo ok: guardar factura, detalles y descontar stock
+                    factura = factura_form.save(commit=False)
+                    factura.creado_por = request.user
+                    factura.save()
+
+                    detalles = formset.save(commit=False)
+                    for detalle in detalles:
+                        prod = prod_map[detalle.producto.id]
+                        # Si el precio no fue definido en la fila, tomar el actual
+                        if not detalle.precio_unitario:
+                            detalle.precio_unitario = prod.precio
+                        detalle.factura = factura
+                        detalle.save()
+
+                        # descontar stock
+                        prod.stock -= detalle.cantidad
+                        prod.save(update_fields=['stock'])
+
+                    # Gestionar elementos que el formset marcó para borrar (si aplica)
+                    for obj in formset.deleted_objects:
+                        obj.delete()
+
+                    # actualizar total de la factura
+                    factura.monto_total = factura.calculate_total()
+                    factura.save(update_fields=['monto_total'])
+
+                    messages.success(
+                        request,
+                        f'Factura #{factura.id} para "{factura.cliente}" creada correctamente.',
+                        extra_tags='factura_creada'
+                    )
+                    return redirect("lista_facturas")
+            except Exception as e:
+                # Si algo raro pasa dentro de la transacción
+                messages.error(request, "Ocurrió un error al procesar la venta. Intenta de nuevo.")
+                return render(request, "facturas/crear.html", {
+                    "form": factura_form,
+                    "formset": formset,
+                })
         else:
-            formset = DetalleFormSet(request.POST)
+            # Formularios no válidos: render con errores (ya los muestra Django)
+            return render(request, "facturas/crear.html", {
+                "form": factura_form,
+                "formset": formset,
+            })
+
     else:
         factura_form = FacturaForm()
-        formset = DetalleFormSet()
-
+        formset = DetalleFacturaFormSet()
     return render(request, "facturas/crear.html", {
         "form": factura_form,
         "formset": formset,
     })
+
     
 
 @login_required
@@ -709,11 +780,16 @@ def obtener_precio_producto(request):
     producto_id = request.GET.get('producto_id')
     try:
         producto = Producto.objects.get(id=producto_id)
-        # Devolver el precio como entero redondeado
-        precio_entero = int(round(float(producto.precio)))
-        return JsonResponse({'precio': precio_entero})
+        # Precio con 2 decimales como string
+        precio_str = f"{producto.precio:.2f}"
+        return JsonResponse({
+            'precio': precio_str,
+            'stock': producto.stock,
+            'estado': producto.estado
+        })
     except Producto.DoesNotExist:
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
+
 
 @login_required
 @permission_required("todo.view_factura", raise_exception=True)
