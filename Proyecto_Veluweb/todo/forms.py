@@ -228,11 +228,33 @@ class DetalleFacturaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Solo productos activos y con stock > 0 para seleccionar (UX)
         self.fields['producto'].queryset = Producto.objects.filter(
-            estado=True,  
+            estado=True, stock__gt=0
         ).order_by('nombre')
-        
         self.fields['producto'].widget.attrs.update({'class': 'form-control'})
+
+    def clean(self):
+        cleaned = super().clean()
+        producto = cleaned.get("producto")
+        cantidad = cleaned.get("cantidad")
+
+        if producto is None or cantidad is None:
+            return cleaned
+
+        if cantidad <= 0:
+            raise forms.ValidationError("La cantidad debe ser mayor a 0.")
+
+        if not producto.estado:
+            raise forms.ValidationError(f"El producto {producto.nombre} está desactivado.")
+
+        if cantidad > producto.stock:
+            raise forms.ValidationError(
+                f"Stock insuficiente para {producto.nombre}. Disponible: {producto.stock}"
+            )
+        return cleaned
+
+
 
 # Formset actualizado
 DetalleFacturaFormSet = inlineformset_factory(
