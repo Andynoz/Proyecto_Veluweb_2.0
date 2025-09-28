@@ -265,17 +265,90 @@ DetalleFacturaFormSet = inlineformset_factory(
     can_delete=True
 )
 
-
 class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700',
+            'placeholder': 'Correo electrónico'
+        }),
+        help_text='Requerido. Ingresa una dirección de correo válida.'
+    )
+    
+    password1 = forms.CharField(
+        label='Contraseña',
+        min_length=8,
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700',
+            'placeholder': 'Mínimo 8 caracteres',
+            'maxlength': '50'
+        }),
+        help_text='La contraseña debe tener entre 8 y 50 caracteres.'
+    )
+    
+    password2 = forms.CharField(
+        label='Confirmar contraseña',
+        min_length=8,
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700',
+            'placeholder': 'Confirmar contraseña',
+            'maxlength': '50'
+        }),
+        help_text='Repite la contraseña anterior.'
+    )
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = ("email", "password1", "password2")  # Removimos username
+    
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        if password1:
+            if len(password1) < 8:
+                raise ValidationError('La contraseña debe tener al menos 8 caracteres.')
+            if len(password1) > 50:
+                raise ValidationError('La contraseña no puede tener más de 50 caracteres.')
+        return password1
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError('Ya existe un usuario con este correo electrónico.')
+        return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data["email"]
+        email = self.cleaned_data["email"]
+        user.email = email
+        user.username = email
+        if commit:
+            user.save()
+        return user
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Personalizamos los widgets de las contraseñas
+        self.fields['password1'].widget.attrs.update({
+            'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700',
+            'placeholder': 'Contraseña'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700',
+            'placeholder': 'Confirmar contraseña'
+        })
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError('Ya existe un usuario con este correo electrónico.')
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        email = self.cleaned_data["email"]
+        user.email = email
+        user.username = email  # Usamos el email como username
         if commit:
             user.save()
         return user

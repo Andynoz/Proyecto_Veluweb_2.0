@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from .models import Cliente, Producto, Factura, DetalleFactura
 from .forms import ClienteForm
@@ -366,13 +367,15 @@ def registro(request):
     else:
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("signIn")
+            try:
+                user = form.save()
+                messages.success(request, 'Usuario registrado correctamente. Ya puedes iniciar sesión.')
+                return redirect("signIn")
+            except Exception as e:
+                messages.error(request, 'Error al crear el usuario. Intenta de nuevo.')
+                return render(request, "todo/registro.html", {"form": form})
         else:
-            return render(request, "todo/registro.html", {
-                "form": form
-            })
+            return render(request, "todo/registro.html", {"form": form})
 
 def signout(request): # Vista para cerrar sesión
     logout(request)
@@ -460,6 +463,23 @@ def nueva_contrasena(request):
     user = User.objects.get(id=user_id)
     if request.method == 'POST':
         nueva = request.POST.get('password')
+        
+        # VALIDACIONES DE CONTRASEÑA
+        errores = []
+        
+        if not nueva:
+            errores.append('La contraseña es obligatoria.')
+        elif len(nueva) < 8:
+            errores.append('La contraseña debe tener al menos 8 caracteres.')
+        elif len(nueva) > 50:
+            errores.append('La contraseña no puede tener más de 50 caracteres.')
+        
+        if errores:
+            for error in errores:
+                messages.error(request, error)
+            return render(request, 'todo/nueva_contrasena.html')
+        
+        # Si no hay errores, guardar la contraseña
         user.set_password(nueva)
         user.save()
         del request.session['reset_user_id']

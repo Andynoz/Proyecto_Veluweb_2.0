@@ -57,25 +57,20 @@
             </div>
         {% endif %}
 
-        <!-- Errores del formulario -->
-        {% if form.errors %}
+        <!-- Solo mostrar errores NON-FIELD (errores generales del formulario) -->
+        {% if form.non_field_errors %}
             <div class="bg-red-50 text-red-600 p-3 rounded-lg mb-5 border-l-4 border-red-600 text-sm">
                 <ul class="list-disc list-inside">
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
+                    {% for error in form.non_field_errors %}
                         <li>{{ error }}</li>
                     {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
                 </ul>
             </div>
         {% endif %}
         
         <form method="POST">
             {% csrf_token %}
-            
+
             <div class="mb-5 text-left">
                 <label for="username" class="block mb-2 font-medium text-gray-800 text-sm">Nombre Completo</label>
                 <input 
@@ -85,67 +80,133 @@
                     placeholder="Ingresa tu nombre" 
                     required
                     class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                    value = "{{ form.username.value|default:'' }}"
                 >
             </div>
             
             <div class="mb-5 text-left">
-                <label for="email" class="block mb-2 font-medium text-gray-800 text-sm">Correo</label>
+                <label for="email" class="block mb-2 font-medium text-gray-800 text-sm">Correo Electrónico</label>
                 <input 
                     type="email" 
                     id="email" 
                     name="email" 
                     placeholder="Ingresa tu correo" 
                     required
-                    class="w-full py-3 px-4 border-2 border-gray-300 rounded-lg box-border text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-blue-700"
+                    value="{{ form.email.value|default:'' }}"
                 >
+                {% if form.email.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
-<div class="relative">
-    <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">Crear contraseña</label>
-  <input 
-    type="password" 
-    id="password1"
-    name="password1"
-    placeholder="Ingresa tu contraseña"
-    class="w-full border rounded-lg px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-  <button 
-    type="button" 
-    onclick="togglePassword('password1', this)" 
-    class="absolute right-3 top-[51px] -translate-y-1/2 text-gray-500 hover:text-blue-600 focus:outline-none"
-  >
-    <!-- Ícono de ojito -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-    </svg>
-  </button>
-</div>
+            <div class="mb-5 text-left relative">
+                <label for="password1" class="block mb-2 font-medium text-gray-800 text-sm">
+                    Crear contraseña
+                    <span class="text-gray-500 text-xs">(8-50 caracteres)</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password1"
+                    name="password1"
+                    placeholder="Mínimo 8 caracteres"
+                    required
+                    minlength="8"
+                    maxlength="50"
+                    class="w-full py-3 px-4 pr-12 border-2 border-gray-300 rounded-lg text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                    value = "{{ form.password1.value|default:'' }}"
+                >
+                <button 
+                    type="button" 
+                    onclick="togglePassword('password1', this)" 
+                    class="absolute right-3 top-[49px] transform -translate-y-1/2 text-gray-500 hover:text-blue-custom focus:outline-none"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
+                
+                <!-- Contador de caracteres -->
+                <div class="text-xs text-gray-500 mt-1">
+                    <span id="password1-count">0</span>/50 caracteres
+                </div>
+                
+                <!-- Indicadores de validación -->
+                <div class="text-xs mt-2">
+                    <div id="length-check1" class="text-red-500">
+                        ✗ Mínimo 8 caracteres
+                    </div>
+                </div>
+                
+                {% if form.password1.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.password1.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
-
-<div class="mb-5 text-left relative">
-    <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">Comprobar contraseña</label>
-    <input 
-        type="password" 
-        id="password2" 
-        name="password2" 
-        placeholder="Confirmar contraseña" 
-        required
-        class="w-full py-3 px-4 pr-12 border-2 border-gray-300 rounded-lg text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
-    >
-    <!-- Botón ojo -->
-    <button type="button" onclick="togglePassword('password2', this)" 
-        class="absolute right-3 top-[49px] transform -translate-y-1/2 text-gray-500 hover:text-blue-custom focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-    </button>
-</div>
-
+            <div class="mb-5 text-left relative">
+                <label for="password2" class="block mb-2 font-medium text-gray-800 text-sm">
+                    Confirmar contraseña
+                    <span class="text-gray-500 text-xs">(8-50 caracteres)</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password2" 
+                    name="password2" 
+                    placeholder="Confirmar contraseña" 
+                    required
+                    minlength="8"
+                    maxlength="50"
+                    class="w-full py-3 px-4 pr-12 border-2 border-gray-300 rounded-lg text-sm bg-white outline-none transition-colors duration-300 focus:border-blue-custom placeholder-gray-400"
+                    value = "{{ form.password2.value|default:'' }}"
+                >
+                <button type="button" onclick="togglePassword('password2', this)" 
+                    class="absolute right-3 top-[49px] transform -translate-y-1/2 text-gray-500 hover:text-blue-custom focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
+                
+                <!-- Contador de caracteres -->
+                <div class="text-xs text-gray-500 mt-1">
+                    <span id="password2-count">0</span>/50 caracteres
+                </div>
+                
+                <!-- Indicadores de validación -->
+                <div class="text-xs mt-2">
+                    <div id="length-check2" class="text-red-500">
+                        ✗ Mínimo 8 caracteres
+                    </div>
+                    <div id="match-check" class="text-red-500 hidden">
+                        ✗ Las contraseñas no coinciden
+                    </div>
+                </div>
+                
+                {% if form.password2.errors %}
+                    <div class="text-red-500 text-sm mt-1">
+                        {% for error in form.password2.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
             
             <div class="flex justify-center mt-6">
-                <button class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline inline-block text-center">
+                <button 
+                    type="submit"
+                    id="submit-btn"
+                    disabled
+                    class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline inline-block text-center opacity-50 cursor-not-allowed"
+                >
                     Registro
                 </button>
             </div>
@@ -177,8 +238,138 @@ function togglePassword(id, btn) {
         icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
     }
 }
-</script>
 
+// Validación en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const password1Input = document.getElementById('password1');
+    const password2Input = document.getElementById('password2');
+    const password1Count = document.getElementById('password1-count');
+    const password2Count = document.getElementById('password2-count');
+    const lengthCheck1 = document.getElementById('length-check1');
+    const lengthCheck2 = document.getElementById('length-check2');
+    const matchCheck = document.getElementById('match-check');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    let password1Valid = false;
+    let password2Valid = false;
+    let passwordsMatch = false;
+    
+    function updateSubmitButton() {
+        if (password1Valid && password2Valid && passwordsMatch) {
+            submitBtn.disabled = false;
+            submitBtn.className = 'btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline inline-block text-center cursor-pointer';
+            submitBtn.textContent = 'Registro';
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.className = 'btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline inline-block text-center opacity-50 cursor-not-allowed';
+            submitBtn.textContent = 'Complete los campos correctamente';
+        }
+    }
+    
+    function validatePassword1() {
+        const value = password1Input.value;
+        const length = value.length;
+        
+        // Actualizar contador
+        password1Count.textContent = length;
+        
+        // Cambiar color del contador según proximidad al límite
+        if (length >= 50) {
+            password1Count.style.color = '#ef4444'; // rojo
+        } else if (length >= 40) {
+            password1Count.style.color = '#f59e0b'; // amarillo
+        } else {
+            password1Count.style.color = '#6b7280'; // gris
+        }
+        
+        // Validar longitud
+        if (length >= 8 && length <= 50) {
+            lengthCheck1.innerHTML = '✓ Longitud correcta (8-50 caracteres)';
+            lengthCheck1.className = 'text-green-500';
+            password1Valid = true;
+        } else if (length < 8) {
+            lengthCheck1.innerHTML = `✗ Mínimo 8 caracteres (faltan ${8 - length})`;
+            lengthCheck1.className = 'text-red-500';
+            password1Valid = false;
+        } else {
+            lengthCheck1.innerHTML = '✗ Máximo 50 caracteres';
+            lengthCheck1.className = 'text-red-500';
+            password1Valid = false;
+        }
+        
+        // Verificar si las contraseñas coinciden
+        checkPasswordMatch();
+        updateSubmitButton();
+    }
+    
+    function validatePassword2() {
+        const value = password2Input.value;
+        const length = value.length;
+        
+        // Actualizar contador
+        password2Count.textContent = length;
+        
+        // Cambiar color del contador según proximidad al límite
+        if (length >= 50) {
+            password2Count.style.color = '#ef4444'; // rojo
+        } else if (length >= 40) {
+            password2Count.style.color = '#f59e0b'; // amarillo
+        } else {
+            password2Count.style.color = '#6b7280'; // gris
+        }
+        
+        // Validar longitud
+        if (length >= 8 && length <= 50) {
+            lengthCheck2.innerHTML = '✓ Longitud correcta (8-50 caracteres)';
+            lengthCheck2.className = 'text-green-500';
+            password2Valid = true;
+        } else if (length < 8) {
+            lengthCheck2.innerHTML = `✗ Mínimo 8 caracteres (faltan ${8 - length})`;
+            lengthCheck2.className = 'text-red-500';
+            password2Valid = false;
+        } else {
+            lengthCheck2.innerHTML = '✗ Máximo 50 caracteres';
+            lengthCheck2.className = 'text-red-500';
+            password2Valid = false;
+        }
+        
+        // Verificar si las contraseñas coinciden
+        checkPasswordMatch();
+        updateSubmitButton();
+    }
+    
+    function checkPasswordMatch() {
+        const password1 = password1Input.value;
+        const password2 = password2Input.value;
+        
+        if (password2.length > 0) {
+            matchCheck.classList.remove('hidden');
+            if (password1 === password2) {
+                matchCheck.innerHTML = '✓ Las contraseñas coinciden';
+                matchCheck.className = 'text-green-500';
+                passwordsMatch = true;
+            } else {
+                matchCheck.innerHTML = '✗ Las contraseñas no coinciden';
+                matchCheck.className = 'text-red-500';
+                passwordsMatch = false;
+            }
+        } else {
+            matchCheck.classList.add('hidden');
+            passwordsMatch = false;
+        }
+    }
+    
+    // Event listeners
+    password1Input.addEventListener('input', validatePassword1);
+    password1Input.addEventListener('keyup', validatePassword1);
+    password2Input.addEventListener('input', validatePassword2);
+    password2Input.addEventListener('keyup', validatePassword2);
+    
+    // Validación inicial
+    validatePassword1();
+    validatePassword2();
+});
+</script>
 
 </body>
 </html>
