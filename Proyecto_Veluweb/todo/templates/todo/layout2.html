@@ -18,6 +18,7 @@
         extend: {
           colors: {
             'blue-dark': '#183a5e',
+            'blue-custom': '#145ba0',
           }
         }
       }
@@ -43,6 +44,22 @@
     @keyframes slideInDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .auto-hide { transition: opacity 0.5s ease-out; }
     .message-icon { flex-shrink: 0; font-size: 1.25rem; }
+
+    /* Estilos para el modal de confirmación */
+    .btn-custom {
+      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
+    .modal-overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body class="font-sans bg-gray-100 min-h-screen flex flex-col">
@@ -52,6 +69,56 @@
 
   <!-- Overlay -->
   <label for="menu-toggle" class="fondo-oscuro fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[998] opacity-0 invisible transition-all duration-300 cursor-pointer"></label>
+
+  <!-- Modal de confirmación para cerrar sesión -->
+  <div id="logoutModal" class="fixed inset-0 z-[1001] flex items-center justify-center opacity-0 invisible transition-all duration-300 modal-overlay">
+    <div class="w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl bg-white modal-content">
+      <!-- Sección superior con fondo rojo -->
+      <div class="bg-gradient-to-br from-red-600 to-red-700 py-8 px-8 text-center text-white">
+        <div class="mb-4">
+          <div class="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center">
+            <i class="fas fa-sign-out-alt text-3xl text-red-600"></i>
+          </div>
+        </div>
+        <h2 class="text-2xl font-semibold m-0 text-white">- Cerrar Sesión -</h2>
+      </div>
+
+      <!-- Sección inferior con fondo blanco -->
+      <div class="bg-white p-8">
+        <div class="text-center mb-6">
+          <p class="text-gray-700 text-base">
+            ¿Estás seguro de que deseas cerrar sesión?
+          </p>
+          <p class="text-gray-500 text-sm mt-2">
+            Tendrás que iniciar sesión nuevamente para acceder al sistema.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <!-- Botón de confirmar -->
+          <a href="{% url 'logout' %}" 
+             class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg border-2 border-red-600 hover:border-red-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-center flex items-center justify-center gap-2">
+            <i class="fas fa-sign-out-alt"></i>
+            Sí, Cerrar Sesión
+          </a>
+
+          <!-- Botón de cancelar -->
+          <button onclick="closeLogoutModal()" 
+                  class="px-2 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg border-2 border-gray-500 hover:border-gray-600 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-center flex items-center justify-center gap-2">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+        </div>
+
+        <div class="text-center mt-6 pt-5 border-t border-gray-300">
+          <p class="text-sm text-gray-600 m-0">
+            <i class="fas fa-info-circle mr-1"></i>
+            Tu sesión se cerrará automáticamente después de 15 minutos de inactividad
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Encabezado -->
   <header class="bg-blue-dark shadow-lg sticky top-0 z-[1000]">
@@ -67,9 +134,9 @@
       </div>
       <!-- Derecha -->
       <div>
-        <a href="{% url 'logout' %}" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">
+        <button onclick="openLogoutModal()" class="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">
           <i class="fas fa-sign-out-alt mr-1"></i> Cerrar Sesión
-        </a>
+        </button>
       </div>
     </div>
   </header>
@@ -148,15 +215,6 @@
   </div>
   {% endif %}
 
-  <!-- Footer principal -->
-  <footer class="bg-blue-dark text-white text-center py-6 px-5 mt-auto">
-    <p class="mb-4 text-sm">Veluweb &copy; 2025 - Todos los derechos reservados</p>
-    <ul class="flex justify-center gap-6 flex-wrap">
-      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Facebook</a></li>
-      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">TikTok</a></li>
-      <li><a href="#" class="text-gray-300 hover:text-blue-400 transition-colors duration-200">Instagram</a></li>
-    </ul>
-  </footer>
 
   <script>
     let timer;
@@ -179,6 +237,37 @@
           setTimeout(() => { message.remove(); }, 500);
         }, 5000);
       });
+    });
+
+    // Funciones para el modal de logout
+    function openLogoutModal() {
+      const modal = document.getElementById('logoutModal');
+      modal.classList.remove('opacity-0', 'invisible');
+      modal.classList.add('opacity-100', 'visible');
+      // Enfocar el botón de cancelar por accesibilidad
+      setTimeout(() => {
+        modal.querySelector('button').focus();
+      }, 100);
+    }
+
+    function closeLogoutModal() {
+      const modal = document.getElementById('logoutModal');
+      modal.classList.remove('opacity-100', 'visible');
+      modal.classList.add('opacity-0', 'invisible');
+    }
+
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLogoutModal();
+      }
+    });
+
+    // Cerrar modal al hacer clic fuera del contenido
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeLogoutModal();
+      }
     });
   </script>
 
