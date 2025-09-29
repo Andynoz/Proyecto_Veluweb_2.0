@@ -400,6 +400,8 @@ def signIn(request):
 
     return render(request, 'todo/signIn.html', {'form': AuthenticationForm()})
 
+def terminos(request):
+    return render(request, "todo/terminos.html")
         
 def enviar_codigo_reset(user):
     codigo = generar_codigo_corto()

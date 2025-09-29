@@ -61,6 +61,8 @@ urlpatterns = [
 
     # Enviar factura por email
     path("facturas/<int:pk>/enviar/", views.enviar_factura_email, name="enviar_factura"),
+
+    path('terminos/', views.terminos, name='terminos'),
 ]
 
 # Para servir archivos multimedia en desarrollo
