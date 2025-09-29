@@ -199,6 +199,26 @@
                     </div>
                 {% endif %}
             </div>
+
+                        <!-- Checkbox de Términos y Condiciones -->
+            <div class="flex justify-center mb-5">
+            <label for="terminos" class="flex items-center space-x-2 text-sm text-gray-700">
+                <input 
+                    type="checkbox" 
+                    id="terminos" 
+                    name="terminos" 
+                    required
+                    class="w-4 h-4 text-blue-custom border-gray-300 rounded focus:ring-blue-custom cursor-pointer"
+                >
+                <span>
+                Acepto los 
+                <a href="{% url 'terminos' %}" class="text-blue-custom hover:text-blue-dark underline">
+                    Términos y Condiciones
+                </a>
+                </span>
+            </label>
+            </div>
+
             
             <div class="flex justify-center mt-6">
                 <button 

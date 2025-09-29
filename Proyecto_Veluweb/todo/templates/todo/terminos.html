@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue-custom': '#145ba0',
+                        'blue-dark': '#183a5e',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="flex justify-center items-center min-h-screen bg-gray-100 p-5">
+
+<div class="w-full max-w-3xl rounded-2xl shadow-2xl bg-white overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-blue-dark to-blue-custom py-6 px-6 text-center text-white">
+        <h1 class="text-2xl font-semibold">Términos y Condiciones</h1>
+    </div>
+
+    <!-- Contenido scrollable -->
+    <div class="p-6 max-h-[500px] overflow-y-auto text-gray-700 leading-relaxed text-sm">
+        <p><strong>1. Aceptación de los términos</strong></p>
+        <p>
+            Al registrarse y utilizar la plataforma VeluWeb, el usuario acepta plenamente y sin reservas 
+            los presentes términos y condiciones de uso.
+        </p>
+
+        <p class="mt-4"><strong>2. Uso de la plataforma</strong></p>
+        <p>
+            El usuario se compromete a utilizar la plataforma de forma responsable y conforme a la 
+            legislación vigente. Queda prohibido el uso de la plataforma para actividades ilícitas 
+            o que perjudiquen a terceros.
+        </p>
+
+        <p class="mt-4"><strong>3. Privacidad y protección de datos</strong></p>
+        <p>
+            VeluWeb respeta la privacidad de los usuarios y garantiza que la información personal será 
+            tratada de acuerdo con la normativa vigente sobre protección de datos.
+        </p>
+
+        <p class="mt-4"><strong>4. Responsabilidades</strong></p>
+        <p>
+            VeluWeb no se hace responsable de interrupciones del servicio por causas ajenas, 
+            ni de daños ocasionados por un mal uso de la plataforma.
+        </p>
+
+        <p class="mt-4"><strong>5. Modificaciones</strong></p>
+        <p>
+            VeluWeb se reserva el derecho de modificar en cualquier momento los presentes términos 
+            y condiciones, notificando oportunamente a los usuarios.
+        </p>
+    </div>
+
+    <!-- Botón volver -->
+    <div class="p-6 flex justify-center">
+        <a href="{% url 'signIn' %}" 
+           class="bg-gradient-to-br from-blue-dark to-blue-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 no-underline text-center">
+           Volver
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
