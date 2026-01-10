@@ -1,16 +1,64 @@
-{% extends "todo/layout.html" %}
+{% extends "todo/layout2.html" %}
+
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Detalle del Producto</title>
-<link rel="stylesheet" href="{% static 'todo/styles.css' %}"></head>
-<body>
-  <h1>{{ producto.nombre }}</h1>
-  <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
-  <p><strong>Precio:</strong> ${{ producto.precio }}</p>
-  <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
-  <a href="{{ url 'listar_productos' }}">Volver a la lista</a>
-</body>
-</html>
+{% load humanize %}
+
+{% block content %}
+<header>
+  <style>
+    /* Gradiente personalizado para el header */
+    .bg-custom-gradient {
+      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
+    /* Colores personalizados para los botones */
+    .btn-custom {
+      background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
+  </style>
+</header>
+<div class="max-w-4xl mx-auto mt-10 mb-10">
+  <!-- Botón de volver -->
+  <div class="flex justify-start gap-4 mt-6">
+    <a href="{% url 'productos_index' %}" 
+       class="btn-custom text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Volver
+    </a>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="flex flex-col md:flex-row gap-8 bg-white rounded-xl shadow-lg p-8">
+    <!-- Imagen del producto -->
+    <div class="md:w-1/2 flex items-start justify-center">
+      {% if producto.imagen %}
+      <img src="{{ producto.imagen.url }}" alt="Imagen del producto"
+      class="rounded shadow-sm w-full max-w-xs object-cover">
+      {% else %}
+      <img src="{% static 'img/no-image.png' %}" alt="Sin imagen disponible"
+      class="rounded shadow-sm w-full max-w-xs object-cover">
+      {% endif %}
+    </div>
+    
+    <!-- Info del producto -->
+    <div class="md:w-1/2 flex flex-col justify-between">
+      <div>
+        <h2 class="mb-3 text-3xl font-bold text-blue-800">{{ producto.nombre }}</h2>
+        <p class="mb-2 text-lg"><span class="font-semibold text-gray-700">Precio:</span> <span class="text-green-600 font-bold">${{ producto.precio|floatformat:0|intcomma }}</span></p>
+        <p class="mb-4 text-base"><span class="font-semibold text-gray-700">Descripción:</span> {{ producto.descripcion }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-format-number').forEach(function(el) {
+        const numero = parseInt(el.textContent);
+        el.textContent = numero.toLocaleString('es-CO');
+    });
+});
+</script>
+
+{% endblock %}

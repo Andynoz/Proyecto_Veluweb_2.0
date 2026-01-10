@@ -1,53 +1,117 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-import uuid
+from django.urls import reverse
+from django.utils.text import slugify
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     correo = models.EmailField(unique=True)
-    telefono = models.CharField(max_length=15)
-    
+    telefono = models.CharField(max_length=10)
+    ciudad = models.CharField(max_length=100, verbose_name="Ciudad", default='Sin especificar')
+    direccion = models.CharField(max_length=255, verbose_name="Dirección", default='Sin especificar')
+
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
-    
+
     class Meta:
         ordering = ['id']
 
+
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    token = models.CharField(max_length=6, unique=True)
     created_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField()
 
     def is_valid(self):
         return timezone.now() < self.expires_at
-    
-# PRODUCTOS
+
+
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+
+
+
+    def __str__(self):
+        return self.nombre
+
 
 class Producto(models.Model):
-    nombre = models.CharField(max_length=100)
     codigo = models.CharField(max_length=50, unique=True)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    nombre = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
+    stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible")
+    precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Unitario")
+    estado = models.BooleanField(default=True)
+
+
+    def get_precio_entero(self):
+        """Retorna el precio como entero redondeado"""
+        return int(round(float(self.precio)))
+    
+    def get_precio_formateado(self):
+        """Retorna el precio como entero con formato de miles"""
+        return f"{self.get_precio_entero():,}".replace(",", ".")
+    def get_absolute_url(self):
+        return reverse('detalle_producto', args=[self.pk])
+
+    def get_stock_class(self):
+        return 'stock-low' if self.stock < 5 else 'stock-ok'
+
+    def get_stock_status(self):
+        return 'Stock Bajo' if self.stock < 5 else 'Stock Disponible'
 
     def __str__(self):
-        return f"{self.nombre} - {self.codigo}"
-
+        return f"{self.nombre}"
+    
+    def estado_stock(self):
+        return self.stock > 0
+    
+    def get_estado_display(self):
+        return "Activo" if self.estado else "Inactivo"
+    
 
 class Factura(models.Model):
+    ESTADO_CHOICES = [
+        ('PENDIENTE', 'Pendiente'),
+        ('PAGADA', 'Pagada'),
+        ('VENCIDA', 'Vencida'),
+    ]
+
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fecha = models.DateTimeField(default=timezone.now)
+    estado = models.CharField(
+        max_length=10,
+        choices=ESTADO_CHOICES,
+        default="PENDIENTE"
+    )
+    monto_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"Factura #{self.id} - {self.cliente}"
 
-    def total(self):
+    def calculate_total(self):
         return sum(item.subtotal() for item in self.detallefactura_set.all())
-    
+
+    def save(self, *args, **kwargs):
+        # Si aún no tiene pk, guardamos primero para obtenerlo
+        if not self.pk:
+            super().save(*args, **kwargs)
+
+        # Una vez tiene pk, podemos calcular el total
+        self.monto_total = self.calculate_total()
+        super().save(update_fields=['monto_total'])
+
+
 
 class DetalleFactura(models.Model):
     factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
@@ -60,3 +124,11 @@ class DetalleFactura(models.Model):
 
     def __str__(self):
         return f"{self.producto} x {self.cantidad}"
+
+
+@receiver(post_save, sender=DetalleFactura)
+@receiver(post_delete, sender=DetalleFactura)
+def update_factura_total(sender, instance, **kwargs):
+    factura = instance.factura
+    factura.monto_total = factura.calculate_total()
+    factura.save(update_fields=['monto_total'])

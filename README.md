@@ -50,3 +50,11 @@ Esto para que sea mas facil el proceso de logearse y demas
 
 (probado por mi mismo :D)
 
+
+Las imágenes de los productos no están incluidas en el repositorio porque la carpeta media/ está ignorada por .gitignore para evitar conflictos.
+
+Cuando se cargan las fixtures, los campos de imagen aparecen pero sin archivo físico. 
+Por favor, solicitar la carpeta de imágenes al responsable si se desea verlas en local.
+
+Esto ya no será un problema una vez el proyecto esté desplegado en un servidor central.
+

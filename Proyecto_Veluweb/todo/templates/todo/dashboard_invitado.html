@@ -1,0 +1,73 @@
+{% extends "todo/layout2.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Dashboard | Veluweb{% endblock %}
+{% block content %}
+
+<head>
+    <style>
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 4px solid #183a5e;
+        }
+
+        .quick-action-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+        }
+
+        .quick-action-card:hover {
+            border-color: #183a5e;
+        }
+
+        .welcome-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+    </style>
+</head>
+
+<div class="min-h-screen bg-gray-50 flex flex-col">
+    <!-- Header de Bienvenida -->
+    <div class="welcome-gradient text-white py-8 mb-8">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl font-bold mb-2">¡Bienvenido, {{ user.username }}!</h1>
+            <p class="text-xl opacity-90">Dashboard Veluweb</p>
+            <div class="mt-4 text-sm opacity-75">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                {{ "now"|date:"l, d de F de Y - g:i a" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista Invitado -->
+    <div class="flex-1 flex flex-col items-center justify-center px-6">
+        <div class="bg-white p-10 rounded-2xl shadow-md max-w-lg w-full text-center">
+            <i class="fas fa-user-lock text-6xl text-gray-400 mb-6"></i>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Acceso Restringido</h2>
+            <p class="text-gray-600 mb-6">
+                Actualmente tu cuenta no tiene permisos asignados. 
+                Por favor, espera a que el administrador te otorgue un rol.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-gray-500 text-sm py-6">
+        <p>Sistema de Gestión Veluweb - Desarrollado para optimizar tu negocio</p>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,13 +1,105 @@
-{% extends "todo/layout.html" %}
+{% extends "todo/layout2.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>¿Eliminar Factura #{{ factura.id }}?</h1>
-    <p>Esta acción eliminará también todos los productos relacionados con esta factura.</p>
-    <form method="post">
+<header>
+     <style>
+        /* Gradiente personalizado para el header */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+        /* Colores personalizados para los botones */
+        .btn-custom {
+            background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+        }
+        
+    </style>
+</header>
+<!-- Contenedor principal -->
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <!-- Contenedor de confirmación con fondo blanco y sombra -->
+  <div class="bg-white rounded-xl shadow-xl overflow-hidden border-l-4 border-red-500">
+    <div class="p-8">
+      <!-- Icono de alerta -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-red-100 rounded-full p-4">
+          <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Título principal -->
+      <h1 class="text-red-600 text-3xl mb-4 text-center font-bold">¿Eliminar Factura #{{ factura.id }}?</h1>
+      
+      <!-- Mensaje de advertencia -->
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <div>
+            <h3 class="text-red-800 font-semibold mb-1">⚠️ Acción Irreversible</h3>
+            <p class="text-red-700 text-sm leading-relaxed">
+              Esta acción eliminará <strong>permanentemente</strong> la factura y todos los productos relacionados con ella. 
+              Esta operación no se puede deshacer.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información adicional de la factura -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-8">
+        <h4 class="text-gray-800 font-semibold mb-3">📋 Información de la Factura:</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">ID:</span>
+            <span class="font-medium text-gray-900">#{{ factura.id }}</span>
+          </div>
+          {% if factura.cliente %}
+          <div class="flex justify-between">
+            <span class="text-gray-600">Cliente:</span>
+            <span class="font-medium text-gray-900">{{ factura.cliente }}</span>
+          </div>
+          {% endif %}
+          {% if factura.fecha %}
+          <div class="flex justify-between">
+            <span class="text-gray-600">Fecha:</span>
+            <span class="font-medium text-gray-900">{{ factura.fecha|date:"d/m/Y" }}</span>
+          </div>
+          {% endif %}
+          {% if factura.total %}
+          <div class="flex justify-between">
+            <span class="text-gray-600">Total:</span>
+            <span class="font-bold text-green-600">${{ factura.total|floatformat:2 }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Formulario de eliminación -->
+      <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-        <a href="{% url 'lista_facturas' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+        
+        <!-- Botones de acción -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl border-2 border-red-600 hover:border-red-700 focus:outline-none focus:ring-4 focus:ring-red-200">
+            🗑️ Sí, eliminar definitivamente
+          </button>
+          <a href="{% url 'lista_facturas' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-lg text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl inline-block text-center border-2 border-gray-500 hover:border-gray-600">
+            ↩️ Cancelar
+          </a>
+        </div>
+      </form>
+
+      <!-- Mensaje adicional -->
+      <div class="mt-6 text-center">
+        <p class="text-gray-500 text-sm">
+          💡 <strong>Sugerencia:</strong> Si tienes dudas, es mejor cancelar y revisar la factura nuevamente.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

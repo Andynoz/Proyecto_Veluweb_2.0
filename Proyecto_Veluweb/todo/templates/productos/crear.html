@@ -1,13 +1,95 @@
-{% extends "todo/layout.html" %}
+{% extends "todo/layout2.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Crear Producto</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="{% url 'productos_index' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<style>
+    /* Gradiente para el botón principal */
+    .btn-custom {
+        background: linear-gradient(135deg, #183a5e 0%, #145ba0 100%);
+    }
+
+    /* Estilo global para inputs y selects */
+    form input,
+    form select,
+    form textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb; /* gris claro */
+        border-radius: 0.5rem;
+        background-color: #f9fafb; /* gris muy claro */
+        font-size: 0.875rem;
+    }
+
+    form input:focus,
+    form select:focus,
+    form textarea:focus {
+        outline: none;
+        border-color: #1e40af; /* azul */
+        background-color: white;
+    }
+</style>
+
+<div class="bg-gray-50 min-h-screen">
+    <div class="max-w-3xl mx-auto p-4 sm:p-8">
+        <!-- Título -->
+        <h1 class="text-dark text-4xl font-semibold mb-8 text-center">Crear Producto</h1>
+
+        <!-- Errores -->
+        {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <ul class="list-disc list-inside">
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <!-- Formulario -->
+        <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl shadow-lg p-8">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="space-y-6">
+                {{ field.label_tag }}
+                {{ field }}
+            </div>
+            {% endfor %}
+
+            <!-- Botones -->
+            <div class="flex flex-wrap gap-4 mt-8">
+                <button type="submit"
+                    class="btn-custom text-white px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-none cursor-pointer">
+                    Registrar Producto
+                </button>
+                <a href="{% url 'productos_index' %}"
+                    class="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg inline-block text-center no-underline">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Previsualización de imagen -->
+<script>
+function previewImage(event) {
+    const input = event.target;
+    const preview = document.getElementById('imagePreview');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+
 {% endblock %}
